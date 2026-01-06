@@ -231,7 +231,10 @@ const tursoDb = {
       }
       values.push(args.where.key);
 
-      await tursoExecute(`UPDATE RateLimitEntry SET ${updates.join(', ')} WHERE key = ?`, values);
+      // Only run update if there are fields to update
+      if (updates.length > 0) {
+        await tursoExecute(`UPDATE RateLimitEntry SET ${updates.join(', ')} WHERE key = ?`, values);
+      }
       const entry = await tursoDb.rateLimitEntry.findUnique(args);
       return entry!;
     },
