@@ -1,9 +1,7 @@
 // Prisma schema for LinkMe
-// Compatible with both local SQLite and Turso (hosted SQLite for Vercel)
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
