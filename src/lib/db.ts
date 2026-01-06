@@ -2,7 +2,7 @@
 // Supports both local SQLite and Turso (for Vercel deployment)
 
 import { PrismaClient } from '@prisma/client';
-import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
 import { createClient } from '@libsql/client';
 
 // Global to prevent multiple instances in development
@@ -15,14 +15,15 @@ declare global {
 const isTurso = process.env.DATABASE_URL?.startsWith('libsql://');
 
 function createPrismaClient(): PrismaClient {
-  if (isTurso) {
+  if (isTurso && process.env.DATABASE_AUTH_TOKEN) {
     // Turso configuration for production
     const libsql = createClient({
       url: process.env.DATABASE_URL!,
       authToken: process.env.DATABASE_AUTH_TOKEN,
     });
 
-    const adapter = new PrismaLibSQL(libsql);
+    const adapter = new PrismaLibSql(libsql);
+    // @ts-expect-error - Prisma adapter types are not fully compatible
     return new PrismaClient({ adapter });
   } else {
     // Local SQLite for development
