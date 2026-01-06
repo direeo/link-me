@@ -2,7 +2,7 @@
 // GET /api/admin/users?secret=YOUR_ADMIN_SECRET
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, DbUser } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,41 +22,25 @@ export async function GET(request: NextRequest) {
 
         const db = getDb();
 
-        // Get all users (excluding password hash for security)
-        const users = await db.user.findMany({
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                emailVerified: true,
-                createdAt: true,
-                updatedAt: true,
-                _count: {
-                    select: {
-                        chatHistories: true,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
+        // Get all users
+        const users = await db.user.findMany();
 
         // Get total counts
         const totalUsers = await db.user.count();
-        const verifiedUsers = await db.user.count({
-            where: { emailVerified: true },
-        });
+        const verifiedUsers = await db.user.count({ where: { emailVerified: true } });
 
         return NextResponse.json({
             success: true,
             data: {
                 totalUsers,
                 verifiedUsers,
-                users: users.map(user => ({
-                    ...user,
-                    chatCount: user._count.chatHistories,
-                    _count: undefined,
+                users: (users as DbUser[]).map(user => ({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    emailVerified: user.emailVerified,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
                 })),
             },
         });
