@@ -3,7 +3,6 @@
 
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
-import { createClient } from '@libsql/client';
 
 // Global to prevent multiple instances in development
 declare global {
@@ -16,14 +15,12 @@ const isTurso = process.env.DATABASE_URL?.startsWith('libsql://');
 
 function createPrismaClient(): PrismaClient {
   if (isTurso && process.env.DATABASE_AUTH_TOKEN) {
-    // Turso configuration for production
-    const libsql = createClient({
+    // Turso configuration for production - pass config directly to adapter
+    const adapter = new PrismaLibSql({
       url: process.env.DATABASE_URL!,
       authToken: process.env.DATABASE_AUTH_TOKEN,
     });
-
-    const adapter = new PrismaLibSql(libsql);
-    // @ts-expect-error - Prisma adapter types are not fully compatible
+    // @ts-expect-error - Prisma adapter types may not be fully compatible
     return new PrismaClient({ adapter });
   } else {
     // Local SQLite for development
