@@ -9,25 +9,16 @@ interface RateLimitConfig {
     blockDurationMs: number; // How long to block after max attempts
 }
 
-const DEFAULT_CONFIG: RateLimitConfig = {
-    maxAttempts: 5,
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    blockDurationMs: 30 * 60 * 1000, // 30 minutes block
-};
-
 // ============================================
 // Rate Limiter Functions
 // ============================================
 
 /**
  * Check if a key (IP or email) is rate limited
- * @param key - Unique identifier (e.g., IP address or email)
- * @param config - Rate limit configuration
- * @returns Object with allowed status and remaining attempts
  */
 export async function checkRateLimit(
     key: string,
-    config: RateLimitConfig = DEFAULT_CONFIG
+    config: RateLimitConfig
 ): Promise<{ allowed: boolean; remainingAttempts: number; retryAfter?: number }> {
     const prisma = getDb();
     const now = new Date();
@@ -47,33 +38,31 @@ export async function checkRateLimit(
         return { allowed: false, remainingAttempts: 0, retryAfter };
     }
 
-    // Check if window has expired
-    const windowStart = new Date(now.getTime() - config.windowMs);
-    if (entry.lastAttempt < windowStart) {
+    // Check if window has expired (using windowStart field from schema)
+    const windowExpiry = new Date(now.getTime() - config.windowMs);
+    if (entry.windowStart < windowExpiry) {
         // Reset the counter
         await prisma.rateLimitEntry.update({
             where: { key },
-            data: { attempts: 0, blockedUntil: null },
+            data: { count: 0, windowStart: now, blockedUntil: null },
         });
         return { allowed: true, remainingAttempts: config.maxAttempts - 1 };
     }
 
-    // Check if max attempts reached
-    if (entry.attempts >= config.maxAttempts) {
+    // Check if max attempts reached (using count field from schema)
+    if (entry.count >= config.maxAttempts) {
         return { allowed: false, remainingAttempts: 0 };
     }
 
-    return { allowed: true, remainingAttempts: config.maxAttempts - entry.attempts - 1 };
+    return { allowed: true, remainingAttempts: config.maxAttempts - entry.count - 1 };
 }
 
 /**
  * Record a rate limit attempt (call on failed attempts)
- * @param key - Unique identifier
- * @param config - Rate limit configuration
  */
 export async function recordAttempt(
     key: string,
-    config: RateLimitConfig = DEFAULT_CONFIG
+    config: RateLimitConfig
 ): Promise<void> {
     const prisma = getDb();
     const now = new Date();
@@ -87,35 +76,35 @@ export async function recordAttempt(
         await prisma.rateLimitEntry.create({
             data: {
                 key,
-                attempts: 1,
-                lastAttempt: now,
+                count: 1,
+                windowStart: now,
             },
         });
         return;
     }
 
     // Check if window has expired
-    const windowStart = new Date(now.getTime() - config.windowMs);
-    if (entry.lastAttempt < windowStart) {
+    const windowExpiry = new Date(now.getTime() - config.windowMs);
+    if (entry.windowStart < windowExpiry) {
         // Reset and start new window
         await prisma.rateLimitEntry.update({
             where: { key },
-            data: { attempts: 1, lastAttempt: now, blockedUntil: null },
+            data: { count: 1, windowStart: now, blockedUntil: null },
         });
         return;
     }
 
-    // Increment attempts
-    const newAttempts = entry.attempts + 1;
-    const blockedUntil = newAttempts >= config.maxAttempts
+    // Increment count
+    const newCount = entry.count + 1;
+    const blockedUntil = newCount >= config.maxAttempts
         ? new Date(now.getTime() + config.blockDurationMs)
         : null;
 
     await prisma.rateLimitEntry.update({
         where: { key },
         data: {
-            attempts: newAttempts,
-            lastAttempt: now,
+            count: newCount,
+            windowStart: now,
             blockedUntil,
         },
     });
@@ -123,7 +112,6 @@ export async function recordAttempt(
 
 /**
  * Reset rate limit for a key (call on successful attempts)
- * @param key - Unique identifier
  */
 export async function resetRateLimit(key: string): Promise<void> {
     const prisma = getDb();
@@ -134,7 +122,6 @@ export async function resetRateLimit(key: string): Promise<void> {
 
 /**
  * Get client IP from request headers
- * Handles proxies and load balancers
  */
 export function getClientIP(headers: Headers): string {
     const forwarded = headers.get('x-forwarded-for');
