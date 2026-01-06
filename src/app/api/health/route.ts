@@ -14,6 +14,9 @@ export async function GET() {
             (process.env.DATABASE_URL.startsWith('libsql://') ? 'libsql://' + process.env.DATABASE_URL.slice(9, 30) + '...' : 'file://...') :
             'NOT SET',
         authTokenSet: !!process.env.DATABASE_AUTH_TOKEN,
+        youtubeApiKeySet: !!process.env.YOUTUBE_API_KEY,
+        jwtSecretSet: !!process.env.JWT_SECRET,
+        adminSecretSet: !!process.env.ADMIN_SECRET,
     };
 
     // Test Turso connection
