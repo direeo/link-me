@@ -1,41 +1,54 @@
 // Database client for LinkMe
-// Uses Prisma with SQLite (local) or Turso (production via libsql)
+// Uses Prisma with SQLite (local) or Turso (production)
+// Initialization is lazy to avoid build-time errors on Vercel
 
 import { PrismaClient } from '@prisma/client';
 
 // Global to prevent multiple instances in development
 declare global {
   // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
+  var __db: PrismaClient | undefined;
 }
 
-// Create singleton instance
-let prismaInstance: PrismaClient | undefined;
-
+// Lazy singleton - only initializes on first call
 export function getDb(): PrismaClient {
-  if (!prismaInstance) {
-    // Check if running on Vercel with Turso
-    if (process.env.DATABASE_URL?.startsWith('libsql://') && process.env.DATABASE_AUTH_TOKEN) {
-      // Dynamic import for Turso - only runs on server
+  if (globalThis.__db) {
+    return globalThis.__db;
+  }
+
+  let client: PrismaClient;
+
+  // Check if running with Turso (libsql URL)
+  const dbUrl = process.env.DATABASE_URL;
+  const authToken = process.env.DATABASE_AUTH_TOKEN;
+
+  if (dbUrl?.startsWith('libsql://') && authToken) {
+    // Production: Use Turso adapter
+    try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { PrismaLibSql } = require('@prisma/adapter-libsql');
       const adapter = new PrismaLibSql({
-        url: process.env.DATABASE_URL,
-        authToken: process.env.DATABASE_AUTH_TOKEN,
+        url: dbUrl,
+        authToken: authToken,
       });
-      prismaInstance = new PrismaClient({ adapter });
-    } else {
-      // Local SQLite
-      prismaInstance = new PrismaClient();
+      client = new PrismaClient({ adapter });
+    } catch (error) {
+      console.error('Failed to initialize Turso adapter:', error);
+      // Fallback to standard client
+      client = new PrismaClient();
     }
-
-    if (process.env.NODE_ENV !== 'production') {
-      globalThis.prisma = prismaInstance;
-    }
+  } else {
+    // Development: Use local SQLite
+    client = new PrismaClient();
   }
-  return prismaInstance;
+
+  // Cache for reuse (except in production where each request may be fresh)
+  if (process.env.NODE_ENV !== 'production') {
+    globalThis.__db = client;
+  }
+
+  return client;
 }
 
-// For backwards compatibility
-export const prisma = getDb();
-export default prisma;
+// Default export for convenience
+export default getDb;
