@@ -2,7 +2,8 @@
 // Compatible with both local SQLite and Turso (hosted SQLite for Vercel)
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
