@@ -40,6 +40,13 @@ const GOAL_KEYWORDS = {
     quick: ['quick', 'fast', 'crash course', 'overview', 'intro', 'introduction', 'brief', 'short']
 };
 
+function isGreeting(message: string): boolean {
+    const greetings = ['hey', 'hi', 'hello', 'yo', 'sup', 'hiya', 'howdy', 'good morning', 'good afternoon', 'good evening', 'whats up', "what's up", 'hii', 'heyy', 'heyyy', 'helloo'];
+    const lower = message.toLowerCase().trim();
+    // Check if it's just a greeting (short message that matches a greeting pattern)
+    return greetings.some(g => lower === g || lower === g + '!' || lower === g + '!!' || lower.startsWith(g + ' '));
+}
+
 function isUnsure(message: string): boolean {
     const patterns = ['idk', "i don't know", 'i dont know', 'not sure', 'no idea', 'dunno', 'unsure', 'whatever', 'any', 'anything', "doesn't matter", 'up to you', '?'];
     const lower = message.toLowerCase().trim();
@@ -150,6 +157,15 @@ export async function POST(request: NextRequest) {
 
         // Stage 1: Waiting for topic
         if (state.stage === 'greeting') {
+            // Check if user is just saying hello
+            if (isGreeting(userMessage)) {
+                return NextResponse.json({
+                    success: true,
+                    response: "Hey there! I'm LinkMe, your tutorial discovery assistant.\n\nWhat would you like to learn today? I can help you find tutorials on anything - programming, cooking, music, crafts, and more!",
+                    conversationId: convId,
+                });
+            }
+
             state.topic = userMessage;
             state.stage = 'got_topic';
             conversationStates.set(convId, state);
