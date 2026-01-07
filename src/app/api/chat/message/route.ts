@@ -1,12 +1,13 @@
 // Chat message API endpoint
 // POST /api/chat/message
-// Smarter conversational AI that understands user intent and mistakes
+// Conversational AI that ALWAYS asks personalization questions
 
 import { NextRequest, NextResponse } from 'next/server';
 import { chatMessageSchema, validateInput, sanitizeInput } from '@/lib/validation';
 import { searchTutorials } from '@/lib/youtube';
 import { verifyAccessToken } from '@/lib/auth';
 import { checkRateLimit, recordAttempt, RATE_LIMITS, getClientIP } from '@/lib/rate-limit';
+import { getDb } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,42 +16,43 @@ export const dynamic = 'force-dynamic';
 // ============================================
 
 interface ConversationState {
-    stage: 'greeting' | 'topic' | 'skill_level' | 'goal' | 'searching' | 'results';
+    stage: 'greeting' | 'got_topic' | 'got_level' | 'ready_to_search' | 'results';
     topic?: string;
     skillLevel?: string;
     goal?: string;
-    lastQuery?: string;
+    messageHistory: Array<{ role: 'user' | 'assistant'; content: string }>;
 }
 
 // In-memory states (MVP - use Redis in production)
 const conversationStates = new Map<string, ConversationState>();
 
 // ============================================
-// Smart Answer Extraction
+// Smart Response Parsing
 // ============================================
 
-// Skill level patterns (including typos and variations)
-const SKILL_PATTERNS = {
-    beginner: ['beginner', 'begginer', 'beginer', 'newbie', 'new', 'noob', 'start', 'starting', 'first time', 'never', 'just started', 'basics', 'basic', 'zero', '0', 'fresh'],
-    intermediate: ['intermediate', 'intermed', 'medium', 'mid', 'some experience', 'know basics', 'familiar', 'worked with', 'used before', 'ok', 'okay', 'decent'],
-    advanced: ['advanced', 'advance', 'expert', 'experienced', 'pro', 'professional', 'senior', 'years', 'long time', 'very good', 'master']
+const SKILL_KEYWORDS = {
+    beginner: ['beginner', 'begginer', 'beginer', 'newbie', 'new', 'noob', 'starting', 'start', 'first', 'never', 'basics', 'basic', 'zero', 'fresh', 'complete beginner', 'total beginner', 'just starting'],
+    intermediate: ['intermediate', 'intermed', 'medium', 'mid', 'some experience', 'know basics', 'familiar', 'worked with', 'used before', 'okay', 'ok', 'decent', 'fair', 'middle', 'average'],
+    advanced: ['advanced', 'advance', 'expert', 'experienced', 'pro', 'professional', 'senior', 'years', 'long time', 'very good', 'master', 'skilled', 'proficient']
 };
 
-// Goal patterns
-const GOAL_PATTERNS = {
-    project: ['project', 'build', 'make', 'create', 'develop', 'app', 'website', 'portfolio', 'real', 'practical', 'hands-on', 'application'],
-    concepts: ['concept', 'theory', 'understand', 'learn', 'fundamentals', 'deep dive', 'how it works', 'why', 'basics', 'comprehensive'],
-    specific: ['specific', 'particular', 'this', 'that', 'exactly', 'particular feature', 'one thing']
+const GOAL_KEYWORDS = {
+    project: ['project', 'build', 'make', 'create', 'develop', 'app', 'website', 'portfolio', 'real', 'practical', 'hands-on', 'application', 'something', 'thing'],
+    concepts: ['concept', 'theory', 'understand', 'learn', 'fundamentals', 'deep dive', 'how it works', 'why', 'comprehensive', 'thorough', 'in-depth'],
+    quick: ['quick', 'fast', 'crash course', 'overview', 'intro', 'introduction', 'brief', 'short', 'summary']
 };
 
-// Unclear/uncertain responses
-const UNCLEAR_PATTERNS = ['idk', 'i dont know', "i don't know", 'not sure', 'no idea', 'dunno', 'dk', 'unsure', 'whatever', 'any', 'anything', 'doesnt matter', "doesn't matter", 'up to you', '?', 'hmm', 'um', 'uh'];
+// Detect if user doesn't know / is unsure
+function isUnsure(message: string): boolean {
+    const unsurePatterns = ['idk', "i don't know", 'i dont know', 'not sure', 'no idea', 'dunno', 'dk', 'unsure', 'whatever', 'any', 'anything', "doesn't matter", 'doesnt matter', 'up to you', 'you decide', 'i guess', 'maybe', 'hmm', 'um', '?'];
+    const lower = message.toLowerCase().trim();
+    return unsurePatterns.some(p => lower.includes(p)) || lower.length < 3;
+}
 
 function extractSkillLevel(message: string): string | null {
     const lower = message.toLowerCase();
-
-    for (const [level, patterns] of Object.entries(SKILL_PATTERNS)) {
-        if (patterns.some(p => lower.includes(p))) {
+    for (const [level, keywords] of Object.entries(SKILL_KEYWORDS)) {
+        if (keywords.some(k => lower.includes(k))) {
             return level;
         }
     }
@@ -59,77 +61,30 @@ function extractSkillLevel(message: string): string | null {
 
 function extractGoal(message: string): string | null {
     const lower = message.toLowerCase();
-
-    for (const [goal, patterns] of Object.entries(GOAL_PATTERNS)) {
-        if (patterns.some(p => lower.includes(p))) {
+    for (const [goal, keywords] of Object.entries(GOAL_KEYWORDS)) {
+        if (keywords.some(k => lower.includes(k))) {
             return goal;
         }
     }
     return null;
 }
 
-function isUnclear(message: string): boolean {
-    const lower = message.toLowerCase().trim();
-    return UNCLEAR_PATTERNS.some(p => lower.includes(p)) || lower.length < 3;
-}
-
-function extractTopic(message: string): string | null {
-    const lower = message.toLowerCase();
-
-    // Common programming topics
-    const topics = ['react', 'javascript', 'python', 'java', 'css', 'html', 'node', 'nodejs', 'typescript',
-        'vue', 'angular', 'nextjs', 'next.js', 'express', 'django', 'flask', 'rust', 'go',
-        'golang', 'c++', 'c#', 'swift', 'kotlin', 'flutter', 'dart', 'sql', 'database',
-        'machine learning', 'ml', 'ai', 'data science', 'web development', 'mobile', 'ios',
-        'android', 'devops', 'docker', 'kubernetes', 'aws', 'cloud', 'git', 'api', 'rest'];
-
-    for (const topic of topics) {
-        if (lower.includes(topic)) {
-            return topic;
-        }
-    }
-
-    // If no specific topic found but message is long enough, use it as topic
-    if (message.length > 5) {
-        // Clean up common filler words
-        const cleaned = message.replace(/^(i want to |i'd like to |can you |please |help me |find me |show me |teach me )/gi, '').trim();
-        if (cleaned.length > 3) {
-            return cleaned;
-        }
-    }
-
-    return null;
-}
-
 // ============================================
-// Conversational Response Generation
+// Conversational Response Templates
 // ============================================
-
-function getTopicQuestion(): string {
-    return "What would you like to learn? 🎯\n\nYou can say something like:\n• \"React\"\n• \"Python for data science\"\n• \"How to build a website\"";
-}
 
 function getSkillQuestion(topic: string): string {
-    return `Great choice with ${topic}! 📚\n\nWhat's your experience level?\n• **Beginner** - just starting out\n• **Intermediate** - know the basics\n• **Advanced** - looking to deepen knowledge`;
+    return `Great! I'd love to help you learn **${topic}**! 📚\n\nTo find the perfect tutorials for you, what's your current experience level?\n\n• **Beginner** - totally new to this\n• **Intermediate** - know the basics, want to go deeper\n• **Advanced** - experienced, looking for advanced techniques\n\n_(Just say "beginner", "intermediate", or "advanced" - or describe your experience in your own words!)_`;
 }
 
-function getGoalQuestion(topic: string): string {
-    return `What's your goal with ${topic}?\n\n• **Build something** - hands-on project tutorials\n• **Learn concepts** - understand the fundamentals\n• **Anything works** - show me the best tutorials`;
+function getGoalQuestion(topic: string, level: string): string {
+    const levelText = level === 'beginner' ? 'beginner-friendly' : level === 'advanced' ? 'advanced' : 'intermediate';
+    return `Perfect! Looking for ${levelText} **${topic}** tutorials. 🎯\n\nOne last thing - what's your goal?\n\n• **Build something** - hands-on project tutorials\n• **Learn concepts** - understand the fundamentals deeply\n• **Quick overview** - crash course to get started fast\n\n_(Just describe what you're hoping to achieve!)_`;
 }
 
-function buildSearchQuery(state: ConversationState): string {
-    let query = state.topic || '';
-
-    if (state.skillLevel) {
-        query += ` ${state.skillLevel}`;
-    }
-    if (state.goal === 'project') {
-        query += ' project tutorial build';
-    } else if (state.goal === 'concepts') {
-        query += ' fundamentals concepts explained';
-    }
-
-    return query.trim();
+function getSearchingMessage(topic: string, level: string, goal: string): string {
+    const goalText = goal === 'project' ? 'project-based' : goal === 'concepts' ? 'concept-focused' : 'quick';
+    return `🔍 Searching for ${level} ${topic} tutorials with a ${goalText} approach...`;
 }
 
 // ============================================
@@ -153,9 +108,14 @@ export async function POST(request: NextRequest) {
         // Check auth
         const accessToken = request.cookies.get('accessToken')?.value;
         let userId = 'guest';
+        let isLoggedIn = false;
+
         if (accessToken) {
             const decoded = verifyAccessToken(accessToken);
-            if (decoded) userId = decoded.userId;
+            if (decoded && !decoded.isGuest) {
+                userId = decoded.userId;
+                isLoggedIn = true;
+            }
         }
 
         // Parse request
@@ -165,185 +125,158 @@ export async function POST(request: NextRequest) {
         if (!validation.success) {
             return NextResponse.json({
                 success: false,
-                message: 'Invalid message',
+                message: 'Please enter a message',
                 errors: validation.errors,
             }, { status: 400 });
         }
 
         const { message, conversationId } = validation.data;
-        const sanitizedMessage = sanitizeInput(message);
+        const sanitizedMessage = sanitizeInput(message).trim();
+
+        // Handle empty-ish messages
+        if (!sanitizedMessage || sanitizedMessage.length === 0) {
+            return NextResponse.json({
+                success: true,
+                response: "I didn't catch that. What would you like to learn today? 🤔",
+                conversationId,
+            });
+        }
+
         const convId = conversationId || `${userId}_${Date.now()}`;
 
         // Get or create state
-        let state = conversationStates.get(convId) || { stage: 'greeting' as const };
+        let state = conversationStates.get(convId) || {
+            stage: 'greeting' as const,
+            messageHistory: []
+        };
 
         // Record attempt
         await recordAttempt(rateLimitKey, RATE_LIMITS.chat);
 
+        // Add user message to history
+        state.messageHistory.push({ role: 'user', content: sanitizedMessage });
+
         // ============================================
-        // Smart Message Processing
+        // Conversation Flow - ALWAYS ask questions
         // ============================================
 
-        // Try to extract info from ANY message
-        const detectedTopic = extractTopic(sanitizedMessage);
-        const detectedSkill = extractSkillLevel(sanitizedMessage);
-        const detectedGoal = extractGoal(sanitizedMessage);
-        const messageIsUnclear = isUnclear(sanitizedMessage);
-
-        // Update state with any detected info
-        if (detectedTopic && !state.topic) state.topic = detectedTopic;
-        if (detectedSkill) state.skillLevel = detectedSkill;
-        if (detectedGoal) state.goal = detectedGoal;
-
-        // Check for "new topic" intent
-        const newTopicKeywords = ['new', 'different', 'something else', 'change', 'switch', 'another topic', 'start over', 'reset'];
-        if (newTopicKeywords.some(k => sanitizedMessage.toLowerCase().includes(k)) && state.stage === 'results') {
-            state = { stage: 'topic' };
+        // Check for "new search" / "start over" intent
+        const resetKeywords = ['new', 'different', 'something else', 'change', 'switch', 'start over', 'reset', 'another topic', 'nevermind', 'never mind'];
+        if (resetKeywords.some(k => sanitizedMessage.toLowerCase().includes(k)) && state.stage !== 'greeting') {
+            state = { stage: 'greeting', messageHistory: state.messageHistory };
             conversationStates.set(convId, state);
             return NextResponse.json({
                 success: true,
-                response: getTopicQuestion(),
+                response: "No problem! Let's start fresh. 🔄\n\nWhat would you like to learn? Tell me anything - programming, cooking, music, crafts, anything!",
                 conversationId: convId,
             });
         }
 
-        // ============================================
-        // Conversation Flow (Single Question at a Time)
-        // ============================================
-
-        // Stage: Greeting - first message
+        // STAGE: Greeting - waiting for initial topic
         if (state.stage === 'greeting') {
-            if (detectedTopic) {
-                // User provided topic in first message
-                state.stage = 'skill_level';
-                state.topic = detectedTopic;
+            // User is telling us what they want to learn
+            state.topic = sanitizedMessage;
+            state.stage = 'got_topic';
+            conversationStates.set(convId, state);
 
-                // If they also provided skill level, skip to goal
-                if (detectedSkill) {
-                    state.skillLevel = detectedSkill;
+            const response = getSkillQuestion(sanitizedMessage);
+            state.messageHistory.push({ role: 'assistant', content: response });
 
-                    // If they also provided goal, search!
-                    if (detectedGoal) {
-                        state.goal = detectedGoal;
-                        state.stage = 'searching';
-                    } else {
-                        state.stage = 'goal';
-                    }
+            return NextResponse.json({
+                success: true,
+                response,
+                conversationId: convId,
+            });
+        }
+
+        // STAGE: Got topic, waiting for skill level
+        if (state.stage === 'got_topic') {
+            let level = extractSkillLevel(sanitizedMessage);
+
+            if (!level) {
+                if (isUnsure(sanitizedMessage)) {
+                    level = 'beginner';
+                } else {
+                    // Couldn't detect, ask more specifically
+                    const response = `I want to make sure I find the right level for you! Are you:\n\n• **Beginner** - new to ${state.topic}\n• **Intermediate** - have some experience\n• **Advanced** - quite experienced\n\n_(Or just say "I'm new" or "I have experience" - I'll understand!)_`;
+                    state.messageHistory.push({ role: 'assistant', content: response });
+                    conversationStates.set(convId, state);
+                    return NextResponse.json({
+                        success: true,
+                        response,
+                        conversationId: convId,
+                    });
                 }
-            } else {
-                state.stage = 'topic';
             }
+
+            state.skillLevel = level;
+            state.stage = 'got_level';
+            conversationStates.set(convId, state);
+
+            const response = getGoalQuestion(state.topic!, level);
+            state.messageHistory.push({ role: 'assistant', content: response });
+
+            return NextResponse.json({
+                success: true,
+                response,
+                conversationId: convId,
+            });
         }
 
-        // Stage: Waiting for topic
-        else if (state.stage === 'topic') {
-            if (detectedTopic) {
-                state.topic = detectedTopic;
-                state.stage = detectedSkill ? (detectedGoal ? 'searching' : 'goal') : 'skill_level';
-            } else if (messageIsUnclear) {
-                // User doesn't know - give suggestions
-                conversationStates.set(convId, state);
-                return NextResponse.json({
-                    success: true,
-                    response: "No worries! Here are some popular topics:\n\n• **React** - build modern web apps\n• **Python** - great for beginners & data science\n• **JavaScript** - essential for web development\n\nWhich sounds interesting?",
-                    conversationId: convId,
-                });
-            } else {
-                // Use the message as topic
-                state.topic = sanitizedMessage;
-                state.stage = 'skill_level';
-            }
-        }
+        // STAGE: Got level, waiting for goal
+        if (state.stage === 'got_level') {
+            let goal = extractGoal(sanitizedMessage);
 
-        // Stage: Waiting for skill level
-        else if (state.stage === 'skill_level') {
-            if (detectedSkill) {
-                state.skillLevel = detectedSkill;
-                state.stage = detectedGoal ? 'searching' : 'goal';
-            } else if (messageIsUnclear) {
-                // Default to beginner
-                state.skillLevel = 'beginner';
-                state.stage = 'goal';
-            } else {
-                // Couldn't detect, assume intermediate and move on
-                state.skillLevel = 'intermediate';
-                state.stage = 'goal';
-            }
-        }
-
-        // Stage: Waiting for goal
-        else if (state.stage === 'goal') {
-            if (detectedGoal) {
-                state.goal = detectedGoal;
-            } else if (messageIsUnclear) {
-                state.goal = 'any';
-            } else {
-                state.goal = 'any';
-            }
-            state.stage = 'searching';
-        }
-
-        // Stage: In results, handle follow-ups
-        else if (state.stage === 'results') {
-            // User wants more or different results
-            if (detectedTopic && detectedTopic !== state.topic) {
-                // New topic
-                state = { stage: 'skill_level', topic: detectedTopic };
-                if (detectedSkill) {
-                    state.skillLevel = detectedSkill;
-                    state.stage = detectedGoal ? 'searching' : 'goal';
+            if (!goal) {
+                if (isUnsure(sanitizedMessage)) {
+                    goal = 'project'; // Default to hands-on
+                } else {
+                    goal = 'project'; // Default assumption
                 }
-            } else {
-                // Refine current search
-                state.lastQuery = sanitizedMessage;
-                state.stage = 'searching';
             }
+
+            state.goal = goal;
+            state.stage = 'ready_to_search';
+            // Fall through to search
         }
 
-        // ============================================
-        // Response Generation
-        // ============================================
+        // STAGE: Ready to search or in results
+        if (state.stage === 'ready_to_search' || state.stage === 'results') {
+            // Build search query
+            const topic = state.topic || sanitizedMessage;
+            const level = state.skillLevel || 'beginner';
+            const goal = state.goal || 'project';
 
-        conversationStates.set(convId, state);
+            let query = topic;
+            if (level === 'beginner') {
+                query += ' beginner tutorial for beginners';
+            } else if (level === 'advanced') {
+                query += ' advanced tutorial in-depth';
+            } else {
+                query += ' tutorial';
+            }
 
-        // Generate appropriate response based on current stage
-        if (state.stage === 'topic') {
-            return NextResponse.json({
-                success: true,
-                response: "👋 Hi! I'm LinkMe, your tutorial discovery assistant.\n\n" + getTopicQuestion(),
-                conversationId: convId,
-            });
-        }
-
-        if (state.stage === 'skill_level') {
-            return NextResponse.json({
-                success: true,
-                response: getSkillQuestion(state.topic || 'that'),
-                conversationId: convId,
-            });
-        }
-
-        if (state.stage === 'goal') {
-            return NextResponse.json({
-                success: true,
-                response: getGoalQuestion(state.topic || 'this'),
-                conversationId: convId,
-            });
-        }
-
-        if (state.stage === 'searching') {
-            // Build query and search
-            const query = buildSearchQuery(state);
+            if (goal === 'project') {
+                query += ' project build hands-on';
+            } else if (goal === 'concepts') {
+                query += ' explained concepts fundamentals';
+            } else {
+                query += ' crash course introduction';
+            }
 
             try {
                 const tutorials = await searchTutorials(query, 7);
 
                 if (tutorials.length === 0) {
-                    state.stage = 'topic';
+                    state.stage = 'greeting';
+                    state.topic = undefined;
+                    state.skillLevel = undefined;
+                    state.goal = undefined;
                     conversationStates.set(convId, state);
+
                     return NextResponse.json({
                         success: true,
-                        response: "I couldn't find tutorials for that specific search. 🔍\n\nCould you try describing what you want to learn differently?",
+                        response: `Hmm, I couldn't find great tutorials for "${topic}". 🤔\n\nCould you try describing what you want to learn differently? Or try a related topic!`,
                         conversationId: convId,
                     });
                 }
@@ -351,8 +284,34 @@ export async function POST(request: NextRequest) {
                 state.stage = 'results';
                 conversationStates.set(convId, state);
 
-                const skillText = state.skillLevel ? ` for ${state.skillLevel}s` : '';
-                const response = `🎯 Found ${tutorials.length} great ${state.topic}${skillText} tutorials!\n\nHere are the best videos I've curated for you:`;
+                // Save to chat history for logged-in users
+                if (isLoggedIn) {
+                    try {
+                        const db = getDb();
+                        await db.chatHistory.create({
+                            data: {
+                                userId,
+                                messages: JSON.stringify({
+                                    topic: state.topic,
+                                    skillLevel: state.skillLevel,
+                                    goal: state.goal,
+                                    query,
+                                    tutorialCount: tutorials.length,
+                                    timestamp: new Date().toISOString(),
+                                }),
+                            },
+                        });
+                    } catch (err) {
+                        console.error('Failed to save chat history:', err);
+                    }
+                }
+
+                const levelText = level.charAt(0).toUpperCase() + level.slice(1);
+                const goalText = goal === 'project' ? 'hands-on projects' : goal === 'concepts' ? 'concept learning' : 'a quick overview';
+
+                const response = `🎯 Found ${tutorials.length} perfect tutorials for you!\n\n**Your preferences:**\n• Topic: ${state.topic}\n• Level: ${levelText}\n• Focus: ${goalText}\n\nHere are the best videos I found:`;
+
+                state.messageHistory.push({ role: 'assistant', content: response });
 
                 return NextResponse.json({
                     success: true,
@@ -369,10 +328,10 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Default: shouldn't reach here, but handle gracefully
+        // Default fallback
         return NextResponse.json({
             success: true,
-            response: "I'm here to help you find tutorials! What would you like to learn?",
+            response: "👋 Hi! I'm LinkMe, your tutorial discovery assistant.\n\nTell me what you'd like to learn - anything from programming to cooking to music! I'll ask a few questions to find the perfect tutorials for YOU.",
             conversationId: convId,
         });
 

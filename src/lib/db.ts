@@ -252,6 +252,18 @@ const tursoDb = {
         [id, args.data.userId, args.data.messages, now, now]
       );
     },
+    async findMany(args: { where: { userId: string } }): Promise<Array<{ id: string; userId: string; messages: string; createdAt: Date }>> {
+      const rows = await tursoExecute('SELECT * FROM ChatHistory WHERE userId = ? ORDER BY createdAt DESC', [args.where.userId]);
+      return rows.map((r: unknown) => {
+        const row = r as Record<string, unknown>;
+        return {
+          id: String(row.id),
+          userId: String(row.userId),
+          messages: String(row.messages),
+          createdAt: new Date(String(row.createdAt)),
+        };
+      });
+    },
   },
 };
 
