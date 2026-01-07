@@ -15,6 +15,7 @@ export async function GET() {
             'NOT SET',
         authTokenSet: !!process.env.DATABASE_AUTH_TOKEN,
         youtubeApiKeySet: !!process.env.YOUTUBE_API_KEY,
+        geminiApiKeySet: !!process.env.GEMINI_API_KEY,
         jwtSecretSet: !!process.env.JWT_SECRET,
         adminSecretSet: !!process.env.ADMIN_SECRET,
     };
