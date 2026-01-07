@@ -97,11 +97,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Signup function
     const signup = async (email: string, password: string, name?: string) => {
         try {
+            // Clear any existing session first (important for guest -> signup flow)
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+            });
+
             const response = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ email, password, name }),
+                body: JSON.stringify({ email, password, confirmPassword: password, name }),
             });
 
             const data = await response.json();
@@ -117,6 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return { success: false, message: 'An error occurred during signup' };
         }
     };
+
 
     // Logout function
     const logout = async () => {
