@@ -201,8 +201,19 @@ export async function POST(request: NextRequest) {
             const result = await model.generateContent(prompt);
             const geminiResponse = result.response.text();
 
+            console.log('=== GEMINI RAW RESPONSE ===');
+            console.log(geminiResponse);
+            console.log('=== END RAW RESPONSE ===');
+
             // Parse the response for search intent
             const parsed = parseSearchIntent(geminiResponse);
+
+            console.log('=== PARSED RESULT ===');
+            console.log('searchReady:', parsed.searchReady);
+            console.log('topic:', parsed.topic);
+            console.log('level:', parsed.level);
+            console.log('goal:', parsed.goal);
+            console.log('=== END PARSED ===');
 
             // Add assistant response to history
             state.messages.push({ role: 'assistant', content: parsed.cleanResponse });
