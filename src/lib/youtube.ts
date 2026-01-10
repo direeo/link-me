@@ -101,23 +101,20 @@ export async function searchTutorials(
         throw new Error('YouTube API key not configured');
     }
 
-    // Build search query with tutorial keywords
-    const enhancedQuery = `${query} tutorial`;
+    // Use query as-is (chat code already adds "tutorial" etc.)
+    console.log('YouTube search query:', query);
 
     // Search for videos
     const searchParams = new URLSearchParams({
         part: 'snippet',
-        q: enhancedQuery,
+        q: query,
         type: 'video',
         maxResults: String(Math.min(maxResults + 3, 15)), // Fetch extra for filtering
         order: 'relevance',
         relevanceLanguage: 'en',
-        videoDuration: 'medium', // Filter out very short or very long videos
-        videoDefinition: 'high', // Prefer HD videos
         key: YOUTUBE_API_KEY,
-        // Only get videos published in the last 2 years for freshness
-        publishedAfter: new Date(Date.now() - 2 * 365 * 24 * 60 * 60 * 1000).toISOString(),
     });
+
 
     try {
         const searchResponse = await fetch(`${YOUTUBE_SEARCH_URL}?${searchParams}`);
