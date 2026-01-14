@@ -246,17 +246,22 @@ export async function POST(request: NextRequest) {
 
                     console.log('Videos fetched:', tutorials.length);
 
-                    // Use AI to analyze and create learning path
+                    // Use AI to analyze and create learning path (with fallback)
                     if (tutorials.length > 0) {
-                        learningPath = await analyzeAndCurateVideos(
-                            tutorials,
-                            parsed.topic || '',
-                            parsed.level || 'beginner',
-                            parsed.goal || 'learn'
-                        );
+                        try {
+                            learningPath = await analyzeAndCurateVideos(
+                                tutorials,
+                                parsed.topic || '',
+                                parsed.level || 'beginner',
+                                parsed.goal || 'learn'
+                            );
 
-                        if (learningPath) {
-                            console.log('Learning path generated with', learningPath.totalVideos, 'curated videos');
+                            if (learningPath) {
+                                console.log('Learning path generated with', learningPath.totalVideos, 'curated videos');
+                            }
+                        } catch (curateError) {
+                            console.log('Learning path failed (rate limit?), using raw videos');
+                            learningPath = null;
                         }
                     }
 
