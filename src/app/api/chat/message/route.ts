@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { chatMessageSchema, validateInput, sanitizeInput } from '@/lib/validation';
 import { searchTutorials, YouTubeVideo } from '@/lib/youtube';
+import { analyzeAndCurateVideos, LearningPath, formatLearningPathAsText } from '@/lib/curriculum';
 import { verifyAccessToken } from '@/lib/auth';
 import { checkRateLimit, recordAttempt, RATE_LIMITS, getClientIP } from '@/lib/rate-limit';
 import { getDb } from '@/lib/db';
@@ -220,6 +221,7 @@ export async function POST(request: NextRequest) {
 
             // If ready to search, do it!
             let tutorials: YouTubeVideo[] | undefined;
+            let learningPath: LearningPath | null = null;
 
             if (parsed.searchReady && parsed.topic) {
                 state.searchReady = true;
@@ -228,25 +230,38 @@ export async function POST(request: NextRequest) {
                 state.goal = parsed.goal;
 
                 // Build search query
-                let query = parsed.topic;
-                if (parsed.level === 'beginner') query += ' tutorial for beginners';
-                else if (parsed.level === 'advanced') query += ' advanced tutorial';
-                else query += ' tutorial';
+                let query = parsed.topic + ' tutorial';
+                if (parsed.level === 'beginner') query += ' for beginners';
+                else if (parsed.level === 'advanced') query += ' advanced';
 
-                if (parsed.goal === 'project') query += ' project';
-                else if (parsed.goal === 'quick') query += ' easy simple';
-
-                console.log('=== SEARCH DEBUG ===');
-                console.log('Topic from Gemini:', parsed.topic);
+                console.log('=== FETCHING VIDEOS FOR AI CURATION ===');
+                console.log('Topic:', parsed.topic);
                 console.log('Level:', parsed.level);
                 console.log('Goal:', parsed.goal);
-                console.log('Final query:', query);
+                console.log('Query:', query);
 
                 try {
-                    tutorials = await searchTutorials(query, 7);
+                    // Fetch MORE videos for AI to analyze and curate
+                    tutorials = await searchTutorials(query, 15);
+
+                    console.log('Videos fetched:', tutorials.length);
+
+                    // Use AI to analyze and create learning path
+                    if (tutorials.length > 0) {
+                        learningPath = await analyzeAndCurateVideos(
+                            tutorials,
+                            parsed.topic || '',
+                            parsed.level || 'beginner',
+                            parsed.goal || 'learn'
+                        );
+
+                        if (learningPath) {
+                            console.log('Learning path generated with', learningPath.totalVideos, 'curated videos');
+                        }
+                    }
 
                     // Save for logged-in users
-                    if (isLoggedIn && tutorials.length > 0) {
+                    if (isLoggedIn && (learningPath || tutorials.length > 0)) {
                         try {
                             const db = getDb();
                             await db.chatHistory.create({
@@ -257,7 +272,11 @@ export async function POST(request: NextRequest) {
                                         skillLevel: parsed.level,
                                         goal: parsed.goal,
                                         query,
-                                        tutorialCount: tutorials.length,
+                                        learningPath: learningPath ? {
+                                            totalVideos: learningPath.totalVideos,
+                                            stages: learningPath.stages.length,
+                                            summary: learningPath.summary,
+                                        } : null,
                                         timestamp: new Date().toISOString(),
                                     }),
                                 },
@@ -273,12 +292,20 @@ export async function POST(request: NextRequest) {
 
             conversationStates.set(convId, state);
 
+            // Build response with learning path if available
+            let responseText = parsed.cleanResponse;
+            if (learningPath && learningPath.stages.length > 0) {
+                responseText = parsed.cleanResponse + '\n\n' + formatLearningPathAsText(learningPath);
+            }
+
             return NextResponse.json({
                 success: true,
-                response: parsed.cleanResponse,
-                tutorials,
+                response: responseText,
+                tutorials: learningPath ? undefined : tutorials, // Only send raw tutorials if no learning path
+                learningPath,
                 conversationId: convId,
             });
+
 
         } catch (geminiError) {
             console.error('Gemini API error:', geminiError);
