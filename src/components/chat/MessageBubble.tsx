@@ -4,6 +4,7 @@
 import React from 'react';
 import { ChatMessage } from '@/types';
 import TutorialCard from './TutorialCard';
+import LearningPath from './LearningPath';
 
 interface MessageBubbleProps {
     message: ChatMessage;
@@ -49,13 +50,23 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                     </div>
                 ) : (
                     <>
-                        {/* Message content */}
+                        {/* Message content - hide curriculum text if LearningPath component will show */}
                         <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">
-                            {message.content}
+                            {message.learningPath && message.learningPath.stages?.length > 0
+                                ? message.content.split('\n\n🎓')[0] // Only show text before curriculum
+                                : message.content
+                            }
                         </div>
 
-                        {/* Tutorial cards */}
-                        {message.tutorials && message.tutorials.length > 0 && (
+                        {/* Learning Path (AI-curated curriculum) */}
+                        {message.learningPath && message.learningPath.stages?.length > 0 && (
+                            <div className="mt-4">
+                                <LearningPath learningPath={message.learningPath} />
+                            </div>
+                        )}
+
+                        {/* Tutorial cards (fallback when no learning path) */}
+                        {!message.learningPath && message.tutorials && message.tutorials.length > 0 && (
                             <div className="mt-4 space-y-3">
                                 {message.tutorials.map((tutorial) => (
                                     <TutorialCard key={tutorial.id} tutorial={tutorial} />
@@ -64,6 +75,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                         )}
                     </>
                 )}
+
 
                 {/* Timestamp */}
                 <div

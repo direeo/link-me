@@ -59,8 +59,10 @@ export interface ChatMessage {
     content: string;
     timestamp: Date;
     tutorials?: YouTubeResult[];
+    learningPath?: LearningPath;
     isLoading?: boolean;
 }
+
 
 export interface Conversation {
     id: string;
@@ -91,6 +93,42 @@ export interface YouTubeSearchResponse {
     results: YouTubeResult[];
     error?: string;
 }
+
+// ============================================
+// Learning Path Types
+// ============================================
+
+export interface VideoAnalysis {
+    videoId: string;
+    title: string;
+    qualityScore: number;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    conceptsCovered: string[];
+    learningOutcomes: string[];
+    prerequisites: string[];
+    whyRecommended: string;
+    estimatedTime: string;
+    order: number;
+}
+
+export interface LearningStage {
+    stageName: string;
+    stageNumber: number;
+    description: string;
+    videos: VideoAnalysis[];
+}
+
+export interface LearningPath {
+    topic: string;
+    userLevel: string;
+    userGoal: string;
+    totalVideos: number;
+    estimatedTotalTime: string;
+    stages: LearningStage[];
+    completionGoals: string[];
+    summary: string;
+}
+
 
 // ============================================
 // API Response Types

@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ChatMessage, YouTubeResult } from '@/types';
+import { ChatMessage, YouTubeResult, LearningPath } from '@/types';
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import GuestBanner from '@/components/chat/GuestBanner';
@@ -97,6 +97,7 @@ export default function ChatPage() {
                     content: data.response || 'Sorry, I could not process your request.',
                     timestamp: new Date(),
                     tutorials: data.tutorials as YouTubeResult[] | undefined,
+                    learningPath: data.learningPath as LearningPath | undefined,
                 };
                 return [...filtered, assistantMessage];
             });
