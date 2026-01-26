@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Types matching backend curriculum.ts
 interface VideoAnalysis {
@@ -36,11 +36,30 @@ interface LearningPathData {
 
 interface LearningPathProps {
     learningPath: LearningPathData;
+    savedPathId?: string; // If already saved
 }
 
-export default function LearningPath({ learningPath }: LearningPathProps) {
+export default function LearningPath({ learningPath, savedPathId: initialSavedPathId }: LearningPathProps) {
     const [expandedVideos, setExpandedVideos] = useState<Set<string>>(new Set());
     const [watchedVideos, setWatchedVideos] = useState<Set<string>>(new Set());
+    const [savedPathId, setSavedPathId] = useState<string | undefined>(initialSavedPathId);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<string | null>(null);
+    const [isGuest, setIsGuest] = useState(false);
+
+    // Check if user is guest on mount
+    useEffect(() => {
+        const checkGuest = async () => {
+            try {
+                const res = await fetch('/api/auth/me', { credentials: 'include' });
+                const data = await res.json();
+                setIsGuest(data.user?.isGuest === true || !data.success);
+            } catch {
+                setIsGuest(true);
+            }
+        };
+        checkGuest();
+    }, []);
 
     const toggleVideoExpand = (videoId: string) => {
         setExpandedVideos(prev => {
@@ -54,8 +73,11 @@ export default function LearningPath({ learningPath }: LearningPathProps) {
         });
     };
 
-    const toggleWatched = (videoId: string, e: React.MouseEvent) => {
+    const toggleWatched = async (videoId: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        const newWatched = !watchedVideos.has(videoId);
+
+        // Update local state immediately
         setWatchedVideos(prev => {
             const next = new Set(prev);
             if (next.has(videoId)) {
@@ -65,6 +87,58 @@ export default function LearningPath({ learningPath }: LearningPathProps) {
             }
             return next;
         });
+
+        // If saved, persist progress to backend
+        if (savedPathId && !isGuest) {
+            try {
+                await fetch('/api/learning-path/progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        learningPathId: savedPathId,
+                        videoId,
+                        watched: newWatched,
+                    }),
+                });
+            } catch (error) {
+                console.error('Failed to save progress:', error);
+            }
+        }
+    };
+
+    const saveLearningPath = async () => {
+        if (isGuest) {
+            setSaveMessage('Please create an account to save learning paths');
+            setTimeout(() => setSaveMessage(null), 3000);
+            return;
+        }
+
+        setIsSaving(true);
+        setSaveMessage(null);
+
+        try {
+            const res = await fetch('/api/learning-path/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ learningPath }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setSavedPathId(data.learningPathId);
+                setSaveMessage('✅ Learning path saved!');
+            } else {
+                setSaveMessage(data.message || 'Failed to save');
+            }
+        } catch (error) {
+            setSaveMessage('Failed to save learning path');
+        } finally {
+            setIsSaving(false);
+            setTimeout(() => setSaveMessage(null), 3000);
+        }
     };
 
     const getDifficultyColor = (difficulty: string) => {
@@ -94,14 +168,61 @@ export default function LearningPath({ learningPath }: LearningPathProps) {
         ? Math.round((watchedVideos.size / learningPath.totalVideos) * 100)
         : 0;
 
+
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="bg-gradient-to-r from-violet-600/20 to-indigo-600/20 border border-violet-500/30 rounded-xl p-5">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    🎓 Your Personalized Learning Path
-                </h3>
-                <p className="text-slate-300 mt-2 text-sm">{learningPath.summary}</p>
+                <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                            🎓 Your Personalized Learning Path
+                        </h3>
+                        <p className="text-slate-300 mt-2 text-sm">{learningPath.summary}</p>
+                    </div>
+
+                    {/* Save Button */}
+                    <button
+                        onClick={saveLearningPath}
+                        disabled={isSaving || savedPathId !== undefined}
+                        className={`
+                            flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all flex-shrink-0
+                            ${savedPathId
+                                ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 cursor-default'
+                                : 'bg-violet-600 hover:bg-violet-700 text-white'
+                            }
+                            ${isSaving ? 'opacity-50 cursor-wait' : ''}
+                        `}
+                    >
+                        {isSaving ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Saving...
+                            </>
+                        ) : savedPathId ? (
+                            <>
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Saved
+                            </>
+                        ) : (
+                            <>
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                </svg>
+                                Save Path
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                {/* Save message */}
+                {saveMessage && (
+                    <div className={`mt-3 text-sm ${saveMessage.includes('✅') ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        {saveMessage}
+                    </div>
+                )}
 
                 <div className="flex flex-wrap items-center gap-4 mt-4 text-sm">
                     <span className="text-slate-400">
@@ -118,11 +239,12 @@ export default function LearningPath({ learningPath }: LearningPathProps) {
                 {/* Progress bar */}
                 <div className="mt-4">
                     <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                        <span>Progress</span>
+                        <span>Progress {savedPathId ? '(auto-saved)' : ''}</span>
                         <span>{progressPercent}% complete</span>
                     </div>
                     <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
+
                             className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500"
                             style={{ width: `${progressPercent}%` }}
                         />
