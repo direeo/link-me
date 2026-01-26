@@ -9,6 +9,7 @@ import { ChatMessage, YouTubeResult } from '@/types';
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import GuestBanner from '@/components/chat/GuestBanner';
+import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
 
 export default function ChatPage() {
     const router = useRouter();
@@ -17,6 +18,7 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [conversationId, setConversationId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Scroll to bottom when messages change
@@ -172,7 +174,20 @@ export default function ChatPage() {
                             </svg>
                             New Chat
                         </button>
+                        {/* History button - only for logged-in users */}
+                        {isAuthenticated && !isGuest && (
+                            <button
+                                onClick={() => setShowHistory(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-300 border border-slate-700 rounded-lg hover:border-violet-500 hover:text-white transition-all"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="hidden sm:inline">History</span>
+                            </button>
+                        )}
                     </div>
+
 
                     <div className="flex items-center gap-3">
                         {isAuthenticated && !user?.emailVerified && (
@@ -224,6 +239,23 @@ export default function ChatPage() {
                     </div>
                 </div>
             </main>
+
+            {/* Chat History Sidebar */}
+            <ChatHistorySidebar
+                isOpen={showHistory}
+                onClose={() => setShowHistory(false)}
+                onSelectHistory={(item) => {
+                    setShowHistory(false);
+                    // Add a message showing the selected history topic
+                    setMessages(prev => [...prev, {
+                        id: `history-${Date.now()}`,
+                        role: 'assistant',
+                        content: `📚 From your history: You previously searched for "${item.topic}" (${item.skillLevel || 'any level'}, ${item.goal || 'general'}).\n\nWould you like to search for this topic again, or try something new?`,
+                        timestamp: new Date(),
+                    }]);
+                }}
+            />
         </div>
     );
 }
+
