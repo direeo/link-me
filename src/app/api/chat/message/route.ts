@@ -289,7 +289,11 @@ export async function POST(request: NextRequest) {
                         } catch (curateError) {
                             console.log('Learning path failed (rate limit?), using raw videos');
                             learningPath = null;
+                            // Still continue with raw tutorials as fallback
                         }
+                    } else {
+                        // No tutorials found - provide helpful message
+                        console.log('No tutorials found for query:', query);
                     }
 
                     // Save for logged-in users
@@ -319,6 +323,12 @@ export async function POST(request: NextRequest) {
                     }
                 } catch (searchError) {
                     console.error('YouTube search error:', searchError);
+                    // Provide a helpful message to the user
+                    return NextResponse.json({
+                        success: true,
+                        response: `${parsed.cleanResponse}\n\n⚠️ I found some issues searching for "${parsed.topic}" tutorials. This might be a temporary issue - please try again, or try rephrasing your topic.`,
+                        conversationId: convId,
+                    });
                 }
             }
 
@@ -328,6 +338,18 @@ export async function POST(request: NextRequest) {
             let responseText = parsed.cleanResponse;
             if (learningPath && learningPath.stages.length > 0) {
                 responseText = parsed.cleanResponse + '\n\n' + formatLearningPathAsText(learningPath);
+            } else if (parsed.searchReady && (!tutorials || tutorials.length === 0)) {
+                // No tutorials found - provide helpful suggestions
+                responseText = `${parsed.cleanResponse}
+
+🔍 I couldn't find tutorials specifically for "${parsed.topic}". This could be a very niche topic, or it might be phrased unusually.
+
+💡 **Try these suggestions:**
+• Use more common terms (e.g., "PID control" instead of "control systems")
+• Be more specific about what aspect you want to learn
+• Try breaking it down into smaller topics
+
+What would you like to try?`;
             }
 
             return NextResponse.json({
@@ -342,10 +364,15 @@ export async function POST(request: NextRequest) {
         } catch (geminiError) {
             console.error('Gemini API error:', geminiError);
 
-            // Fallback response
+            // Fallback response - more helpful
+            const errorMessage = geminiError instanceof Error ? geminiError.message : 'Unknown error';
+            const isRateLimit = errorMessage.toLowerCase().includes('rate') || errorMessage.toLowerCase().includes('quota');
+
             return NextResponse.json({
                 success: true,
-                response: "I'm having trouble thinking right now. Could you try again?",
+                response: isRateLimit
+                    ? "🔄 I'm a bit overwhelmed right now! Please wait a moment and try again."
+                    : "I had a small hiccup processing that. Could you rephrase or try again?",
                 conversationId: convId,
             });
         }

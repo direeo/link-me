@@ -1,10 +1,57 @@
 'use client';
 
 // Chat message bubble component
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatMessage } from '@/types';
 import TutorialCard from './TutorialCard';
 import LearningPath from './LearningPath';
+
+// Loading indicator with rotating status messages
+function LoadingIndicator() {
+    const [statusIndex, setStatusIndex] = useState(0);
+    const statuses = [
+        { emoji: '🔍', text: 'Analyzing your request...' },
+        { emoji: '🎯', text: 'Understanding your learning goals...' },
+        { emoji: '📹', text: 'Searching for quality tutorials...' },
+        { emoji: '🧠', text: 'AI is curating the best videos...' },
+        { emoji: '📊', text: 'Analyzing video quality & relevance...' },
+        { emoji: '🎓', text: 'Building your personalized learning path...' },
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setStatusIndex(prev => (prev + 1) % statuses.length);
+        }, 3000); // Change status every 3 seconds
+        return () => clearInterval(interval);
+    }, [statuses.length]);
+
+    const currentStatus = statuses[statusIndex];
+
+    return (
+        <div className="space-y-3">
+            <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-slate-300 text-sm font-medium animate-pulse">
+                    {currentStatus.emoji} {currentStatus.text}
+                </span>
+            </div>
+            {/* Progress steps */}
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                {statuses.slice(0, 4).map((_, i) => (
+                    <div
+                        key={i}
+                        className={`w-5 h-1 rounded-full transition-all duration-500 ${i <= statusIndex ? 'bg-violet-500' : 'bg-slate-700'
+                            }`}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
 
 interface MessageBubbleProps {
     message: ChatMessage;
@@ -40,14 +87,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
                 {/* Loading state */}
                 {isLoading ? (
-                    <div className="flex items-center gap-2">
-                        <div className="flex gap-1">
-                            <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                        </div>
-                        <span className="text-slate-400 text-sm">Searching for tutorials...</span>
-                    </div>
+                    <LoadingIndicator />
                 ) : (
                     <>
                         {/* Message content - hide curriculum text if LearningPath component will show */}

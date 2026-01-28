@@ -77,10 +77,21 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Reset rate limit on successful login
+        // Reset rate limit on successful password verification
         await resetRateLimit(rateLimitKey);
 
-        // Generate auth tokens
+        // Check if 2FA is enabled
+        if (user.twoFactorEnabled) {
+            // Don't generate tokens yet - require 2FA verification
+            return NextResponse.json({
+                success: true,
+                requires2FA: true,
+                email: user.email,
+                message: 'Please enter your 2FA code',
+            });
+        }
+
+        // Generate auth tokens (only if 2FA is not enabled)
         const tokenPayload = {
             userId: user.id,
             email: user.email,

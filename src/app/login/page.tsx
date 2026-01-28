@@ -1,6 +1,6 @@
 'use client';
 
-// Login page
+// Login page with 2FA support
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,11 @@ export default function LoginPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [serverError, setServerError] = useState('');
+
+    // 2FA state
+    const [requires2FA, setRequires2FA] = useState(false);
+    const [twoFactorCode, setTwoFactorCode] = useState('');
+    const [isBackupCode, setIsBackupCode] = useState(false);
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
@@ -43,14 +48,73 @@ export default function LoginPage() {
 
         setIsLoading(true);
 
-        const result = await login(formData.email, formData.password);
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(formData),
+            });
 
-        setIsLoading(false);
+            const data = await response.json();
 
-        if (result.success) {
-            router.push('/chat');
-        } else {
-            setServerError(result.message);
+            if (data.success) {
+                if (data.requires2FA) {
+                    // Need 2FA verification
+                    setRequires2FA(true);
+                    setIsLoading(false);
+                } else {
+                    // Login complete, refresh auth state
+                    await login(formData.email, formData.password);
+                    router.push('/chat');
+                }
+            } else {
+                setServerError(data.message || 'Login failed');
+                setIsLoading(false);
+            }
+        } catch (error) {
+            setServerError('An error occurred. Please try again.');
+            setIsLoading(false);
+        }
+    };
+
+    const handle2FASubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setServerError('');
+
+        if (!twoFactorCode || twoFactorCode.length < 6) {
+            setServerError('Please enter a valid code');
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('/api/auth/2fa/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email: formData.email,
+                    code: twoFactorCode,
+                    isBackupCode,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // 2FA verification complete, redirect to chat
+                router.push('/chat');
+                // Force a page reload to update auth state
+                window.location.href = '/chat';
+            } else {
+                setServerError(data.message || 'Invalid code');
+            }
+        } catch (error) {
+            setServerError('Verification failed. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -66,6 +130,104 @@ export default function LoginPage() {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
     };
+
+    // 2FA Verification Screen
+    if (requires2FA) {
+        return (
+            <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+                {/* Background effects */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-1/4 -left-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
+                    <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
+                </div>
+
+                <div className="w-full max-w-md relative z-10">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center justify-center gap-2 mb-8">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                            <span className="text-xl">🔗</span>
+                        </div>
+                        <span className="text-xl font-bold gradient-text">LinkMe</span>
+                    </Link>
+
+                    {/* Card */}
+                    <div className="glass rounded-2xl p-8">
+                        <div className="text-center mb-6">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-violet-500/20 flex items-center justify-center">
+                                <span className="text-3xl">🔐</span>
+                            </div>
+                            <h1 className="text-2xl font-bold mb-2">Two-Factor Authentication</h1>
+                            <p className="text-slate-400">
+                                Enter the code from your authenticator app
+                            </p>
+                        </div>
+
+                        {serverError && (
+                            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+                                {serverError}
+                            </div>
+                        )}
+
+                        <form onSubmit={handle2FASubmit} className="space-y-5">
+                            <div>
+                                <input
+                                    type="text"
+                                    value={twoFactorCode}
+                                    onChange={(e) => setTwoFactorCode(
+                                        isBackupCode
+                                            ? e.target.value.toUpperCase().slice(0, 8)
+                                            : e.target.value.replace(/\D/g, '').slice(0, 6)
+                                    )}
+                                    placeholder={isBackupCode ? 'XXXXXXXX' : '000000'}
+                                    className="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-center text-2xl tracking-widest focus:outline-none focus:border-violet-500 font-mono"
+                                    maxLength={isBackupCode ? 8 : 6}
+                                    autoFocus
+                                />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                loading={isLoading}
+                                className="w-full"
+                                disabled={twoFactorCode.length < 6}
+                            >
+                                Verify
+                            </Button>
+                        </form>
+
+                        <div className="mt-6 text-center">
+                            <button
+                                onClick={() => {
+                                    setIsBackupCode(!isBackupCode);
+                                    setTwoFactorCode('');
+                                    setServerError('');
+                                }}
+                                className="text-sm text-violet-400 hover:text-violet-300"
+                            >
+                                {isBackupCode
+                                    ? '← Use authenticator app code'
+                                    : 'Lost access? Use a backup code'
+                                }
+                            </button>
+                        </div>
+
+                        <div className="mt-4 text-center">
+                            <button
+                                onClick={() => {
+                                    setRequires2FA(false);
+                                    setTwoFactorCode('');
+                                    setServerError('');
+                                }}
+                                className="text-sm text-slate-500 hover:text-slate-400"
+                            >
+                                ← Back to login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
