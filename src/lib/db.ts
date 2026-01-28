@@ -16,6 +16,16 @@ export interface DbUser {
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  // 2FA fields
+  twoFactorEnabled: boolean;
+  twoFactorSecret: string | null;
+  twoFactorBackupCodes: string | null;
+  // YouTube OAuth fields
+  youtubeAccessToken: string | null;
+  youtubeRefreshToken: string | null;
+  youtubeTokenExpiry: Date | null;
+  youtubeChannelId: string | null;
+  youtubeChannelName: string | null;
 }
 
 export interface DbVerificationToken {
@@ -66,7 +76,7 @@ async function tursoExecute(sql: string, args: unknown[] = []): Promise<unknown[
 
 const tursoDb = {
   user: {
-    async findUnique(args: { where: { email?: string; id?: string } }): Promise<DbUser | null> {
+    async findUnique(args: { where: { email?: string; id?: string }; select?: Record<string, boolean> }): Promise<DbUser | null> {
       const key = args.where.email ? 'email' : 'id';
       const value = args.where.email ?? args.where.id;
       const rows = await tursoExecute(`SELECT * FROM User WHERE ${key} = ?`, [value]);
@@ -80,14 +90,24 @@ const tursoDb = {
         emailVerified: Boolean(r.emailVerified),
         createdAt: new Date(String(r.createdAt)),
         updatedAt: new Date(String(r.updatedAt)),
+        // 2FA fields
+        twoFactorEnabled: Boolean(r.twoFactorEnabled),
+        twoFactorSecret: r.twoFactorSecret ? String(r.twoFactorSecret) : null,
+        twoFactorBackupCodes: r.twoFactorBackupCodes ? String(r.twoFactorBackupCodes) : null,
+        // YouTube OAuth fields
+        youtubeAccessToken: r.youtubeAccessToken ? String(r.youtubeAccessToken) : null,
+        youtubeRefreshToken: r.youtubeRefreshToken ? String(r.youtubeRefreshToken) : null,
+        youtubeTokenExpiry: r.youtubeTokenExpiry ? new Date(String(r.youtubeTokenExpiry)) : null,
+        youtubeChannelId: r.youtubeChannelId ? String(r.youtubeChannelId) : null,
+        youtubeChannelName: r.youtubeChannelName ? String(r.youtubeChannelName) : null,
       };
     },
     async create(args: { data: { email: string; passwordHash: string; name?: string | null; emailVerified?: boolean } }): Promise<DbUser> {
       const id = generateId();
       const now = new Date().toISOString();
       await tursoExecute(
-        'INSERT INTO User (id, email, passwordHash, name, emailVerified, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [id, args.data.email, args.data.passwordHash, args.data.name ?? null, args.data.emailVerified ? 1 : 0, now, now]
+        'INSERT INTO User (id, email, passwordHash, name, emailVerified, createdAt, updatedAt, twoFactorEnabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [id, args.data.email, args.data.passwordHash, args.data.name ?? null, args.data.emailVerified ? 1 : 0, now, now, 0]
       );
       return {
         id,
@@ -97,27 +117,55 @@ const tursoDb = {
         emailVerified: args.data.emailVerified ?? false,
         createdAt: new Date(now),
         updatedAt: new Date(now),
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+        twoFactorBackupCodes: null,
+        youtubeAccessToken: null,
+        youtubeRefreshToken: null,
+        youtubeTokenExpiry: null,
+        youtubeChannelId: null,
+        youtubeChannelName: null,
       };
     },
-    async update(args: { where: { email?: string; id?: string }; data: { emailVerified?: boolean; name?: string | null } }): Promise<DbUser> {
+    async update(args: { where: { email?: string; id?: string }; data: Record<string, unknown> }): Promise<DbUser> {
       const key = args.where.email ? 'email' : 'id';
       const value = args.where.email ?? args.where.id;
       const updates: string[] = [];
       const values: unknown[] = [];
 
-      if (args.data.emailVerified !== undefined) {
-        updates.push('emailVerified = ?');
-        values.push(args.data.emailVerified ? 1 : 0);
+      // Handle all possible update fields
+      const fieldMappings: Record<string, string> = {
+        emailVerified: 'emailVerified',
+        name: 'name',
+        twoFactorEnabled: 'twoFactorEnabled',
+        twoFactorSecret: 'twoFactorSecret',
+        twoFactorBackupCodes: 'twoFactorBackupCodes',
+        youtubeAccessToken: 'youtubeAccessToken',
+        youtubeRefreshToken: 'youtubeRefreshToken',
+        youtubeTokenExpiry: 'youtubeTokenExpiry',
+        youtubeChannelId: 'youtubeChannelId',
+        youtubeChannelName: 'youtubeChannelName',
+      };
+
+      for (const [dataKey, dbField] of Object.entries(fieldMappings)) {
+        if (args.data[dataKey] !== undefined) {
+          updates.push(`${dbField} = ?`);
+          let val = args.data[dataKey];
+          // Convert booleans to integers for SQLite
+          if (typeof val === 'boolean') val = val ? 1 : 0;
+          // Convert dates to ISO strings
+          if (val instanceof Date) val = val.toISOString();
+          values.push(val);
+        }
       }
-      if (args.data.name !== undefined) {
-        updates.push('name = ?');
-        values.push(args.data.name);
-      }
+
       updates.push('updatedAt = ?');
       values.push(new Date().toISOString());
       values.push(value);
 
-      await tursoExecute(`UPDATE User SET ${updates.join(', ')} WHERE ${key} = ?`, values);
+      if (updates.length > 1) {
+        await tursoExecute(`UPDATE User SET ${updates.join(', ')} WHERE ${key} = ?`, values);
+      }
       const user = await tursoDb.user.findUnique(args);
       return user!;
     },
@@ -133,6 +181,14 @@ const tursoDb = {
           emailVerified: Boolean(row.emailVerified),
           createdAt: new Date(String(row.createdAt)),
           updatedAt: new Date(String(row.updatedAt)),
+          twoFactorEnabled: Boolean(row.twoFactorEnabled),
+          twoFactorSecret: row.twoFactorSecret ? String(row.twoFactorSecret) : null,
+          twoFactorBackupCodes: row.twoFactorBackupCodes ? String(row.twoFactorBackupCodes) : null,
+          youtubeAccessToken: row.youtubeAccessToken ? String(row.youtubeAccessToken) : null,
+          youtubeRefreshToken: row.youtubeRefreshToken ? String(row.youtubeRefreshToken) : null,
+          youtubeTokenExpiry: row.youtubeTokenExpiry ? new Date(String(row.youtubeTokenExpiry)) : null,
+          youtubeChannelId: row.youtubeChannelId ? String(row.youtubeChannelId) : null,
+          youtubeChannelName: row.youtubeChannelName ? String(row.youtubeChannelName) : null,
         };
       });
     },
