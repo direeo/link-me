@@ -1,7 +1,8 @@
 // YouTube OAuth 2.0 authentication utilities
 // Handles OAuth flow for YouTube playlist creation
 
-import { google } from 'googleapis';
+import { google, youtube_v3 } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import { getDb } from './db';
 
 // OAuth2 client configuration
@@ -94,8 +95,8 @@ export async function refreshAccessToken(refreshToken: string): Promise<{
  * Automatically refreshes the token if expired
  */
 export async function getAuthenticatedClient(userId: string): Promise<{
-    client: ReturnType<typeof google.auth.OAuth2>;
-    youtube: ReturnType<typeof google.youtube>;
+    client: OAuth2Client;
+    youtube: youtube_v3.Youtube;
 } | null> {
     const prisma = getDb();
 
@@ -169,7 +170,7 @@ export async function getAuthenticatedClient(userId: string): Promise<{
 /**
  * Get the user's YouTube channel info
  */
-export async function getChannelInfo(youtube: ReturnType<typeof google.youtube>): Promise<{
+export async function getChannelInfo(youtube: youtube_v3.Youtube): Promise<{
     channelId: string;
     channelName: string;
 } | null> {

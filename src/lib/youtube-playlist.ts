@@ -1,11 +1,11 @@
 // YouTube Playlist management utilities
 // Creates and manages playlists from learning paths
 
-import { google } from 'googleapis';
+import { youtube_v3 } from 'googleapis';
 import { getAuthenticatedClient } from './youtube-auth';
 import { getDb } from './db';
 
-type YouTubeAPI = ReturnType<typeof google.youtube>;
+type YouTubeAPI = youtube_v3.Youtube;
 
 /**
  * Create a new YouTube playlist
