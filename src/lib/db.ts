@@ -1,8 +1,10 @@
 // Database client for LinkMe
 // Uses @libsql/client for Turso (production) or Prisma for SQLite (local dev)
 
-import { PrismaClient } from '@prisma/client';
 import { createClient, Client } from '@libsql/client';
+
+// Note: PrismaClient is dynamically imported only when needed for local development
+// This prevents bundle-time schema validation errors on Vercel
 
 // ============================================
 // Types
@@ -432,16 +434,18 @@ const tursoDb = {
 };
 
 // ============================================
-// Prisma Client for Local Development
+// Prisma Client for Local Development (dynamically imported)
 // ============================================
 
 declare global {
-  // eslint-disable-next-line no-var
-  var __prisma: PrismaClient | undefined;
+  // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
+  var __prisma: any;
 }
 
-function getPrismaClient(): PrismaClient {
+async function getPrismaClient(): Promise<any> {
   if (globalThis.__prisma) return globalThis.__prisma;
+  // Dynamic import to avoid bundle-time schema validation
+  const { PrismaClient } = await import('@prisma/client');
   const client = new PrismaClient();
   if (process.env.NODE_ENV !== 'production') {
     globalThis.__prisma = client;
