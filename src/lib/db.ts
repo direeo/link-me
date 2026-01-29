@@ -52,9 +52,16 @@ let tursoClient: Client | null = null;
 
 function getTurso(): Client {
   if (!tursoClient) {
+    const url = process.env.DATABASE_URL;
+    const authToken = process.env.DATABASE_AUTH_TOKEN;
+
+    if (!url) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+
     tursoClient = createClient({
-      url: process.env.DATABASE_URL!,
-      authToken: process.env.DATABASE_AUTH_TOKEN,
+      url,
+      authToken,
     });
   }
   return tursoClient;
@@ -65,9 +72,14 @@ function generateId(): string {
 }
 
 async function tursoExecute(sql: string, args: unknown[] = []): Promise<unknown[]> {
-  const client = getTurso();
-  const result = await client.execute({ sql, args: args as (string | number | null)[] });
-  return result.rows as unknown[];
+  try {
+    const client = getTurso();
+    const result = await client.execute({ sql, args: args as (string | number | null)[] });
+    return result.rows as unknown[];
+  } catch (error) {
+    console.error('Turso execute error:', { sql, args, error });
+    throw error;
+  }
 }
 
 // ============================================
