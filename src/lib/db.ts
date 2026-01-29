@@ -453,10 +453,12 @@ function getPrismaClient(): PrismaClient {
 // Main Export - Auto-detect which to use
 // ============================================
 
-const isTurso = process.env.DATABASE_URL?.startsWith('libsql://');
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getDb(): any {
+  // Check dynamically at runtime (not module load time) for Vercel compatibility
+  const databaseUrl = process.env.DATABASE_URL || '';
+  const isTurso = databaseUrl.startsWith('libsql://');
+
   if (isTurso) {
     return tursoDb;
   }
