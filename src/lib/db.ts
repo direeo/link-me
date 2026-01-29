@@ -461,12 +461,25 @@ async function getPrismaClient(): Promise<any> {
 export function getDb(): any {
   // Check dynamically at runtime (not module load time) for Vercel compatibility
   const databaseUrl = process.env.DATABASE_URL || '';
-  const isTurso = databaseUrl.startsWith('libsql://');
+  const authToken = process.env.DATABASE_AUTH_TOKEN;
+
+  // Turso is detected by either:
+  // 1. DATABASE_URL starting with libsql://
+  // 2. DATABASE_AUTH_TOKEN being set (Turso-specific)
+  const isTurso = databaseUrl.startsWith('libsql://') || !!authToken;
+
+  console.log('[getDb] DATABASE_URL starts with:', databaseUrl.substring(0, 20));
+  console.log('[getDb] AUTH_TOKEN present:', !!authToken);
+  console.log('[getDb] Using:', isTurso ? 'Turso' : 'Prisma');
 
   if (isTurso) {
     return tursoDb;
   }
-  return getPrismaClient();
+
+  // Local development fallback - getPrismaClient is async but we handle it
+  // Note: This path should NOT be reached in production
+  console.warn('[getDb] WARNING: Using Prisma in production is not supported');
+  throw new Error('Prisma is not available in production. Please set DATABASE_URL and DATABASE_AUTH_TOKEN.');
 }
 
 export default getDb;
