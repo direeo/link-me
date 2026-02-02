@@ -134,10 +134,17 @@ export async function POST(request: NextRequest) {
         return response;
     } catch (error) {
         console.error('Signup error:', error);
+        // Include more details in development/for debugging
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorStack = error instanceof Error ? error.stack : '';
+        console.error('Signup error details:', { message: errorMessage, stack: errorStack });
+
         return NextResponse.json(
             {
                 success: false,
                 message: 'An error occurred during signup',
+                // Include error details in response for debugging (remove in final production)
+                debug: process.env.NODE_ENV !== 'production' ? errorMessage : undefined,
             },
             { status: 500 }
         );
