@@ -18,6 +18,9 @@ export async function GET() {
         geminiApiKeySet: !!process.env.GEMINI_API_KEY,
         jwtSecretSet: !!process.env.JWT_SECRET,
         adminSecretSet: !!process.env.ADMIN_SECRET,
+        databaseUrlLength: process.env.DATABASE_URL?.length || 0,
+        databaseUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.slice(0, 10) : '',
+        authTokenLength: process.env.DATABASE_AUTH_TOKEN?.length || 0,
         envKeys: Object.keys(process.env).sort(),
     };
 
