@@ -1,7 +1,7 @@
 // YouTube Data API v3 integration
 // Searches for tutorial videos and filters by quality/recency
 
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY?.trim();
 const YOUTUBE_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search';
 const YOUTUBE_VIDEOS_URL = 'https://www.googleapis.com/youtube/v3/videos';
 

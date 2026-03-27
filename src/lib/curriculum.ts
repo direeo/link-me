@@ -4,7 +4,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { YouTubeVideo } from './youtube';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
 
 // ============================================
 // Types
