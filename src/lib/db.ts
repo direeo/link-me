@@ -54,8 +54,8 @@ let tursoClient: Client | null = null;
 
 function getTurso(): Client {
   if (!tursoClient) {
-    const url = process.env.DATABASE_URL;
-    const authToken = process.env.DATABASE_AUTH_TOKEN;
+    const url = process.env.DATABASE_URL?.trim();
+    const authToken = process.env.DATABASE_AUTH_TOKEN?.trim();
 
     if (!url) {
       throw new Error('DATABASE_URL environment variable is not set');
@@ -460,8 +460,8 @@ async function getPrismaClient(): Promise<any> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getDb(): any {
   // Check dynamically at runtime (not module load time) for Vercel compatibility
-  const databaseUrl = process.env.DATABASE_URL || '';
-  const authToken = process.env.DATABASE_AUTH_TOKEN;
+  const databaseUrl = process.env.DATABASE_URL?.trim() || '';
+  const authToken = process.env.DATABASE_AUTH_TOKEN?.trim();
 
   // Turso is detected by either:
   // 1. DATABASE_URL starting with libsql://
