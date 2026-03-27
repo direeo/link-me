@@ -18,6 +18,7 @@ export async function GET() {
         geminiApiKeySet: !!process.env.GEMINI_API_KEY,
         jwtSecretSet: !!process.env.JWT_SECRET,
         adminSecretSet: !!process.env.ADMIN_SECRET,
+        envKeys: Object.keys(process.env).sort(),
     };
 
     // Test Turso connection
