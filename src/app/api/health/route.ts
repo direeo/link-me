@@ -25,11 +25,14 @@ export async function GET() {
     };
 
     // Test Turso connection
-    if (process.env.DATABASE_URL?.startsWith('libsql://') && process.env.DATABASE_AUTH_TOKEN) {
+    const dbUrl = process.env.DATABASE_URL?.trim();
+    const dbAuthToken = process.env.DATABASE_AUTH_TOKEN?.trim();
+
+    if (dbUrl?.startsWith('libsql://') && dbAuthToken) {
         try {
             const client = createClient({
-                url: process.env.DATABASE_URL,
-                authToken: process.env.DATABASE_AUTH_TOKEN,
+                url: dbUrl,
+                authToken: dbAuthToken,
             });
 
             // Try a simple query
