@@ -46,6 +46,30 @@ export interface DbRateLimitEntry {
   blockedUntil: Date | null;
 }
 
+export interface DbSavedLearningPath {
+  id: string;
+  userId: string;
+  topic: string;
+  userLevel: string;
+  userGoal: string;
+  totalVideos: number;
+  estimatedTotalTime: string;
+  stages: string;
+  completionGoals: string;
+  summary: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DbVideoProgress {
+  id: string;
+  userId: string;
+  learningPathId: string;
+  videoId: string;
+  watched: boolean;
+  watchedAt: Date | null;
+}
+
 // ============================================
 // Turso Client for Production
 // ============================================
@@ -345,7 +369,92 @@ const tursoDb = {
       );
       return { id };
     },
-    async findUnique(args: { where: { id: string } }): Promise<Record<string, unknown> | null> {
+    async findFirst(args: { where: { userId?: string; topic?: string; userLevel?: string; userGoal?: string; id?: string } }): Promise<DbSavedLearningPath | null> {
+      const conditions: string[] = [];
+      const values: unknown[] = [];
+
+      if (args.where.id) {
+        conditions.push('id = ?');
+        values.push(args.where.id);
+      }
+      if (args.where.userId) {
+        conditions.push('userId = ?');
+        values.push(args.where.userId);
+      }
+      if (args.where.topic) {
+        conditions.push('topic = ?');
+        values.push(args.where.topic);
+      }
+      if (args.where.userLevel) {
+        conditions.push('userLevel = ?');
+        values.push(args.where.userLevel);
+      }
+      if (args.where.userGoal) {
+        conditions.push('userGoal = ?');
+        values.push(args.where.userGoal);
+      }
+
+      let sql = 'SELECT * FROM SavedLearningPath';
+      if (conditions.length > 0) {
+        sql += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      sql += ' ORDER BY createdAt DESC LIMIT 1';
+
+      const rows = await tursoExecute(sql, values);
+      if (rows.length === 0) return null;
+      const r = rows[0] as Record<string, unknown>;
+      return {
+        id: String(r.id),
+        userId: String(r.userId),
+        topic: String(r.topic),
+        userLevel: String(r.userLevel),
+        userGoal: String(r.userGoal),
+        totalVideos: Number(r.totalVideos),
+        estimatedTotalTime: String(r.estimatedTotalTime),
+        stages: String(r.stages),
+        completionGoals: String(r.completionGoals),
+        summary: String(r.summary),
+        createdAt: new Date(String(r.createdAt)),
+        updatedAt: new Date(String(r.updatedAt)),
+      };
+    },
+    async update(args: { where: { id: string }; data: { totalVideos?: number; estimatedTotalTime?: string; summary?: string; completionGoals?: string; stages?: string } }): Promise<DbSavedLearningPath> {
+      const updates: string[] = [];
+      const values: unknown[] = [];
+
+      if (args.data.totalVideos !== undefined) {
+        updates.push('totalVideos = ?');
+        values.push(args.data.totalVideos);
+      }
+      if (args.data.estimatedTotalTime !== undefined) {
+        updates.push('estimatedTotalTime = ?');
+        values.push(args.data.estimatedTotalTime);
+      }
+      if (args.data.summary !== undefined) {
+        updates.push('summary = ?');
+        values.push(args.data.summary);
+      }
+      if (args.data.completionGoals !== undefined) {
+        updates.push('completionGoals = ?');
+        values.push(args.data.completionGoals);
+      }
+      if (args.data.stages !== undefined) {
+        updates.push('stages = ?');
+        values.push(args.data.stages);
+      }
+
+      updates.push('updatedAt = ?');
+      values.push(new Date().toISOString());
+      values.push(args.where.id);
+
+      if (updates.length > 1) {
+        await tursoExecute(`UPDATE SavedLearningPath SET ${updates.join(', ')} WHERE id = ?`, values);
+      }
+      
+      const path = await tursoDb.savedLearningPath.findUnique({ where: { id: args.where.id } });
+      return path!;
+    },
+    async findUnique(args: { where: { id: string } }): Promise<DbSavedLearningPath | null> {
       const rows = await tursoExecute('SELECT * FROM SavedLearningPath WHERE id = ?', [args.where.id]);
       if (rows.length === 0) return null;
       const r = rows[0] as Record<string, unknown>;
@@ -364,7 +473,7 @@ const tursoDb = {
         updatedAt: new Date(String(r.updatedAt)),
       };
     },
-    async findMany(args: { where: { userId: string }; orderBy?: { createdAt: string } }): Promise<Array<Record<string, unknown>>> {
+    async findMany(args: { where: { userId: string }; orderBy?: { createdAt: string } }): Promise<DbSavedLearningPath[]> {
       const rows = await tursoExecute('SELECT * FROM SavedLearningPath WHERE userId = ? ORDER BY createdAt DESC', [args.where.userId]);
       return rows.map((r: unknown) => {
         const row = r as Record<string, unknown>;
@@ -399,31 +508,55 @@ const tursoDb = {
     },
   },
   videoProgress: {
-    async findMany(args: { where: { learningPathId: string } }): Promise<Array<{ id: string; videoId: string; watched: boolean }>> {
+    async findMany(args: { where: { learningPathId: string } }): Promise<DbVideoProgress[]> {
       const rows = await tursoExecute('SELECT * FROM VideoProgress WHERE learningPathId = ?', [args.where.learningPathId]);
       return rows.map((r: unknown) => {
         const row = r as Record<string, unknown>;
         return {
           id: String(row.id),
+          userId: String(row.userId),
+          learningPathId: String(row.learningPathId),
           videoId: String(row.videoId),
           watched: Boolean(row.watched),
+          watchedAt: row.watchedAt ? new Date(String(row.watchedAt)) : null,
         };
       });
     },
-    async upsert(args: { where: { learningPathId_videoId: { learningPathId: string; videoId: string } }; create: { learningPathId: string; videoId: string; watched: boolean }; update: { watched: boolean } }): Promise<void> {
+    async upsert(args: { where: { learningPathId_videoId: { learningPathId: string; videoId: string } }; create: { userId: string; learningPathId: string; videoId: string; watched: boolean; watchedAt?: Date | null }; update: { watched: boolean; watchedAt?: Date | null } }): Promise<DbVideoProgress> {
       const { learningPathId, videoId } = args.where.learningPathId_videoId;
       const rows = await tursoExecute('SELECT id FROM VideoProgress WHERE learningPathId = ? AND videoId = ?', [learningPathId, videoId]);
 
       if (rows.length > 0) {
         // Update existing
-        await tursoExecute('UPDATE VideoProgress SET watched = ?, updatedAt = ? WHERE learningPathId = ? AND videoId = ?',
-          [args.update.watched ? 1 : 0, new Date().toISOString(), learningPathId, videoId]);
+        const row = rows[0] as Record<string, unknown>;
+        const id = String(row.id);
+        await tursoExecute('UPDATE VideoProgress SET watched = ?, watchedAt = ?, updatedAt = ? WHERE learningPathId = ? AND videoId = ?',
+          [args.update.watched ? 1 : 0, args.update.watchedAt?.toISOString() ?? null, new Date().toISOString(), learningPathId, videoId]);
+        
+        return {
+          id,
+          userId: '', // Not needed for return here
+          learningPathId,
+          videoId,
+          watched: args.update.watched,
+          watchedAt: args.update.watchedAt ?? null,
+        };
       } else {
         // Create new
         const id = generateId();
         const now = new Date().toISOString();
-        await tursoExecute('INSERT INTO VideoProgress (id, learningPathId, videoId, watched, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)',
-          [id, learningPathId, videoId, args.create.watched ? 1 : 0, now, now]);
+        const watchedAt = args.create.watchedAt?.toISOString() ?? null;
+        await tursoExecute('INSERT INTO VideoProgress (id, userId, learningPathId, videoId, watched, watchedAt, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [id, args.create.userId, learningPathId, videoId, args.create.watched ? 1 : 0, watchedAt, now, now]);
+        
+        return {
+          id,
+          userId: args.create.userId,
+          learningPathId,
+          videoId,
+          watched: args.create.watched,
+          watchedAt: args.create.watchedAt ?? null,
+        };
       }
     },
     async deleteMany(args: { where: { learningPathId: string } }): Promise<{ count: number }> {
