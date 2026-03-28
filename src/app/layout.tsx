@@ -10,14 +10,31 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LinkMe - Smart Tutorial Discovery",
-  description: "Find the best learning resources without wasting time. LinkMe uses AI to curate the most relevant tutorial videos from YouTube.",
-  keywords: ["tutorials", "learning", "youtube", "education", "programming", "courses"],
-  authors: [{ name: "LinkMe Team" }],
+  title: "LinkMe | Master Any Skill with AI-Curated Learning Paths",
+  description: "LinkMe uses AI to build structured learning paths from the best YouTube tutorials. Stop searching, start mastering. Save paths, track progress, and sync playlists.",
+  keywords: ["tutorials", "learning path", "AI tutor", "youtube learning", "skill mastery", "curated education", "LinkMe"],
+  authors: [{ name: "LinkMe Founders" }],
   openGraph: {
-    title: "LinkMe - Smart Tutorial Discovery",
-    description: "Find the best learning resources without wasting time.",
+    title: "LinkMe | AI-Powered Learning for the Modern World",
+    description: "Personalized learning paths created from world-class tutorials. Structured, smart, and efficient.",
+    url: "https://linkme-rust.vercel.app",
+    siteName: "LinkMe",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "LinkMe - Smart Tutorial Discovery",
+      },
+    ],
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LinkMe | AI-Powered Learning Paths",
+    description: "Stop wasting time searching. Get a structured learning path for any topic in seconds.",
+    images: ["/og-image.png"],
   },
 };
 

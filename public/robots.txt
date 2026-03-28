@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /chat
+Disallow: /api/
+Disallow: /settings
+Disallow: /admin
+Disallow: /2fa
+
+Sitemap: https://linkme-rust.vercel.app/sitemap.xml

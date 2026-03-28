@@ -42,22 +42,21 @@ export default function ChatPage() {
                 {
                     id: '1',
                     role: 'assistant',
-                    content: `👋 Hi${user?.name ? ` ${user.name}` : ''}! I'm LinkMe, your AI-powered learning path curator.
+                    content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}! 🚀
 
-🎯 What makes me different? I don't just find videos – I create personalized structured learning paths with:
+I'm your AI learning architect. Tell me what you want to master, and I'll build you a professional learning path from the best tutorials on the web.
 
-✨ AI-curated videos organized into progressive stages
-📊 Quality scores and difficulty ratings
-📋 Key concepts and learning outcomes for each video
-💾 Save paths and track your progress
-🎬 Export to YouTube playlist (connect in Settings!)
+**How I help you:**
+✅ **Structured Stages**: From 'Hello World' to advanced mastery.
+✅ **Smart Curation**: Videos filtered for quality, relevance, and level.
+✅ **Total Control**: Track progress and sync paths to YouTube.
 
-Try asking me:
-• "I want to master React from scratch"
-• "Create a learning path for Python machine learning"
-• "Help me learn web development as a complete beginner"
+**Try asking me:**
+• *"I want to master React from scratch"*
+• *"Python for Machine Learning"*
+• *"Help me learn web development as a beginner"*
 
-What would you like to learn today?`,
+What skill are we tackling today?`,
                     timestamp: new Date(),
                 },
             ]);
