@@ -6,9 +6,9 @@ import { OAuth2Client } from 'google-auth-library';
 import { getDb } from './db';
 
 // OAuth2 client configuration
-const YOUTUBE_CLIENT_ID = process.env.YOUTUBE_CLIENT_ID;
-const YOUTUBE_CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET;
-const YOUTUBE_REDIRECT_URI = process.env.YOUTUBE_REDIRECT_URI || 'http://localhost:3000/api/youtube/callback';
+const YOUTUBE_CLIENT_ID = process.env.YOUTUBE_CLIENT_ID?.trim();
+const YOUTUBE_CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET?.trim();
+const YOUTUBE_REDIRECT_URI = process.env.YOUTUBE_REDIRECT_URI?.trim() || 'http://localhost:3000/api/youtube/callback';
 
 // Required scopes for playlist management
 const YOUTUBE_SCOPES = [
