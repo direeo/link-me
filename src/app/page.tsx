@@ -316,15 +316,34 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 px-6 py-8 border-t border-slate-800">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🔗</span>
-            <span className="font-semibold">LinkMe</span>
+      <footer className="relative z-10 px-6 py-12 border-t border-slate-800 bg-[#0a0a0f]">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🔗</span>
+              <span className="text-xl font-bold gradient-text">LinkMe</span>
+            </div>
+            <p className="text-sm text-slate-500 max-w-xs text-center md:text-left">
+              The smartest way to find tutorials. AI-powered learning paths tailored to you.
+            </p>
           </div>
-          <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} LinkMe. Find the perfect tutorials, faster.
+          
+          <div className="flex flex-col items-center md:items-end gap-2">
+            <span className="text-sm font-semibold text-slate-300 text-center md:text-left">Questions or Feedback?</span>
+            <a href="mailto:hello@linkme-ai.com" className="text-violet-400 hover:text-violet-300 transition-colors">
+              hello@linkme-ai.com
+            </a>
+          </div>
+        </div>
+        
+        <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-slate-600">
+            © {new Date().getFullYear()} LinkMe Inc. All rights reserved.
           </p>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">Terms of Service</Link>
+          </div>
         </div>
       </footer>
     </div>
