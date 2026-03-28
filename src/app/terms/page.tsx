@@ -5,8 +5,8 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-slate-300 py-20 px-6">
       <div className="max-w-3xl mx-auto">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="inline-flex items-center gap-2 mb-12 text-sm font-medium text-slate-500 hover:text-violet-400 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,7 +22,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using LinkMe ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Platform.
+              By accessing or using LinkMe, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Platform.
             </p>
           </div>
 

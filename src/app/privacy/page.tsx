@@ -5,8 +5,8 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-slate-300 py-20 px-6">
       <div className="max-w-3xl mx-auto">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="inline-flex items-center gap-2 mb-12 text-sm font-medium text-slate-500 hover:text-violet-400 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
           <div>
             <h2 className="text-xl font-semibold text-white mb-4">1. Introduction</h2>
             <p>
-              Welcome to LinkMe ("we," "our," or "us"). We are committed to protecting your privacy and providing a secure environment for discovering and organizing learning resources. This Privacy Policy explains how we collect, use, and safeguard your personal information.
+              Welcome to LinkMe. We are committed to protecting your privacy and providing a secure environment for discovering and organizing learning resources. This Privacy Policy explains how we collect, use, and safeguard your personal information.
             </p>
           </div>
 
