@@ -21,6 +21,7 @@ export async function GET() {
         databaseUrlLength: process.env.DATABASE_URL?.length || 0,
         databaseUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.slice(0, 10) : '',
         authTokenLength: process.env.DATABASE_AUTH_TOKEN?.length || 0,
+        youtubeRedirectUri: process.env.YOUTUBE_REDIRECT_URI || 'DEFAULTED TO LOCALHOST',
         envKeys: Object.keys(process.env).sort(),
     };
 
