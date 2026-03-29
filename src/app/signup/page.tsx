@@ -1,13 +1,15 @@
 'use client';
 
-// Signup page
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
+/**
+ * Premium Signup Page: Neural Midnight Edition
+ */
 export default function SignupPage() {
     const router = useRouter();
     const { signup, continueAsGuest } = useAuth();
@@ -24,28 +26,15 @@ export default function SignupPage() {
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
+        if (!formData.name.trim()) newErrors.name = 'Full identity required';
+        if (!formData.email.trim()) newErrors.email = 'Neural ID required';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid transmission pattern';
+        
+        if (!formData.password) newErrors.password = 'Access protocol required';
+        else if (formData.password.length < 8) newErrors.password = 'Complexity below threshold (8+ characters)';
+        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) newErrors.password = 'Protocol requires: Upper, Lower, Digital';
 
-        if (!formData.name.trim()) {
-            newErrors.name = 'Name is required';
-        }
-
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email';
-        }
-
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters';
-        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-            newErrors.password = 'Password must include uppercase, lowercase, and number';
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
+        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Sync frequency mismatch';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -54,20 +43,12 @@ export default function SignupPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setServerError('');
-
         if (!validateForm()) return;
-
         setIsLoading(true);
-
         const result = await signup(formData.email, formData.password, formData.name);
-
         setIsLoading(false);
-
-        if (result.success) {
-            router.push('/chat');
-        } else {
-            setServerError(result.message);
-        }
+        if (result.success) router.push('/chat');
+        else setServerError(result.message);
     };
 
     const handleGuestMode = async () => {
@@ -78,151 +59,92 @@ export default function SignupPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
-    // Password strength indicator
     const getPasswordStrength = () => {
-        const password = formData.password;
-        if (!password) return { width: '0%', color: 'bg-slate-700', text: '' };
-
-        let strength = 0;
-        if (password.length >= 8) strength++;
-        if (/[a-z]/.test(password)) strength++;
-        if (/[A-Z]/.test(password)) strength++;
-        if (/\d/.test(password)) strength++;
-        if (/[^a-zA-Z\d]/.test(password)) strength++;
-
-        const levels = [
-            { width: '20%', color: 'bg-red-500', text: 'Very weak' },
-            { width: '40%', color: 'bg-orange-500', text: 'Weak' },
-            { width: '60%', color: 'bg-yellow-500', text: 'Fair' },
-            { width: '80%', color: 'bg-lime-500', text: 'Good' },
-            { width: '100%', color: 'bg-green-500', text: 'Strong' },
+        const p = formData.password;
+        if (!p) return { width: '0%', color: 'bg-slate-700', text: '' };
+        let s = 0; if (p.length >= 8) s++; if (/[a-z]/.test(p)) s++; if (/[A-Z]/.test(p)) s++; if (/\d/.test(p)) s++; if (/[^a-zA-Z\d]/.test(p)) s++;
+        const lvls = [
+            { width: '20%', color: 'bg-red-500', text: 'Critical' },
+            { width: '40%', color: 'bg-orange-500', text: 'Unsafe' },
+            { width: '60%', color: 'bg-yellow-500', text: 'Moderate' },
+            { width: '80%', color: 'bg-lime-500', text: 'Secure' },
+            { width: '100%', color: 'bg-emerald-500', text: 'Elite' },
         ];
-
-        return levels[strength - 1] || levels[0];
+        return lvls[s - 1] || lvls[0];
     };
 
     const strength = getPasswordStrength();
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-            {/* Background effects */}
+        <div className="min-h-screen bg-[#050508] flex items-center justify-center px-4 py-20 relative overflow-hidden selection:bg-violet-500/30">
+            {/* Neural Background Orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 -left-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
+                <div className="orb orb-purple top-[5%] -left-[10%] opacity-20" />
+                <div className="orb orb-indigo bottom-[15%] -right-[10%] opacity-15" />
             </div>
 
-            <div className="w-full max-w-md relative z-10">
-                {/* Logo */}
-                <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+            <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-700">
+                {/* Branding */}
+                <Link href="/" className="flex items-center justify-center gap-3 mb-10 group">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/20 group-hover:scale-110 transition-transform duration-300">
                         <span className="text-xl">🔗</span>
                     </div>
-                    <span className="text-xl font-bold gradient-text">LinkMe</span>
+                    <span className="text-2xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
                 </Link>
 
-                {/* Card */}
-                <div className="glass rounded-2xl p-8">
-                    <h1 className="text-2xl font-bold text-center mb-2">Create your account</h1>
-                    <p className="text-slate-400 text-center mb-8">
-                        Start discovering the best tutorials
-                    </p>
+                <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 border-white/5 premium-glow-violet">
+                    <div className="text-center mb-10">
+                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Initialize Profile</h1>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Creation of New Mastery Node</p>
+                    </div>
 
                     {serverError && (
-                        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
-                            {serverError}
+                        <div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wide">
+                            ⚠️ System Halt: {serverError}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <Input
-                            label="Full Name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            error={errors.name}
-                            placeholder="John Doe"
-                            autoComplete="name"
-                        />
-
-                        <Input
-                            label="Email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            error={errors.email}
-                            placeholder="you@example.com"
-                            autoComplete="email"
-                        />
-
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <Input label="Full Identity" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="John Operator" />
+                        <Input label="Neural ID (Email)" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@linkme-ai.com" />
+                        
                         <div>
-                            <Input
-                                label="Password"
-                                name="password"
-                                type="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                error={errors.password}
-                                placeholder="••••••••"
-                                autoComplete="new-password"
-                            />
+                            <Input label="Access Protocol" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
                             {formData.password && (
-                                <div className="mt-2">
-                                    <div className="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full ${strength.color} transition-all duration-300`}
-                                            style={{ width: strength.width }}
-                                        />
+                                <div className="mt-3">
+                                    <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                        <div className={`h-full ${strength.color} transition-all duration-500 shadow-[0_0_10px_rgba(255,255,255,0.2)]`} style={{ width: strength.width }} />
                                     </div>
-                                    <p className={`text-xs mt-1 ${strength.color.replace('bg-', 'text-')}`}>
-                                        {strength.text}
+                                    <p className={`text-[10px] uppercase font-black tracking-widest mt-1.5 ${strength.color.replace('bg-', 'text-')}`}>
+                                        Protocol Security: {strength.text}
                                     </p>
                                 </div>
                             )}
                         </div>
 
-                        <Input
-                            label="Confirm Password"
-                            name="confirmPassword"
-                            type="password"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            error={errors.confirmPassword}
-                            placeholder="••••••••"
-                            autoComplete="new-password"
-                        />
-
-                        <Button type="submit" loading={isLoading} className="w-full">
-                            Create Account
+                        <Input label="Sync Confirmation" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />
+                        
+                        <Button type="submit" loading={isLoading} className="w-full py-4 tracking-widest mt-4" variant="glow">
+                            Commence Initialization
                         </Button>
                     </form>
 
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-700" />
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-[#1e1e2e] text-slate-500">or</span>
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest bg-transparent">
+                            <span className="px-4 text-slate-700">Sandbox Interaction</span>
                         </div>
                     </div>
 
-                    <button
-                        onClick={handleGuestMode}
-                        className="w-full py-3 text-sm font-medium text-slate-300 border border-slate-700 rounded-xl hover:border-violet-500 hover:text-white transition-all"
-                    >
-                        Continue as Guest
-                    </button>
+                    <Button onClick={handleGuestMode} variant="outline" className="w-full py-4 tracking-widest text-[10px] uppercase border-white/5 hover:bg-white/5">
+                        Initialize Guest Profile
+                    </Button>
 
-                    <p className="mt-6 text-center text-sm text-slate-400">
-                        Already have an account?{' '}
-                        <Link href="/login" className="text-violet-400 hover:text-violet-300 font-medium">
-                            Sign in
-                        </Link>
+                    <p className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-slate-600">
+                        Existing Node? <Link href="/login" className="text-violet-400 hover:text-white transition-colors ml-1 underline decoration-violet-500/30">Authorize Registry Access</Link>
                     </p>
                 </div>
             </div>

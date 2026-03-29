@@ -1,93 +1,87 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 
+/**
+ * Terms of Service: Neural Midnight Edition
+ */
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-slate-300 py-20 px-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-[#050508] text-slate-300 py-32 px-6 selection:bg-violet-500/30 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="orb orb-indigo top-[5%] -right-[10%] opacity-20" />
+        <div className="orb orb-purple bottom-[15%] -left-[10%] opacity-15" />
+      </div>
+
+      <div className="max-w-3xl mx-auto relative z-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 mb-12 text-sm font-medium text-slate-500 hover:text-violet-400 transition-colors"
+          className="inline-flex items-center gap-2 mb-16 text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-violet-400 transition-all group"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to Home
+          Back to Command Center
         </Link>
 
-        <h1 className="text-4xl font-bold text-white mb-4">Terms of Service</h1>
-        <p className="text-sm text-slate-500 mb-12">Last Updated: March 28, 2024</p>
+        <div className="glass-panel rounded-[2rem] p-8 md:p-12 border-white/5 premium-glow-violet mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4 uppercase tracking-tighter">Terms of Service</h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-500 mb-12">System Update: March 29, 2024</p>
 
-        <section className="space-y-8">
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
-            <p>
-              By accessing or using LinkMe, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Platform.
-            </p>
-          </div>
+            <div className="space-y-12 font-body font-medium">
+            <section className="space-y-4">
+                <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                    <span className="text-violet-500">01</span> Binding Agreement
+                </h2>
+                <p className="text-slate-400 leading-relaxed">
+                By accessing or interacting with LinkMe ("the Platform"), you agree to be bound by these formal protocols and Terms of Service. If you do not agree to these terms, please do not use the Platform.
+                </p>
+            </section>
 
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">2. Account Creation & Security</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>To use certain features, you must create an account. You agree to provide accurate, current, and complete information.</li>
-              <li>You are responsible for maintaining the confidentiality of your account credentials. Any activity under your account is your responsibility.</li>
-              <li>Notify us immediately at <a href="mailto:hello@linkme-ai.com" className="text-violet-400 hover:text-violet-300 transition-colors">hello@linkme-ai.com</a> if you suspect any unauthorized access.</li>
-            </ul>
-          </div>
+            <section className="space-y-4">
+                <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                    <span className="text-violet-500">02</span> Neural Integration & Content
+                </h2>
+                <p className="text-slate-400 leading-relaxed border-l-2 border-violet-500/30 pl-4 py-2 italic font-medium">
+                LinkMe uses advanced AI neural architectures to synthesize learning paths and curate world-class tutorial data. While we strive for extreme accuracy, AI-generated content may sometimes contain inaccuracies.
+                </p>
+            </section>
 
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">3. Use of AI & Content</h2>
-            <p>
-              LinkMe uses advanced AI models to generate learning paths and search for tutorials. While we strive for accuracy, AI-generated content may sometimes contain errors or inaccuracies.
-            </p>
-            <p className="mt-4">
-              <strong className="text-slate-200">User Conduct:</strong> You agree not to use the platform to generate or share harmful, illegal, or offensive content. Unauthorized automated scrapers or bots are prohibited.
-            </p>
-          </div>
+            <section className="space-y-4">
+                <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                    <span className="text-violet-500">03</span> YouTube Protocol
+                </h2>
+                <p className="text-slate-400 leading-relaxed">
+                LinkMe integrates with YouTube APIs to search for and synchronize automated playlists. Your use of these features is subject to the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:underline">YouTube Terms of Service</a>. We are not responsible for the content archived on the YouTube platform.
+                </p>
+            </section>
 
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">4. YouTube Integration</h2>
-            <p>
-              LinkMe integrates with YouTube APIs to search for and sync video playlists. Your use of these features is subject to the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:underline">YouTube Terms of Service</a>. We are not responsible for content found on YouTube.
-            </p>
-          </div>
+            <section className="space-y-4">
+                <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                    <span className="text-violet-500">04</span> Intellectual Property
+                </h2>
+                <p className="text-slate-400 leading-relaxed">
+                LinkMe, its neural architecture, codebase, and premium design are the exclusive property of LinkMe AI. You retain ownership of your generated learning paths, but grant us a non-exclusive license to process and preserve them for your use.
+                </p>
+            </section>
 
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">5. Intellectual Property</h2>
-            <p>
-              LinkMe, its logo, design, and proprietary code are the property of LinkMe AI. You retain ownership of your generated learning paths, but grant us a non-exclusive license to store and display them for your use.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">6. Limitation of Liability</h2>
-            <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl">
-              <p className="text-xs uppercase font-bold text-slate-500 mb-2">Disclaimer</p>
-              <p className="text-sm">
-                LINKME IS PROVIDED "AS IS" AND "AS AVAILABLE." WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED. WE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING FROM YOUR USE OF THE PLATFORM.
-              </p>
+            <section className="space-y-4">
+                <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                    <span className="text-violet-500">05</span> Liability Disclaimer
+                </h2>
+                <div className="p-5 rounded-2xl bg-black/40 border border-white/5 uppercase text-[10px] leading-relaxed tracking-widest text-slate-500">
+                    LINKME IS PROVIDED "AS IS." WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED. WE SHALL NOT BE LIABLE FOR ANY DAMAGES ARISING FROM YOUR USE OF THE PLATFORM.
+                </div>
+            </section>
             </div>
-          </div>
+        </div>
 
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">7. Termination</h2>
-            <p>
-              We reserve the right to suspend or terminate your account at our sole discretion, without notice, for conduct that we believe violates these Terms of Service.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">8. Governing Law</h2>
-            <p>
-              These terms are governed by the laws of your jurisdiction. Any disputes shall be resolved in the appropriate courts.
-            </p>
-          </div>
-        </section>
-
-        <div className="mt-20 pt-8 border-t border-slate-900 flex justify-between items-center text-xs text-slate-600">
-          <p>© 2024 LinkMe. Master Any Skill with AI.</p>
-          <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-12 border-t border-white/5 text-[10px] font-black uppercase tracking-widest text-slate-600">
+          <p>© 2024 LinkMe Technologies. Standard Mastery Codex.</p>
+          <div className="flex gap-8">
+            <Link href="/privacy" className="hover:text-violet-400 transition-all">Privacy Codex</Link>
           </div>
         </div>
       </div>

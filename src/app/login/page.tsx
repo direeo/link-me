@@ -1,41 +1,32 @@
 'use client';
 
-// Login page with 2FA support
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
+/**
+ * Premium Login Page: Neural Midnight Edition
+ */
 export default function LoginPage() {
     const router = useRouter();
     const { login, continueAsGuest } = useAuth();
 
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [serverError, setServerError] = useState('');
 
-    // 2FA state
     const [requires2FA, setRequires2FA] = useState(false);
     const [twoFactorCode, setTwoFactorCode] = useState('');
     const [isBackupCode, setIsBackupCode] = useState(false);
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
-
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        }
-
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        }
-
+        if (!formData.email.trim()) newErrors.email = 'Email required';
+        if (!formData.password) newErrors.password = 'Password required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -43,11 +34,8 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setServerError('');
-
         if (!validateForm()) return;
-
         setIsLoading(true);
-
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -55,16 +43,12 @@ export default function LoginPage() {
                 credentials: 'include',
                 body: JSON.stringify(formData),
             });
-
             const data = await response.json();
-
             if (data.success) {
                 if (data.requires2FA) {
-                    // Need 2FA verification
                     setRequires2FA(true);
                     setIsLoading(false);
                 } else {
-                    // Login complete, refresh auth state
                     await login(formData.email, formData.password);
                     router.push('/chat');
                 }
@@ -72,47 +56,27 @@ export default function LoginPage() {
                 setServerError(data.message || 'Login failed');
                 setIsLoading(false);
             }
-        } catch (error) {
-            setServerError('An error occurred. Please try again.');
+        } catch {
+            setServerError('An error occurred');
             setIsLoading(false);
         }
     };
 
     const handle2FASubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setServerError('');
-
-        if (!twoFactorCode || twoFactorCode.length < 6) {
-            setServerError('Please enter a valid code');
-            return;
-        }
-
         setIsLoading(true);
-
         try {
             const response = await fetch('/api/auth/2fa/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({
-                    email: formData.email,
-                    code: twoFactorCode,
-                    isBackupCode,
-                }),
+                body: JSON.stringify({ email: formData.email, code: twoFactorCode, isBackupCode }),
             });
-
             const data = await response.json();
-
-            if (data.success) {
-                // 2FA verification complete, redirect to chat
-                router.push('/chat');
-                // Force a page reload to update auth state
-                window.location.href = '/chat';
-            } else {
-                setServerError(data.message || 'Invalid code');
-            }
-        } catch (error) {
-            setServerError('Verification failed. Please try again.');
+            if (data.success) window.location.href = '/chat';
+            else setServerError(data.message || 'Invalid code');
+        } catch {
+            setServerError('Verification failed');
         } finally {
             setIsLoading(false);
         }
@@ -126,202 +90,118 @@ export default function LoginPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
-    // 2FA Verification Screen
-    if (requires2FA) {
-        return (
-            <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-                {/* Background effects */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-1/4 -left-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
-                    <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
-                </div>
+    return (
+        <div className="min-h-screen bg-[#050508] flex items-center justify-center px-4 py-20 relative overflow-hidden selection:bg-violet-500/30">
+            {/* Neural Background Orbs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="orb orb-purple top-[10%] -left-[10%] opacity-20" />
+                <div className="orb orb-indigo bottom-[10%] -right-[10%] opacity-15" />
+            </div>
 
-                <div className="w-full max-w-md relative z-10">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                            <span className="text-xl">🔗</span>
-                        </div>
-                        <span className="text-xl font-bold gradient-text">LinkMe</span>
-                    </Link>
+            <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-700">
+                {/* Branding */}
+                <Link href="/" className="flex items-center justify-center gap-3 mb-10 group">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-xl">🔗</span>
+                    </div>
+                    <span className="text-2xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
+                </Link>
 
-                    {/* Card */}
-                    <div className="glass rounded-2xl p-8">
-                        <div className="text-center mb-6">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-violet-500/20 flex items-center justify-center">
-                                <span className="text-3xl">🔐</span>
+                <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 border-white/5 premium-glow-violet">
+                    {requires2FA ? (
+                        <>
+                            <div className="text-center mb-10">
+                                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shadow-inner">
+                                    <span className="text-2xl">🔐</span>
+                                </div>
+                                <h1 className="text-2xl font-black text-white uppercase tracking-tight">Neural Unlock</h1>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2">
+                                    Identity Verification Required
+                                </p>
                             </div>
-                            <h1 className="text-2xl font-bold mb-2">Two-Factor Authentication</h1>
-                            <p className="text-slate-400">
-                                Enter the code from your authenticator app
-                            </p>
-                        </div>
 
-                        {serverError && (
-                            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
-                                {serverError}
-                            </div>
-                        )}
+                            {serverError && (
+                                <div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wide">
+                                    ⚠️ {serverError}
+                                </div>
+                            )}
 
-                        <form onSubmit={handle2FASubmit} className="space-y-5">
-                            <div>
+                            <form onSubmit={handle2FASubmit} className="space-y-6">
                                 <input
                                     type="text"
                                     value={twoFactorCode}
-                                    onChange={(e) => setTwoFactorCode(
-                                        isBackupCode
-                                            ? e.target.value.toUpperCase().slice(0, 8)
-                                            : e.target.value.replace(/\D/g, '').slice(0, 6)
-                                    )}
-                                    placeholder={isBackupCode ? 'XXXXXXXX' : '000000'}
-                                    className="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-center text-2xl tracking-widest focus:outline-none focus:border-violet-500 font-mono"
+                                    onChange={(e) => setTwoFactorCode(isBackupCode ? e.target.value.toUpperCase().slice(0, 8) : e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                    placeholder={isBackupCode ? 'BACKUP CODE' : '0 0 0 0 0 0'}
+                                    className="w-full px-4 py-5 bg-white/[0.03] border border-white/[0.08] rounded-2xl text-white text-center text-3xl tracking-[0.3em] focus:outline-none focus:border-violet-500/50 font-black backdrop-blur-xl"
                                     maxLength={isBackupCode ? 8 : 6}
                                     autoFocus
                                 />
+                                <Button type="submit" loading={isLoading} className="w-full py-4" variant="glow">
+                                    Verify Identity
+                                </Button>
+                            </form>
+                            
+                            <div className="mt-8 flex flex-col gap-4 text-center">
+                                <button onClick={() => { setIsBackupCode(!isBackupCode); setTwoFactorCode(''); }} className="text-[10px] font-black uppercase tracking-widest text-violet-400 hover:text-white transition-colors">
+                                    {isBackupCode ? 'Use App Code' : 'Lost Access? Use Backup'}
+                                </button>
+                                <button onClick={() => setRequires2FA(false)} className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors">
+                                    Return to Registry
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="text-center mb-10">
+                                <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Welcome Back</h1>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Resuming Learning Session</p>
                             </div>
 
-                            <Button
-                                type="submit"
-                                loading={isLoading}
-                                className="w-full"
-                                disabled={twoFactorCode.length < 6}
-                            >
-                                Verify
+                            {serverError && (
+                                <div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wide">
+                                    ⚠️ {serverError}
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <Input label="Neural ID (Email)" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="operator@linkme.com" />
+                                <Input label="Access Protocol (Password)" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                                
+                                <div className="flex items-center justify-between">
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                        <div className="w-4 h-4 rounded border border-white/10 bg-white/5 flex items-center justify-center transition-all group-hover:border-violet-500/50">
+                                            <input type="checkbox" className="hidden" />
+                                            <div className="w-2 h-2 rounded-sm bg-violet-500 opacity-0 transition-opacity" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Maintain Session</span>
+                                    </label>
+                                    <a href="#" className="text-[10px] font-bold text-violet-400 hover:text-white uppercase tracking-widest">Forgot Protocol?</a>
+                                </div>
+
+                                <Button type="submit" loading={isLoading} className="w-full py-4 tracking-widest" variant="glow">
+                                    Authorize Access
+                                </Button>
+                            </form>
+
+                            <div className="relative my-8">
+                                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
+                                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest leading-none bg-transparent">
+                                    <span className="px-4 text-slate-700">External Node Bypass</span>
+                                </div>
+                            </div>
+
+                            <Button onClick={handleGuestMode} variant="outline" className="w-full py-4 tracking-widest text-[10px] uppercase border-white/5 hover:bg-white/5">
+                                Initialize Guest Access
                             </Button>
-                        </form>
 
-                        <div className="mt-6 text-center">
-                            <button
-                                onClick={() => {
-                                    setIsBackupCode(!isBackupCode);
-                                    setTwoFactorCode('');
-                                    setServerError('');
-                                }}
-                                className="text-sm text-violet-400 hover:text-violet-300"
-                            >
-                                {isBackupCode
-                                    ? '← Use authenticator app code'
-                                    : 'Lost access? Use a backup code'
-                                }
-                            </button>
-                        </div>
-
-                        <div className="mt-4 text-center">
-                            <button
-                                onClick={() => {
-                                    setRequires2FA(false);
-                                    setTwoFactorCode('');
-                                    setServerError('');
-                                }}
-                                className="text-sm text-slate-500 hover:text-slate-400"
-                            >
-                                ← Back to login
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-            {/* Background effects */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 -left-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
-            </div>
-
-            <div className="w-full max-w-md relative z-10">
-                {/* Logo */}
-                <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                        <span className="text-xl">🔗</span>
-                    </div>
-                    <span className="text-xl font-bold gradient-text">LinkMe</span>
-                </Link>
-
-                {/* Card */}
-                <div className="glass rounded-2xl p-8">
-                    <h1 className="text-2xl font-bold text-center mb-2">Welcome back</h1>
-                    <p className="text-slate-400 text-center mb-8">
-                        Sign in to continue learning
-                    </p>
-
-                    {serverError && (
-                        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
-                            {serverError}
-                        </div>
+                            <p className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-slate-600">
+                                New Operator? <Link href="/signup" className="text-violet-400 hover:text-white transition-colors ml-1 underline decoration-violet-500/30">Create Neural Profile</Link>
+                            </p>
+                        </>
                     )}
-
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <Input
-                            label="Email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            error={errors.email}
-                            placeholder="you@example.com"
-                            autoComplete="email"
-                        />
-
-                        <Input
-                            label="Password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            error={errors.password}
-                            placeholder="••••••••"
-                            autoComplete="current-password"
-                        />
-
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-violet-500 focus:ring-violet-500 focus:ring-offset-0"
-                                />
-                                <span className="text-slate-400">Remember me</span>
-                            </label>
-                            <a href="#" className="text-violet-400 hover:text-violet-300">
-                                Forgot password?
-                            </a>
-                        </div>
-
-                        <Button type="submit" loading={isLoading} className="w-full">
-                            Sign In
-                        </Button>
-                    </form>
-
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-700" />
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-[#1e1e2e] text-slate-500">or</span>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={handleGuestMode}
-                        className="w-full py-3 text-sm font-medium text-slate-300 border border-slate-700 rounded-xl hover:border-violet-500 hover:text-white transition-all"
-                    >
-                        Continue as Guest
-                    </button>
-
-                    <p className="mt-6 text-center text-sm text-slate-400">
-                        Don&apos;t have an account?{' '}
-                        <Link href="/signup" className="text-violet-400 hover:text-violet-300 font-medium">
-                            Sign up
-                        </Link>
-                    </p>
                 </div>
             </div>
         </div>
