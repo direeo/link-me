@@ -1,6 +1,6 @@
 'use client';
 
-// Tutorial video card component
+// Premium Tutorial Card: Neural Midnight Edition
 import React from 'react';
 import { YouTubeResult } from '@/types';
 
@@ -15,15 +15,10 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         const diffMs = now.getTime() - date.getTime();
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-        if (diffDays < 7) {
-            return `${diffDays} days ago`;
-        } else if (diffDays < 30) {
-            return `${Math.floor(diffDays / 7)} weeks ago`;
-        } else if (diffDays < 365) {
-            return `${Math.floor(diffDays / 30)} months ago`;
-        } else {
-            return `${Math.floor(diffDays / 365)} years ago`;
-        }
+        if (diffDays < 7) return `${diffDays}d ago`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+        if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+        return `${Math.floor(diffDays / 365)}y ago`;
     };
 
     return (
@@ -31,71 +26,77 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
             href={tutorial.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block group"
+            className="block group/card relative"
         >
-            <div className="bg-slate-900/80 rounded-xl overflow-hidden border border-slate-700/50 hover:border-violet-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/10 hover:scale-[1.02]">
-                {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden">
-                    <img
-                        src={tutorial.thumbnail}
-                        alt={tutorial.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {/* Duration badge */}
-                    {tutorial.duration && (
-                        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                            {tutorial.duration}
+            <div className="glass-card rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(139,92,246,0.15)] bg-white/5 border border-white/5">
+                <div className="flex flex-col sm:flex-row h-full">
+                    {/* Thumbnail Architecture */}
+                    <div className="relative w-full sm:w-48 lg:w-56 aspect-video sm:aspect-square flex-shrink-0 overflow-hidden">
+                        <img
+                            src={tutorial.thumbnail}
+                            alt={tutorial.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+                        
+                        {/* Status Overlays */}
+                        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                            {tutorial.duration && (
+                                <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-md border border-white/10 uppercase tracking-tighter">
+                                    {tutorial.duration}
+                                </span>
+                            )}
                         </div>
-                    )}
-                    {/* Play overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
-                            <svg
-                                className="w-6 h-6 text-white ml-1"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
+                        
+                        {/* Play Orb */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
+                             <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shadow-2xl shadow-red-600/50 scale-75 group-hover/card:scale-100 transition-transform duration-500">
+                                <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1" />
+                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Content */}
-                <div className="p-4">
-                    {/* Title */}
-                    <h3 className="font-semibold text-white text-sm line-clamp-2 group-hover:text-violet-300 transition-colors">
-                        {tutorial.title}
-                    </h3>
+                    {/* Content Intelligence */}
+                    <div className="p-5 flex flex-col justify-between flex-1 min-w-0">
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between gap-4">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400 truncate">
+                                    {tutorial.channelTitle}
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-500 whitespace-nowrap">
+                                    {formatDate(tutorial.publishedAt)}
+                                </span>
+                            </div>
+                            
+                            <h3 className="font-bold text-white text-sm sm:text-base leading-snug line-clamp-2 group-hover/card:text-violet-300 transition-colors">
+                                {tutorial.title}
+                            </h3>
+                            
+                            <p className="text-xs text-slate-500 line-clamp-2 font-medium leading-relaxed">
+                                {tutorial.description}
+                            </p>
+                        </div>
 
-                    {/* Channel info */}
-                    <div className="mt-2 flex items-center gap-2">
-                        <span className="text-xs text-slate-400">{tutorial.channelTitle}</span>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="mt-2 flex items-center gap-3 text-xs text-slate-500">
-                        {tutorial.viewCount && (
-                            <span className="flex items-center gap-1">
-                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                {tutorial.viewCount}
+                        {/* Resource Meta */}
+                        <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                {tutorial.viewCount && (
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-1 h-1 rounded-full bg-slate-700" />
+                                        <span className="text-[10px] font-bold text-slate-500">{tutorial.viewCount} views</span>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-1.5 text-violet-500/80">
+                                    <div className="w-1 h-1 rounded-full bg-violet-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest group-hover/card:text-violet-400 transition-colors">Neural Pick</span>
+                                </div>
+                            </div>
+                            
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 group-hover/card:text-slate-400 transition-colors">
+                                Visit Source ↗
                             </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {formatDate(tutorial.publishedAt)}
-                        </span>
+                        </div>
                     </div>
-
-                    {/* Description preview */}
-                    <p className="mt-2 text-xs text-slate-400 line-clamp-2">
-                        {tutorial.description}
-                    </p>
                 </div>
             </div>
         </a>

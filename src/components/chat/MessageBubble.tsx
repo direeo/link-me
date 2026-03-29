@@ -1,53 +1,65 @@
 'use client';
 
-// Chat message bubble component
 import React, { useState, useEffect } from 'react';
 import { ChatMessage } from '@/types';
 import TutorialCard from './TutorialCard';
 import LearningPath from './LearningPath';
 
-// Loading indicator with rotating status messages
+/**
+ * Premium Loading Indicator: Neural Midnight Edition
+ * Features: Rotating status messages with smooth transitions and a tiered progress bar.
+ */
 function LoadingIndicator() {
     const [statusIndex, setStatusIndex] = useState(0);
+    const [progress, setProgress] = useState(0);
+    
     const statuses = [
-        { emoji: '🔍', text: 'Analyzing your request...' },
-        { emoji: '🎯', text: 'Understanding your learning goals...' },
-        { emoji: '📹', text: 'Searching for quality tutorials...' },
-        { emoji: '🧠', text: 'AI is curating the best videos...' },
-        { emoji: '📊', text: 'Analyzing video quality & relevance...' },
-        { emoji: '🎓', text: 'Building your personalized learning path...' },
+        { emoji: '🌌', text: 'Initializing Neural Architect...' },
+        { emoji: '🔎', text: 'Scanning the Knowledge Web...' },
+        { emoji: '🎯', text: 'Synthesizing Learning Objectives...' },
+        { emoji: '🧠', text: 'Curating Premium Tutorials...' },
+        { emoji: '🎨', text: 'Structuring your Mastery Path...' },
     ];
 
     useEffect(() => {
         const interval = setInterval(() => {
             setStatusIndex(prev => (prev + 1) % statuses.length);
-        }, 3000); // Change status every 3 seconds
-        return () => clearInterval(interval);
+        }, 3500);
+        
+        const progInterval = setInterval(() => {
+            setProgress(prev => (prev < 95 ? prev + 1 : prev));
+        }, 150);
+
+        return () => {
+            clearInterval(interval);
+            clearInterval(progInterval);
+        };
     }, [statuses.length]);
 
     const currentStatus = statuses[statusIndex];
 
     return (
-        <div className="space-y-3">
-            <div className="flex items-center gap-2">
-                <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+        <div className="py-2 space-y-4">
+            <div className="flex items-center gap-3">
+                <div className="relative w-5 h-5">
+                    <div className="absolute inset-0 border-2 border-violet-500/20 rounded-full" />
+                    <div className="absolute inset-0 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
                 </div>
-                <span className="text-slate-300 text-sm font-medium animate-pulse">
-                    {currentStatus.emoji} {currentStatus.text}
-                </span>
+                <div className="flex flex-col">
+                    <span className="text-sm font-bold text-violet-400 tracking-wide animate-pulse">
+                        {currentStatus.emoji} {currentStatus.text}
+                    </span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">
+                        Deep Analysis in Progress ({progress}%)
+                    </span>
+                </div>
             </div>
-            {/* Progress steps */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                {statuses.slice(0, 4).map((_, i) => (
-                    <div
-                        key={i}
-                        className={`w-5 h-1 rounded-full transition-all duration-500 ${i <= statusIndex ? 'bg-violet-500' : 'bg-slate-700'
-                            }`}
-                    />
-                ))}
+            
+            <div className="h-1 w-full bg-slate-800/50 rounded-full overflow-hidden border border-white/5">
+                <div 
+                    className="h-full bg-gradient-to-r from-violet-600 to-indigo-500 transition-all duration-1000 ease-out"
+                    style={{ width: `${progress}%` }}
+                />
             </div>
         </div>
     );
@@ -62,72 +74,79 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     const isLoading = message.isLoading;
 
     return (
-        <div
-            className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
-        >
+        <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-8 group animate-in fade-in slide-in-from-bottom-4 duration-500`}>
             <div
                 className={`
-          max-w-[85%] md:max-w-[75%]
-          ${isUser
-                        ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-2xl rounded-br-md'
-                        : 'bg-slate-800/80 text-slate-100 rounded-2xl rounded-bl-md border border-slate-700/50'
+                    relative max-w-[90%] md:max-w-[80%] px-5 py-4 shadow-2xl transition-all duration-300
+                    ${isUser
+                        ? 'bg-slate-900/40 border border-white/5 text-slate-200 rounded-2xl rounded-tr-sm'
+                        : 'glass-card rounded-2xl rounded-tl-sm premium-glow-violet'
                     }
-          px-4 py-3 shadow-lg
-        `}
+                `}
             >
-                {/* Avatar and name */}
-                {!isUser && (
-                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-700/50">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center justify-center text-xs font-bold">
-                            🔗
+                {/* Assistant Branding */}
+                {!isUser && !isLoading && (
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/5">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 border border-violet-400/30">
+                                <span className="text-xs">🔗</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-black uppercase tracking-widest bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">LinkMe AI</span>
+                                <span className="text-[10px] text-slate-500 font-medium">Learning Architect</span>
+                            </div>
                         </div>
-                        <span className="text-sm font-medium text-violet-400">LinkMe</span>
+                        <div className="px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-[10px] font-bold text-violet-400 uppercase tracking-tighter">
+                            Curated Path
+                        </div>
                     </div>
                 )}
 
-                {/* Loading state */}
-                {isLoading ? (
-                    <LoadingIndicator />
-                ) : (
-                    <>
-                        {/* Message content - hide curriculum text if LearningPath component will show */}
-                        <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">
-                            {message.learningPath && message.learningPath.stages?.length > 0
-                                ? message.content.split('\n\n🎓')[0] // Only show text before curriculum
-                                : message.content
-                            }
+                {/* Content Area */}
+                <div className="relative z-10">
+                    {isLoading ? (
+                        <LoadingIndicator />
+                    ) : (
+                        <div className="space-y-4">
+                            {/* Text Content */}
+                            <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed font-body">
+                                {message.learningPath && message.learningPath.stages?.length > 0
+                                    ? message.content.split('\n\n🎓')[0]
+                                    : message.content
+                                }
+                            </div>
+
+                            {/* Feature Components */}
+                            {message.learningPath && message.learningPath.stages?.length > 0 && (
+                                <div className="mt-6">
+                                    <LearningPath learningPath={message.learningPath} />
+                                </div>
+                            )}
+
+                            {!message.learningPath && message.tutorials && message.tutorials.length > 0 && (
+                                <div className="mt-6 grid gap-4">
+                                    {message.tutorials.map((tutorial) => (
+                                        <TutorialCard key={tutorial.id} tutorial={tutorial} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                    )}
+                </div>
 
-                        {/* Learning Path (AI-curated curriculum) */}
-                        {message.learningPath && message.learningPath.stages?.length > 0 && (
-                            <div className="mt-4">
-                                <LearningPath learningPath={message.learningPath} />
-                            </div>
-                        )}
-
-                        {/* Tutorial cards (fallback when no learning path) */}
-                        {!message.learningPath && message.tutorials && message.tutorials.length > 0 && (
-                            <div className="mt-4 space-y-3">
-                                {message.tutorials.map((tutorial) => (
-                                    <TutorialCard key={tutorial.id} tutorial={tutorial} />
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
-
-
-                {/* Timestamp */}
-                <div
-                    className={`
-            text-xs mt-2 pt-1
-            ${isUser ? 'text-violet-200/70' : 'text-slate-500'}
-          `}
-                >
-                    {new Date(message.timestamp).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    })}
+                {/* Meta Information */}
+                <div className={`flex items-center gap-2 mt-4 pt-2 border-t border-white/5 opacity-40 group-hover:opacity-100 transition-opacity`}>
+                    <span className="text-[10px] font-medium tracking-tight text-slate-500">
+                        {new Date(message.timestamp).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        })}
+                    </span>
+                    {!isUser && !isLoading && (
+                        <span className="text-[10px] font-bold text-violet-500 uppercase tracking-widest ml-auto cursor-default">
+                            Verified AI Research
+                        </span>
+                    )}
                 </div>
             </div>
         </div>

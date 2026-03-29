@@ -1,9 +1,10 @@
 'use client';
 
-// Landing page with hero section and features
+// Landing page with premium Neural Midnight redesign
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/Button';
 
 export default function HomePage() {
   const { isAuthenticated, isGuest, continueAsGuest, isLoading } = useAuth();
@@ -14,46 +15,39 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen bg-[#050508] relative overflow-hidden font-body selection:bg-violet-500/30">
+      
+      {/* --- Neural Background Architecture --- */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute top-1/2 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div className="orb orb-purple top-[10%] -left-[10%] opacity-20" />
+        <div className="orb orb-indigo top-[40%] -right-[10%] opacity-20" />
+        <div className="orb orb-purple bottom-[10%] left-[20%] opacity-10" />
       </div>
 
-      {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 lg:px-24">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-            <span className="text-xl">🔗</span>
+      {/* --- Navigation --- */}
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-4 md:px-12 lg:px-24 flex items-center justify-between backdrop-blur-md">
+        <div className="flex items-center gap-3 group cursor-pointer">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-300">
+            <span className="text-lg">🔗</span>
           </div>
-          <span className="text-xl font-bold gradient-text">LinkMe</span>
+          <span className="text-xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
         </div>
-        <div className="flex items-center gap-4">
+        
+        <div className="flex items-center gap-6">
           {!isLoading && (
             <>
               {isAuthenticated || isGuest ? (
-                <Link
-                  href="/chat"
-                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/30"
-                >
-                  Go to Chat
-                </Link>
+                <Button variant="glow" size="sm" onClick={() => window.location.href = '/chat'}>
+                  Resume Learning
+                </Button>
               ) : (
                 <>
-                  <Link
-                    href="/login"
-                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
-                  >
+                  <Link href="/login" className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors hidden sm:block">
                     Sign In
                   </Link>
-                  <Link
-                    href="/signup"
-                    className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/30"
-                  >
+                  <Button variant="primary" size="sm" onClick={() => window.location.href = '/signup'}>
                     Get Started
-                  </Link>
+                  </Button>
                 </>
               )}
             </>
@@ -61,288 +55,240 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-20 pb-32 md:pt-32 md:pb-40">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-float">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-sm text-slate-300">AI-Powered Tutorial Discovery</span>
+      {/* --- Hero Section --- */}
+      <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-40 pb-32 md:pt-52 md:pb-48 text-center">
+        {/* Elite Badge */}
+        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card mb-10 animate-float border-violet-500/20">
+          <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse shadow-[0_0_10px_rgba(139,92,246,1)]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400">Next-Gen AI Learning Architecture</span>
         </div>
 
-        {/* Headline */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center max-w-4xl leading-tight">
-          Find the{' '}
-          <span className="gradient-text glow-text">Perfect Tutorial</span>
-          {' '}in Seconds
+        {/* Master Headline */}
+        <h1 className="text-5xl md:text-8xl lg:text-9xl font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl">
+          Master Any Skill <br className="hidden md:block" />
+          <span className="gradient-text drop-shadow-[0_0_30px_rgba(139,92,246,0.3)]">Without the Noise.</span>
         </h1>
 
-        {/* Subheadline */}
-        <p className="mt-6 text-lg md:text-xl text-slate-400 text-center max-w-2xl">
-          Stop wasting time on irrelevant videos. LinkMe uses smart search to curate the best
-          learning resources tailored to your skill level and goals.
+        {/* Neural Subheadline */}
+        <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed mb-12 font-medium">
+          Stop drowning in search results. LinkMe uses AI to architect 
+          structured learning paths from the world's most elite tutorials.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
-          <Link
-            href="/signup"
-            className="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 hover:scale-105 shine-effect"
+        {/* CTA Matrix */}
+        <div className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto">
+          <Button 
+            variant="glow" 
+            size="lg" 
+            className="w-full sm:w-auto min-w-[220px] shine-effect"
+            onClick={() => window.location.href = '/signup'}
           >
-            Start Learning Free
-          </Link>
-          <button
+            Start Your Journey
+          </Button>
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="w-full sm:w-auto min-w-[220px]"
             onClick={handleGuestMode}
-            className="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-slate-300 border-2 border-slate-700 rounded-xl hover:border-violet-500 hover:text-white transition-all hover:bg-violet-500/10"
           >
-            Try as Guest
-          </button>
+            Explore as Guest
+          </Button>
         </div>
 
-        {/* Social proof */}
-        <div className="mt-12 flex items-center gap-4 text-slate-500">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 border-2 border-[#0a0a0f]"
-              />
+        {/* Pulse Indicators */}
+        <div className="mt-16 flex items-center gap-6 text-slate-600">
+          <div className="flex -space-x-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className={`w-9 h-9 rounded-full border-2 border-[#050508] bg-slate-800 flex items-center justify-center text-[10px] font-bold`}>
+                User
+              </div>
             ))}
           </div>
-          <span className="text-sm">Start your learning journey today</span>
+          <div className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Join 1,000+ specialized learners
+          </div>
         </div>
       </main>
 
-      {/* Pricing Section - MOVED UP */}
-      <section id="pricing" className="relative z-10 px-6 py-20 md:px-12 lg:px-24 bg-slate-900/10">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Simple, <span className="gradient-text">Transparent Pricing</span>
-          </h2>
-          <p className="text-slate-400 text-center mb-16 max-w-xl mx-auto">
-            Start free and upgrade as you scale your learning.
-          </p>
+      {/* --- Bento Box Features Section --- */}
+      <section id="features" className="relative z-10 px-6 py-32 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20 text-center md:text-left">
+            <div className="max-w-xl">
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 uppercase">
+                Why <span className="gradient-text">LinkMe?</span>
+              </h2>
+              <p className="text-slate-400 text-lg font-medium italic border-l-4 border-violet-500/40 pl-6">
+                Most platforms give you search results. We give you a roadmap.
+              </p>
+            </div>
+            <Link href="/signup" className="text-xs font-black uppercase tracking-[0.3em] text-violet-400 hover:text-white transition-colors duration-300">
+              View All Features ↗
+            </Link>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            {/* Free Plan */}
-            <div className="glass rounded-3xl p-8 border-slate-800 hover:border-slate-700 transition-all">
-              <h3 className="text-xl font-bold mb-2">Free</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">$0</span>
-                <span className="text-slate-500">/forever</span>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[300px]">
+            
+            {/* Bento 1: AI Discovery */}
+            <div className="md:col-span-8 glass-card rounded-[2.5rem] p-10 flex flex-col justify-end relative overflow-hidden group">
+              <div className="absolute top-10 right-10 w-40 h-40 bg-violet-600/10 blur-[80px] rounded-full group-hover:bg-violet-600/20 transition-all duration-700" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-6">
+                   <span className="text-2xl">🧠</span>
+                </div>
+                <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight">Neural Video Curation</h3>
+                <p className="text-slate-400 max-w-lg font-medium leading-relaxed">
+                  Our AI doesn't just search; it watches. It filters by quality, level, and recency 
+                  to ensure you're learning from the absolute best resources available.
+                </p>
               </div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-slate-300">
-                  <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  UNLIMITED AI Learning Paths
-                </li>
-                <li className="flex items-center gap-3 text-slate-300">
-                  <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  YouTube Playlist Syncing
-                </li>
-                <li className="flex items-center gap-3 text-slate-300">
-                  <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Basic Progress Tracking
-                </li>
+            </div>
+
+            {/* Bento 2: Chat Interface */}
+            <div className="md:col-span-4 glass-card rounded-[2.5rem] p-10 flex flex-col justify-between border-indigo-500/20">
+               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6">
+                   <span className="text-2xl">💬</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">Conversational Architect</h3>
+                  <p className="text-sm text-slate-400 font-medium leading-relaxed">
+                    Just chat. Tell us what you want to build, and we'll handle the curriculum design.
+                  </p>
+                </div>
+            </div>
+
+            {/* Bento 3: Timeline */}
+            <div className="md:col-span-4 glass-card rounded-[2.5rem] p-10 flex flex-col justify-between border-cyan-500/20">
+               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6">
+                   <span className="text-2xl">📊</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">Mastery Timelines</h3>
+                  <p className="text-sm text-slate-400 font-medium leading-relaxed">
+                    Visualize your progress with our vertical milestone architecture. Every video brings you closer to 100%.
+                  </p>
+                </div>
+            </div>
+
+            {/* Bento 4: YouTube Sync */}
+            <div className="md:col-span-8 glass-card rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-10 border-red-500/10 group">
+              <div className="flex-1">
+                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6">
+                   <span className="text-2xl">🎬</span>
+                </div>
+                <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight">One-Click YouTube Sync</h3>
+                <p className="text-slate-400 font-medium leading-relaxed">
+                  Sync your entire curated path directly to your YouTube account with a single click. 
+                  Learn where you're already comfortable.
+                </p>
+              </div>
+              <div className="w-full md:w-1/3 aspect-video rounded-3xl bg-black/40 border border-white/5 flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
+                 <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-2xl shadow-red-600/50">
+                    <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-white border-b-[10px] border-b-transparent ml-1" />
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- Pricing Section --- */}
+      <section id="pricing" className="relative z-10 px-6 py-32 md:px-12 lg:px-24">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-20">
+             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 uppercase">
+              The <span className="gradient-text">Pricing</span>
+            </h2>
+            <p className="text-slate-500 text-xs font-black uppercase tracking-[0.4em]">Simple. Direct. Powerful.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div className="glass-panel rounded-[2.5rem] p-10 border-white/5 relative group">
+              <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2">Essential</h3>
+              <div className="flex items-baseline gap-2 mb-8">
+                <span className="text-5xl font-black text-white">$0</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Path</span>
+              </div>
+              <ul className="space-y-5 mb-12">
+                {['Unlimited AI Discovery', 'Vertical Learning Paths', 'Progress Tracking', 'Community Access'].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-400">
+                    <span className="text-violet-500">✦</span> {feat}
+                  </li>
+                ))}
               </ul>
-              <Link
-                href="/signup"
-                className="block w-full py-3 text-center font-semibold text-white border border-slate-700 rounded-xl hover:bg-slate-800 transition-all bg-violet-600/10 hover:bg-violet-600 hover:text-white"
-              >
-                Get Started
-              </Link>
+              <Button variant="outline" className="w-full py-6" onClick={() => window.location.href = '/signup'}>
+                Access Framework
+              </Button>
             </div>
 
             {/* Pro Plan */}
-            <div className="glass rounded-3xl p-8 border-violet-500/50 bg-violet-500/5 relative overflow-hidden group">
-              <div className="absolute top-4 right-4 px-3 py-1 bg-violet-500 rounded-full text-[10px] font-bold tracking-widest uppercase">
-                COMING SOON
+            <div className="glass-panel rounded-[2.5rem] p-10 border-violet-500/40 bg-violet-600/[0.03] relative overflow-hidden premium-glow-violet group">
+              <div className="absolute top-6 right-6 px-3 py-1 bg-violet-600 rounded-full text-[8px] font-black tracking-[0.2em] text-white uppercase">Featured</div>
+              <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2">Professional</h3>
+              <div className="flex items-baseline gap-2 mb-8">
+                <span className="text-5xl font-black text-white">$9</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Monthly</span>
               </div>
-              <h3 className="text-xl font-bold mb-2">Pro</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">$9</span>
-                <span className="text-slate-500">/month</span>
-              </div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-slate-300">
-                  <svg className="w-5 h-5 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Everything in Free
-                </li>
-                <li className="flex items-center gap-3 text-slate-300">
-                  <svg className="w-5 h-5 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Advanced AI Tutoring
-                </li>
-                <li className="flex items-center gap-3 text-slate-300">
-                  <svg className="w-5 h-5 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Offline Path Export (PDF)
-                </li>
+              <ul className="space-y-5 mb-12">
+                {['YouTube Playlist Integration', 'Advanced AI Architecting', 'Priority API Requests', 'Neural Note-Taking'].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-200">
+                    <span className="text-violet-400">✦</span> {feat}
+                  </li>
+                ))}
               </ul>
-              <button className="block w-full py-3 text-center font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl opacity-50 cursor-not-allowed">
+              <Button variant="primary" className="w-full py-6 grayscale opacity-50 cursor-not-allowed">
                 Waitlist Only
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="relative z-10 px-6 py-20 md:px-12 lg:px-24 bg-slate-900/30">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            Master Any Topic in <span className="gradient-text">3 Simple Steps</span>
-          </h2>
-          
-          <div className="space-y-12">
-            {/* Step 1 */}
-            <div className="flex flex-col md:flex-row items-center gap-8 group">
-              <div className="w-16 h-16 rounded-full bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-2xl font-bold text-violet-500 flex-shrink-0 group-hover:bg-violet-500 group-hover:text-white transition-all">
-                1
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Describe Your Goal</h3>
-                <p className="text-slate-400">Tell LinkMe what you want to learn and your current skill level. Our AI understands your context better than any search engine.</p>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex flex-col md:flex-row items-center gap-8 group">
-              <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-2xl font-bold text-indigo-500 flex-shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                2
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Get Your Learning Path</h3>
-                <p className="text-slate-400">Receive a structured, stage-by-stage learning path with hand-picked videos, quality ratings, and difficulty scores.</p>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col md:flex-row items-center gap-8 group">
-              <div className="w-16 h-16 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl font-bold text-purple-500 flex-shrink-0 group-hover:bg-purple-500 group-hover:text-white transition-all">
-                3
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Start Learning & Sync</h3>
-                <p className="text-slate-400">Save your paths, track your progress, and automatically send your curated videos to a YouTube playlist.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section - MOVED DOWN */}
-      <section id="features" className="relative z-10 px-6 py-20 md:px-12 lg:px-24">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Why Choose <span className="gradient-text">LinkMe</span>?
-          </h2>
-          <p className="text-slate-400 text-center mb-16 max-w-2xl mx-auto">
-            We understand the frustration of searching for quality tutorials.
-            That&apos;s why we built something better.
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="glass rounded-2xl p-8 hover:border-violet-500/50 transition-all duration-300 group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Chat-Style Interface</h3>
-              <p className="text-slate-400">
-                Just tell us what you want to learn. Our conversational AI asks the right questions
-                to find exactly what you need.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="glass rounded-2xl p-8 hover:border-violet-500/50 transition-all duration-300 group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Smart Curation</h3>
-              <p className="text-slate-400">
-                We filter by quality, recency, and relevance. No more wading through outdated
-                or clickbait videos.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="glass rounded-2xl p-8 hover:border-violet-500/50 transition-all duration-300 group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Instant Results</h3>
-              <p className="text-slate-400">
-                Get 5-7 highly relevant tutorials in seconds. Save hours of searching and
-                start learning immediately.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="relative z-10 px-6 py-20 md:px-12 lg:px-24">
-        <div className="max-w-4xl mx-auto text-center glass rounded-3xl p-12 glow-violet">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Learn Smarter?
-          </h2>
-          <p className="text-slate-400 mb-8 max-w-xl mx-auto">
-            Join thousands of learners who have discovered a better way to find tutorials.
-          </p>
-          <Link
-            href="/signup"
-            className="inline-flex px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40"
-          >
-            Get Started for Free
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 px-6 py-12 border-t border-slate-800 bg-[#0a0a0f]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex flex-col items-center md:items-start gap-4">
-            <div className="flex items-center gap-2">
+      {/* --- Footer --- */}
+      <footer className="relative z-10 px-6 py-20 border-t border-white/5 bg-[#050508]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-16">
+          <div className="max-w-xs space-y-6">
+             <div className="flex items-center gap-3">
               <span className="text-2xl">🔗</span>
-              <span className="text-xl font-bold gradient-text">LinkMe</span>
+              <span className="text-xl font-black tracking-tighter text-white uppercase">LinkMe</span>
             </div>
-            <p className="text-sm text-slate-500 max-w-xs text-center md:text-left">
-              The smartest way to find tutorials. AI-powered learning paths tailored to you.
+            <p className="text-sm font-medium text-slate-500 leading-relaxed italic border-l-2 border-slate-800 pl-4">
+              Designing the future of self-directed mastery through AI-curated neural roadmaps.
             </p>
           </div>
           
-          <div className="flex flex-col items-center md:items-end gap-2">
-            <span className="text-sm font-semibold text-slate-300 text-center md:text-left">Questions or Feedback?</span>
-            <a href="mailto:hello@linkme-ai.com" className="text-violet-400 hover:text-violet-300 transition-colors">
-              hello@linkme-ai.com
-            </a>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-12">
+             <div className="space-y-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Platform</span>
+                <ul className="space-y-2">
+                   <li><Link href="/signup" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Start Learning</Link></li>
+                   <li><Link href="/chat" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">AI Architect</Link></li>
+                </ul>
+             </div>
+             <div className="space-y-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Corporate</span>
+                <ul className="space-y-2">
+                   <li><Link href="/privacy" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Privacy Codex</Link></li>
+                   <li><Link href="/terms" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Terms of Use</Link></li>
+                </ul>
+             </div>
+             <div className="space-y-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Support</span>
+                <ul className="space-y-2">
+                   <li><a href="mailto:hello@linkme-ai.com" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Neural Email</a></li>
+                </ul>
+             </div>
           </div>
         </div>
         
-        <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-600">
-            © {new Date().getFullYear()} LinkMe Inc. All rights reserved.
+        <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">
+            © 2024 LinkMe Technologies. Standardized Mastery Platforms.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">Terms of Service</Link>
+             <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">Built in the Shadows</span>
           </div>
         </div>
       </footer>

@@ -1,15 +1,16 @@
 'use client';
 
-// Main chat interface
+// Main chat interface with premium Neural Midnight redesign
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ChatMessage, YouTubeResult, LearningPath } from '@/types';
+import { ChatMessage, YouTubeResult, LearningPath as LearningPathType } from '@/types';
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import GuestBanner from '@/components/chat/GuestBanner';
 import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
+import { Button } from '@/components/ui/Button';
 
 export default function ChatPage() {
     const router = useRouter();
@@ -42,21 +43,21 @@ export default function ChatPage() {
                 {
                     id: '1',
                     role: 'assistant',
-                    content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}! 🚀
-
-I'm your AI learning architect. Tell me what you want to master, and I'll build you a professional learning path from the best tutorials on the web.
+                    content: `Neural Architecture Initialized${user?.name ? `, ${user.name}` : ''}. 🔗🎓
+                    
+I am your AI learning architect. Describe any skill or specialized topic you wish to master, and I will synthesize a structured learning path from the world's most elite tutorial data.
 
 **How I help you:**
-✅ **Structured Stages**: From 'Hello World' to advanced mastery.
-✅ **Smart Curation**: Videos filtered for quality, relevance, and level.
-✅ **Total Control**: Track progress and sync paths to YouTube.
+✅ **Sequential Stages**: From foundational concepts to professional mastery.
+✅ **Neural Curation**: Videos analyzed for quality, relevance, and level.
+✅ **YouTube Ecosystem**: Sync your entirely path to your native workspace.
 
 **Try asking me:**
-• *"I want to master React from scratch"*
-• *"Python for Machine Learning"*
-• *"Help me learn web development as a beginner"*
+• *"Master React from scratch for professional engineers"*
+• *"Python for Quantitative Finance"*
+• *"Fullstack Development Roadmap 2024"*
 
-What skill are we tackling today?`,
+What shall we architect today?`,
                     timestamp: new Date(),
                 },
             ]);
@@ -67,7 +68,6 @@ What skill are we tackling today?`,
     const sendMessage = async (content: string) => {
         if (isLoading) return;
 
-        // Add user message
         const userMessage: ChatMessage = {
             id: `user-${Date.now()}`,
             role: 'user',
@@ -75,7 +75,6 @@ What skill are we tackling today?`,
             timestamp: new Date(),
         };
 
-        // Add loading message
         const loadingMessage: ChatMessage = {
             id: `loading-${Date.now()}`,
             role: 'assistant',
@@ -92,51 +91,36 @@ What skill are we tackling today?`,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({
-                    message: content,
-                    conversationId,
-                }),
+                body: JSON.stringify({ message: content, conversationId }),
             });
 
             const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.message || 'Transmission error');
 
-            // Check if response was successful
-            if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Failed to send message');
-            }
-
-            // Remove loading message and add response
             setMessages(prev => {
                 const filtered = prev.filter(m => !m.isLoading);
                 const assistantMessage: ChatMessage = {
                     id: `assistant-${Date.now()}`,
                     role: 'assistant',
-                    content: data.response || 'Sorry, I could not process your request.',
+                    content: data.response || 'System Error: Synthesis failed.',
                     timestamp: new Date(),
                     tutorials: data.tutorials as YouTubeResult[] | undefined,
-                    learningPath: data.learningPath as LearningPath | undefined,
+                    learningPath: data.learningPath as LearningPathType | undefined,
                 };
                 return [...filtered, assistantMessage];
             });
 
-            if (data.conversationId) {
-                setConversationId(data.conversationId);
-            }
+            if (data.conversationId) setConversationId(data.conversationId);
         } catch (error) {
-            console.error('Chat error:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
-            // Remove loading message and add error
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             setMessages(prev => {
                 const filtered = prev.filter(m => !m.isLoading);
-                return [
-                    ...filtered,
-                    {
-                        id: `error-${Date.now()}`,
-                        role: 'assistant',
-                        content: `Sorry, ${errorMessage}. Please try again.`,
-                        timestamp: new Date(),
-                    },
-                ];
+                return [...filtered, {
+                    id: `error-${Date.now()}`,
+                    role: 'assistant',
+                    content: `⚠️ System Error: ${errorMessage}. Please re-transmit.`,
+                    timestamp: new Date(),
+                }];
             });
         } finally {
             setIsLoading(false);
@@ -150,175 +134,131 @@ What skill are we tackling today?`,
 
     const startNewChat = () => {
         setConversationId(null);
-        setMessages([
-            {
-                id: '1',
-                role: 'assistant',
-                content: `👋 Starting a new chat! What would you like to learn today?`,
-                timestamp: new Date(),
-            },
-        ]);
+        setMessages([{
+            id: '1',
+            role: 'assistant',
+            content: `👋 New Session Initialized. What specific skill are we architecting now?`,
+            timestamp: new Date(),
+        }]);
     };
 
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-slate-300">Loading...</span>
+            <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin shadow-[0_0_15px_rgba(139,92,246,0.3)]" />
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-violet-400 animate-pulse">Neural Booting...</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
-            {/* Header */}
-            <header className="flex-shrink-0 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-                <div className="flex items-center justify-between px-4 py-3 md:px-6">
-                    <div className="flex items-center gap-4">
-                        <Link href="/" className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
+        <div className="h-screen bg-[#050508] flex flex-col relative overflow-hidden selection:bg-violet-500/30">
+            {/* Neural Background Orbs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="orb orb-purple top-[10%] -left-[10%] opacity-10" />
+                <div className="orb orb-indigo bottom-[10%] -right-[10%] opacity-10" />
+            </div>
+
+            {/* --- Global Command Header --- */}
+            <header className="flex-shrink-0 z-40 glass-panel border-b border-white/5 backdrop-blur-md">
+                <div className="flex items-center justify-between px-6 py-4">
+                    <div className="flex items-center gap-6">
+                        <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-transform duration-300">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
                                 <span className="text-sm">🔗</span>
                             </div>
-                            <span className="font-bold gradient-text hidden sm:block">LinkMe</span>
+                            <span className="text-xl font-black tracking-tighter text-white uppercase hidden sm:block">LinkMe</span>
                         </Link>
-                        <button
-                            onClick={startNewChat}
-                            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs font-medium text-slate-300 border border-slate-700 rounded-lg hover:border-violet-500 hover:text-white transition-all"
-                            title="New Chat"
-                        >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span className="hidden sm:inline">New Chat</span>
-                        </button>
-                        {/* History button - only for logged-in users */}
-                        {isAuthenticated && !isGuest && (
-                            <button
-                                onClick={() => setShowHistory(true)}
-                                className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs font-medium text-slate-300 border border-slate-700 rounded-lg hover:border-violet-500 hover:text-white transition-all"
-                                title="Chat History"
-                            >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span className="hidden sm:inline">History</span>
-                            </button>
-                        )}
+                        
+                        <div className="h-6 w-px bg-white/10 hidden sm:block" />
+
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" onClick={startNewChat} className="text-[10px] uppercase tracking-widest font-bold">
+                                <svg className="w-3 h-3 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
+                                New Session
+                            </Button>
+                            
+                            {isAuthenticated && !isGuest && (
+                                <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} className="text-[10px] uppercase tracking-widest font-bold hidden md:flex">
+                                    <svg className="w-3 h-3 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    History
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
+                    <div className="flex items-center gap-4">
+                        {/* Feedback Access */}
+                        <a 
+                            href="mailto:hello@linkme-ai.com?subject=LinkMe%20Feedback"
+                            className="text-[10px] font-black uppercase tracking-widest text-violet-400 hover:text-white transition-colors hidden lg:block border-r border-white/5 pr-4 mr-2"
+                        >
+                            Provide Feedback
+                        </a>
 
-                    <div className="flex items-center gap-3">
-                        {isAuthenticated && !user?.emailVerified && (
-                            <button
-                                onClick={async () => {
-                                    if (isResendingVerification || !user?.email) return;
-                                    setIsResendingVerification(true);
-                                    setVerificationMessage(null);
-                                    try {
-                                        const response = await fetch('/api/verify/resend', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ email: user.email }),
-                                        });
-                                        const data = await response.json();
-                                        setVerificationMessage(data.message || 'Verification email sent!');
-                                    } catch {
-                                        setVerificationMessage('Failed to send. Please try again.');
-                                    } finally {
-                                        setIsResendingVerification(false);
-                                        setTimeout(() => setVerificationMessage(null), 5000);
-                                    }
-                                }}
-                                disabled={isResendingVerification}
-                                className="text-xs text-amber-400 hover:text-amber-300 hidden sm:flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
-                                title="Click to resend verification email"
-                            >
-                                {isResendingVerification ? (
-                                    <>
-                                        <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                        </svg>
-                                        Sending...
-                                    </>
-                                ) : verificationMessage ? (
-                                    <span className="text-green-400">{verificationMessage}</span>
-                                ) : (
-                                    <>⚠️ Click to verify email</>
-                                )}
-                            </button>
-                        )}
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 flex items-center justify-center text-xs font-bold">
+                        <div className="flex items-center gap-3 px-3 py-1.5 bg-white/5 border border-white/5 rounded-xl">
+                            <div className="w-6 h-6 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center text-[10px] font-black text-white">
                                 {isGuest ? 'G' : user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
-                            <span className="text-sm text-slate-300 hidden sm:block">
-                                {isGuest ? 'Guest' : user?.name || user?.email}
+                            <span className="text-xs font-bold text-slate-300 hidden sm:block">
+                                {isGuest ? 'Guest Operator' : user?.name || user?.email}
                             </span>
                         </div>
-                        {/* Settings link - only for logged-in users */}
-                        {isAuthenticated && !isGuest && (
-                            <Link
-                                href="/settings"
-                                className="p-2 text-slate-400 hover:text-white transition-colors"
-                                title="Settings"
-                            >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </Link>
-                        )}
-                        <button
-                            onClick={handleLogout}
-                            className="p-2 text-slate-400 hover:text-white transition-colors"
-                            title="Logout"
-                        >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                        </button>
+
+                        <div className="flex items-center gap-1">
+                            {isAuthenticated && !isGuest && (
+                                <Link href="/settings" className="p-2 text-slate-400 hover:text-white transition-all hover:scale-110">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                </Link>
+                            )}
+                            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-rose-500 transition-all hover:scale-110">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            {/* Main chat area */}
-            <main className="flex-1 overflow-hidden flex flex-col">
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
-                    <div className="max-w-3xl mx-auto">
-                        {/* Guest banner */}
+            {/* --- Main Operational Area --- */}
+            <main className="flex-1 overflow-hidden flex flex-col relative z-10">
+                {/* Scrolling Message Workspace */}
+                <div className="flex-1 overflow-y-auto px-4 py-8 md:px-12 no-scrollbar">
+                    <div className="max-w-4xl mx-auto">
                         {isGuest && <GuestBanner />}
-
-                        {/* Message list */}
-                        {messages.map((message) => (
-                            <MessageBubble key={message.id} message={message} />
-                        ))}
-                        <div ref={messagesEndRef} />
+                        
+                        {/* Dynamic Message Matrix */}
+                        <div className="space-y-2">
+                            {messages.map((message) => (
+                                <MessageBubble key={message.id} message={message} />
+                            ))}
+                        </div>
+                        <div ref={messagesEndRef} className="h-12" />
                     </div>
                 </div>
 
-                {/* Input area */}
-                <div className="flex-shrink-0 border-t border-slate-800 bg-slate-900/50 backdrop-blur-sm p-4 md:p-6">
-                    <div className="max-w-3xl mx-auto">
+                {/* --- Input Neural Matrix --- */}
+                <div className="flex-shrink-0 p-6 md:p-10">
+                    <div className="max-w-3xl mx-auto glass-panel p-2 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5">
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
+                    </div>
+                    <div className="text-center mt-4">
+                         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-600">Secure AI Neural Architecture • LinkMe Protocol v2.0</span>
                     </div>
                 </div>
             </main>
 
-            {/* Chat History Sidebar */}
+            {/* Persistence Layer Sidebar */}
             <ChatHistorySidebar
                 isOpen={showHistory}
                 onClose={() => setShowHistory(false)}
                 onSelectHistory={(item) => {
                     setShowHistory(false);
-                    // Add a message showing the selected history topic
                     setMessages(prev => [...prev, {
                         id: `history-${Date.now()}`,
                         role: 'assistant',
-                        content: `📚 From your history: You previously searched for "${item.topic}" (${item.skillLevel || 'any level'}, ${item.goal || 'general'}).\n\nWould you like to search for this topic again, or try something new?`,
+                        content: `📚 Neural Retrieval: Accessing former architecture for "${item.topic}".`,
                         timestamp: new Date(),
                     }]);
                 }}
@@ -326,4 +266,3 @@ What skill are we tackling today?`,
         </div>
     );
 }
-
