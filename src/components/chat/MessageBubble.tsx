@@ -85,7 +85,7 @@ function LoadingIndicator() {
                 
                 <div className="bg-[#161616] border border-[#262626] p-4 rounded-xl flex items-center gap-3">
                     <div className="w-4 h-4 border-2 border-white/5 border-t-white rounded-full animate-spin" />
-                    <span className="text-xs font-bold text-slate-400">Architecting your path...</span>
+                    <span className="text-xs font-bold text-slate-400">Building your learning path...</span>
                 </div>
             </div>
         </div>

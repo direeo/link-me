@@ -78,6 +78,7 @@ export interface Conversation {
 
 export interface YouTubeResult {
     id: string;
+    videoId: string;
     title: string;
     description: string;
     thumbnail: string;

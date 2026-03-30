@@ -6,8 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 
 /**
- * Premium Landing Page: Professional Minimalism Reset
- * Focus: High-performance scrolling, minimalist typography, and crisp 1px borders.
+ * Professional Landing Page: Clean Minimalism
+ * Focus: High-performance, clean typography, and zero-distraction.
  */
 export default function HomePage() {
   const { isAuthenticated, isGuest, continueAsGuest, isLoading } = useAuth();
@@ -18,9 +18,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden font-sans selection:bg-white/10">
+    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden font-sans selection:bg-white/10 text-slate-200">
       
-      {/* Standard Pro Navigation */}
+      {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 lg:px-24 flex items-center justify-between border-b border-[#262626] bg-[#0a0a0a]/90 backdrop-blur-sm">
         <div className="flex items-center gap-3 transition-transform duration-150 hover:scale-[1.01]">
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-lg">
@@ -51,20 +51,20 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* --- High-End Typography Hero --- */}
+      {/* Hero */}
       <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-48 pb-32 md:pt-64 md:pb-48 text-center animate-in fade-in duration-700">
-        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-[#262626] bg-[#111111] mb-8 transition-all hover:border-white/20">
+        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-[#262626] bg-[#111111] mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Professional Learning Framework v2.1</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Learning Simplified</span>
         </div>
 
         <h1 className="text-5xl md:text-[5.5rem] lg:text-[7rem] font-bold text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl">
-          Curated learning paths <br className="hidden md:block" />
-          built by intelligence.
+          Structured learning <br className="hidden md:block" />
+          built for clarity.
         </h1>
 
         <p className="text-base md:text-lg text-slate-500 max-w-2xl leading-relaxed mb-12 font-medium">
-          Stop searching. Start mastering. LinkMe builds structured paths from world-class tutorials, designed for speed and technical clarity.
+          Eliminate discovery fatigue. LinkMe organizes the best tutorials into simple, actionable paths for any technical skill.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
@@ -74,7 +74,7 @@ export default function HomePage() {
             className="w-full sm:w-auto min-w-[200px]"
             onClick={() => window.location.href = '/signup'}
           >
-            Start Mastery
+            Start mastering
           </Button>
           <Button 
             variant="outline" 
@@ -87,48 +87,45 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* --- Minimal Feature Index --- */}
+      {/* Features */}
       <section id="features" className="relative z-10 px-6 py-32 md:px-12 lg:px-24 border-t border-[#262626]">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
             <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter uppercase">
-              The Framework
+              How it works
             </h2>
-            <Link href="/signup" className="text-[10px] font-bold uppercase tracking-widest text-[#8b5cf6] hover:text-white transition-all">
-              Technical Overview ↗
+            <Link href="/signup" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-all">
+              Join the waitlist ↗
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Feature 1 */}
-            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:bg-[#161616] hover:border-[#333333]">
+            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:border-[#444444]">
               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-lg">🎯</div>
               <div>
-                <h3 className="text-lg font-bold text-white uppercase mb-2">Automated Curation</h3>
+                <h3 className="text-lg font-bold text-white uppercase mb-2">Automated Discovery</h3>
                 <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                  We filter the noise, identifying only the highest-quality tutorial resources for your specific learning goals.
+                  Our system evaluates available data to identify the most effective and accurate resources for your goal.
                 </p>
               </div>
             </div>
 
-            {/* Feature 2 */}
-            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:bg-[#161616] hover:border-[#333333]">
+            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:border-[#444444]">
               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-lg">🧱</div>
               <div>
-                <h3 className="text-lg font-bold text-white uppercase mb-2">Structural Mastery</h3>
+                <h3 className="text-lg font-bold text-white uppercase mb-2">Sequential Paths</h3>
                 <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                  Every path is organized into logical, sequential stages that ensure comprehensive topic coverage from scratch.
+                  Learning is structured into logical stages, ensuring a foundations-to-mastery workflow for every topic.
                 </p>
               </div>
             </div>
 
-            {/* Feature 3 */}
-            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:bg-[#161616] hover:border-[#333333]">
+            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:border-[#444444]">
               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-lg">🔗</div>
               <div>
-                <h3 className="text-lg font-bold text-white uppercase mb-2">Native Integration</h3>
+                <h3 className="text-lg font-bold text-white uppercase mb-2">Native Sync</h3>
                 <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                  Sync your synthesized paths directly to your YouTube workspace for a seamless cross-platform experience.
+                  Export organized playlists directly to your YouTube profile and sync progress across devices.
                 </p>
               </div>
             </div>
@@ -136,7 +133,57 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* --- Performance Footer --- */}
+      {/* Pricing */}
+      <section id="pricing" className="relative z-10 px-6 py-32 md:px-12 lg:px-24 border-t border-[#262626]">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-20">
+             <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-4 uppercase">
+              Join the Beta
+            </h2>
+            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-[0.4em]">Simple Plans for Early Adopters</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] transition-all">
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-2">Basic</h3>
+              <div className="flex items-baseline gap-2 mb-8">
+                <span className="text-4xl font-bold text-white shadow-sm">$0</span>
+                <span className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">/ Individual</span>
+              </div>
+              <ul className="space-y-4 mb-10">
+                {['Unlimited path discovery', 'Goal tracking', 'Community support'].map((f, i) => (
+                  <li key={i} className="flex items-center gap-3 text-[12px] font-medium text-slate-500">
+                    <span className="text-emerald-500">✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="outline" className="w-full py-5 text-[10px] uppercase font-bold" onClick={() => window.location.href = '/signup'}>
+                Get Access
+              </Button>
+            </div>
+
+            <div className="rounded-2xl bg-[#111111] p-10 border border-white/5 transition-all">
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-2">Pro</h3>
+              <div className="flex items-baseline gap-2 mb-8">
+                <span className="text-4xl font-bold text-white">$9</span>
+                <span className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">/ Monthly</span>
+              </div>
+              <ul className="space-y-4 mb-10">
+                {['YouTube Playlist Syncing', 'Priority path updates', 'Premium features'].map((f, i) => (
+                  <li key={i} className="flex items-center gap-3 text-[12px] font-medium text-slate-300">
+                    <span className="text-white">✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="primary" className="w-full py-5 text-[10px] uppercase font-bold" onClick={() => window.location.href = '/signup'}>
+                Join Pro Waitlist
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
       <footer className="relative z-10 px-6 py-20 border-t border-[#262626] bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-16">
           <div className="max-w-xs space-y-4">
@@ -145,20 +192,20 @@ export default function HomePage() {
               <span className="text-xl font-bold tracking-tighter text-white uppercase">LinkMe</span>
             </div>
             <p className="text-[11px] font-bold text-slate-700 leading-relaxed italic border-l border-[#262626] pl-5">
-              High-performance learning paths for the world's most technical skillsets. Minimal noise, infinite mastery.
+              Reframing the future of human learning. High-speed mastery built for those who value clarity.
             </p>
           </div>
           
           <div className="flex flex-wrap gap-20">
              <div className="space-y-6">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800">Platform</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800">Explore</span>
                 <ul className="space-y-3">
                    <li><Link href="/signup" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Start Mastering</Link></li>
-                   <li><Link href="/chat" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Workspace</Link></li>
+                   <li><Link href="/chat" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Dashboard</Link></li>
                 </ul>
              </div>
              <div className="space-y-6">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800">Legal Codex</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800">Legal</span>
                 <ul className="space-y-3">
                    <li><Link href="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Privacy</Link></li>
                    <li><Link href="/terms" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Conditions</Link></li>
@@ -169,10 +216,10 @@ export default function HomePage() {
         
         <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-[#262626] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[10px] font-bold text-slate-800 uppercase tracking-widest">
-            © 2024 LinkMe. All Rights Reserved.
+            © 2026 LinkMe. All Rights Reserved.
           </p>
           <div className="flex items-center gap-6">
-             <span className="text-[10px] font-bold uppercase tracking-widest text-[#8b5cf6]">Node Active: Master Branch</span>
+             <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-900">Alpha Status: Online</span>
           </div>
         </div>
       </footer>

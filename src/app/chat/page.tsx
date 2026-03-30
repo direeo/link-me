@@ -129,7 +129,7 @@ What are you looking to master today?`,
         setMessages([{
             id: '1',
             role: 'assistant',
-            content: `👋 Ready for a new objective. What shall we learn?`,
+            content: `👋 New chat started. What would you like to learn today?`,
             timestamp: new Date(),
         }]);
     };
@@ -210,7 +210,7 @@ What are you looking to master today?`,
                     <div className="max-w-3xl mx-auto">
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
                         <div className="text-center mt-4">
-                             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-800">Professional Learning Protocols Active</span>
+                             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-800">Learning path generator active</span>
                         </div>
                     </div>
                 </div>
