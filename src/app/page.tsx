@@ -1,11 +1,14 @@
 'use client';
 
-// Landing page with premium Neural Midnight redesign
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 
+/**
+ * Premium Landing Page: Clean Modern Dark Edition
+ * Focus: High-performance scrolling, minimalist gradients, and 150ms snappy interactions.
+ */
 export default function HomePage() {
   const { isAuthenticated, isGuest, continueAsGuest, isLoading } = useAuth();
 
@@ -15,22 +18,18 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050508] relative overflow-hidden font-body selection:bg-violet-500/30">
+    <div className="min-h-screen bg-[#0c0c12] relative overflow-hidden font-body selection:bg-violet-500/30">
       
-      {/* --- Neural Background Architecture --- */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="orb orb-purple top-[10%] -left-[10%] opacity-20" />
-        <div className="orb orb-indigo top-[40%] -right-[10%] opacity-20" />
-        <div className="orb orb-purple bottom-[10%] left-[20%] opacity-10" />
-      </div>
+      {/* Optimized Background Gradients (No Blur Filter) */}
+      <div className="neural-bg" />
 
-      {/* --- Navigation --- */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-4 md:px-12 lg:px-24 flex items-center justify-between backdrop-blur-md">
-        <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-300">
-            <span className="text-lg">🔗</span>
+      {/* --- High-Speed Navigation --- */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-5 md:px-12 lg:px-24 flex items-center justify-between border-b border-white/5 bg-[#0c0c12]/80 backdrop-blur-md">
+        <div className="flex items-center gap-3 group cursor-pointer transition-transform duration-150 hover:scale-[1.02]">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-600/10">
+            <span className="text-base font-black">🔗</span>
           </div>
-          <span className="text-xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
+          <span className="text-lg font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-150">LinkMe</span>
         </div>
         
         <div className="flex items-center gap-6">
@@ -38,15 +37,15 @@ export default function HomePage() {
             <>
               {isAuthenticated || isGuest ? (
                 <Button variant="glow" size="sm" onClick={() => window.location.href = '/chat'}>
-                  Resume Learning
+                  Resume Session
                 </Button>
               ) : (
                 <>
-                  <Link href="/login" className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors hidden sm:block">
-                    Sign In
+                  <Link href="/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors hidden sm:block">
+                    Registry Login
                   </Link>
                   <Button variant="primary" size="sm" onClick={() => window.location.href = '/signup'}>
-                    Get Started
+                    Initialize Profile
                   </Button>
                 </>
               )}
@@ -55,240 +54,224 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* --- Hero Section --- */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-40 pb-32 md:pt-52 md:pb-48 text-center">
-        {/* Elite Badge */}
-        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card mb-10 animate-float border-violet-500/20">
-          <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse shadow-[0_0_10px_rgba(139,92,246,1)]" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400">Next-Gen AI Learning Architecture</span>
+      {/* --- Hero Architecture --- */}
+      <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-48 pb-32 md:pt-64 md:pb-48 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* Elite Indicator */}
+        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/5 mb-10 transition-all duration-150 hover:border-violet-500/30">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Next-Gen AI Learning Architecture</span>
         </div>
 
         {/* Master Headline */}
-        <h1 className="text-5xl md:text-8xl lg:text-9xl font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl">
+        <h1 className="text-5xl md:text-8xl lg:text-9xl font-black text-white leading-[0.85] tracking-tighter mb-8 max-w-5xl">
           Master Any Skill <br className="hidden md:block" />
-          <span className="gradient-text drop-shadow-[0_0_30px_rgba(139,92,246,0.3)]">Without the Noise.</span>
+          <span className="gradient-text">Without the Noise.</span>
         </h1>
 
-        {/* Neural Subheadline */}
-        <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed mb-12 font-medium">
-          Stop drowning in search results. LinkMe uses AI to architect 
-          structured learning paths from the world's most elite tutorials.
+        {/* Pro Subheadline */}
+        <p className="text-base md:text-lg text-slate-500 max-w-2xl leading-relaxed mb-12 font-medium italic border-l-2 border-violet-500/20 pl-6">
+          LinkMe uses proprietary AI to architect structured learning paths from the world's most elite tutorial data. Performance-first, distraction-free mastery.
         </p>
 
-        {/* CTA Matrix */}
-        <div className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto">
+        {/* Dynamic CTA Matrix */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <Button 
             variant="glow" 
             size="lg" 
-            className="w-full sm:w-auto min-w-[220px] shine-effect"
+            className="w-full sm:w-auto min-w-[220px] font-black uppercase tracking-widest text-xs"
             onClick={() => window.location.href = '/signup'}
           >
-            Start Your Journey
+            Commence Learning
           </Button>
           <Button 
             variant="outline" 
             size="lg" 
-            className="w-full sm:w-auto min-w-[220px]"
+            className="w-full sm:w-auto min-w-[220px] font-black uppercase tracking-widest text-xs"
             onClick={handleGuestMode}
           >
-            Explore as Guest
+            Explore Sandbox
           </Button>
         </div>
 
-        {/* Pulse Indicators */}
-        <div className="mt-16 flex items-center gap-6 text-slate-600">
-          <div className="flex -space-x-3">
+        {/* Status Indicators */}
+        <div className="mt-20 flex flex-col items-center gap-4">
+           <div className="flex -space-x-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className={`w-9 h-9 rounded-full border-2 border-[#050508] bg-slate-800 flex items-center justify-center text-[10px] font-bold`}>
-                User
+              <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-[#1a1a23] flex items-center justify-center text-[10px] font-bold text-slate-500 transition-transform duration-150 hover:scale-110">
+                {String.fromCharCode(65 + i)}
               </div>
             ))}
           </div>
-          <div className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Join 1,000+ specialized learners
+          <div className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-700 flex items-center gap-2">
+            Verified Nodes Active Across 150+ Technical Domains
           </div>
         </div>
       </main>
 
-      {/* --- Bento Box Features Section --- */}
-      <section id="features" className="relative z-10 px-6 py-32 md:px-12 lg:px-24">
+      {/* --- Performance Bento Grid --- */}
+      <section id="features" className="relative z-10 px-6 py-32 md:px-12 lg:px-24 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20 text-center md:text-left">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
             <div className="max-w-xl">
-              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 uppercase">
-                Why <span className="gradient-text">LinkMe?</span>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4 uppercase">
+                Why <span className="text-violet-500">LinkMe?</span>
               </h2>
-              <p className="text-slate-400 text-lg font-medium italic border-l-4 border-violet-500/40 pl-6">
-                Most platforms give you search results. We give you a roadmap.
-              </p>
+              <p className="text-slate-500 text-sm font-bold uppercase tracking-[0.3em]">Extreme Curation. Infinite Mastery.</p>
             </div>
-            <Link href="/signup" className="text-xs font-black uppercase tracking-[0.3em] text-violet-400 hover:text-white transition-colors duration-300">
-              View All Features ↗
+            <Link href="/signup" className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 hover:text-white transition-all">
+              Explore Operational Specs ↗
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[300px]">
-            
-            {/* Bento 1: AI Discovery */}
-            <div className="md:col-span-8 glass-card rounded-[2.5rem] p-10 flex flex-col justify-end relative overflow-hidden group">
-              <div className="absolute top-10 right-10 w-40 h-40 bg-violet-600/10 blur-[80px] rounded-full group-hover:bg-violet-600/20 transition-all duration-700" />
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-6">
-                   <span className="text-2xl">🧠</span>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 auto-rows-[280px]">
+            {/* Feature 1: AI Insight */}
+            <div className="md:col-span-8 rounded-3xl bg-[#1a1a23] p-10 border border-white/5 flex flex-col justify-end group transition-all duration-150 hover:border-violet-500/20">
+               <div className="w-10 h-10 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center mb-6 transition-transform duration-150 group-hover:scale-110">
+                   <span className="text-lg">🧠</span>
                 </div>
-                <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight">Neural Video Curation</h3>
-                <p className="text-slate-400 max-w-lg font-medium leading-relaxed">
-                  Our AI doesn't just search; it watches. It filters by quality, level, and recency 
-                  to ensure you're learning from the absolute best resources available.
+                <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">Neural Resource Filtering</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-lg">
+                  Every tutorial in your path is analyzed for quality, difficulty, and relevance. We ignore the high-volume noise to find the high-impact knowledge.
                 </p>
-              </div>
             </div>
 
-            {/* Bento 2: Chat Interface */}
-            <div className="md:col-span-4 glass-card rounded-[2.5rem] p-10 flex flex-col justify-between border-indigo-500/20">
-               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6">
-                   <span className="text-2xl">💬</span>
+            {/* Feature 2: Speed */}
+            <div className="md:col-span-4 rounded-3xl bg-[#1a1a23] p-10 border border-white/5 flex flex-col justify-between group transition-all duration-150 hover:border-indigo-500/20">
+               <div className="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center transition-transform duration-150 group-hover:scale-110">
+                   <span className="text-lg">⚡️</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">Conversational Architect</h3>
-                  <p className="text-sm text-slate-400 font-medium leading-relaxed">
-                    Just chat. Tell us what you want to build, and we'll handle the curriculum design.
+                  <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Instant Synthesis</h3>
+                  <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                    Zero-latency curriculum design. Describe your intent, and LinkMe builds your path in seconds.
                   </p>
                 </div>
             </div>
 
-            {/* Bento 3: Timeline */}
-            <div className="md:col-span-4 glass-card rounded-[2.5rem] p-10 flex flex-col justify-between border-cyan-500/20">
-               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6">
-                   <span className="text-2xl">📊</span>
+            {/* Feature 3: Progress */}
+            <div className="md:col-span-4 rounded-3xl bg-[#1a1a23] p-10 border border-white/5 flex flex-col justify-between group transition-all duration-150 hover:border-cyan-500/20">
+               <div className="w-10 h-10 rounded-xl bg-cyan-600/10 border border-cyan-500/20 flex items-center justify-center transition-transform duration-150 group-hover:scale-110">
+                   <span className="text-lg">📊</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">Mastery Timelines</h3>
-                  <p className="text-sm text-slate-400 font-medium leading-relaxed">
-                    Visualize your progress with our vertical milestone architecture. Every video brings you closer to 100%.
+                  <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Quantified Mastery</h3>
+                  <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                    Track every node, every stage, and every achievement with our vertical performance timeline.
                   </p>
                 </div>
             </div>
 
-            {/* Bento 4: YouTube Sync */}
-            <div className="md:col-span-8 glass-card rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-10 border-red-500/10 group">
+            {/* Feature 4: Integration */}
+            <div className="md:col-span-8 rounded-3xl bg-[#1a1a23] p-10 border border-white/5 flex flex-col md:flex-row items-center gap-10 group transition-all duration-150 hover:border-red-500/20">
               <div className="flex-1">
-                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6">
-                   <span className="text-2xl">🎬</span>
+                 <div className="w-10 h-10 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center mb-6 transition-transform duration-150 group-hover:scale-110">
+                   <span className="text-lg">🎬</span>
                 </div>
-                <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight">One-Click YouTube Sync</h3>
-                <p className="text-slate-400 font-medium leading-relaxed">
-                  Sync your entire curated path directly to your YouTube account with a single click. 
-                  Learn where you're already comfortable.
+                <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">Native YouTube Protocols</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">
+                  Export entire paths directly to your YouTube profile. Access world-class learning within your existing native ecosystem.
                 </p>
               </div>
-              <div className="w-full md:w-1/3 aspect-video rounded-3xl bg-black/40 border border-white/5 flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
-                 <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-2xl shadow-red-600/50">
-                    <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-white border-b-[10px] border-b-transparent ml-1" />
-                 </div>
+              <div className="w-32 h-32 rounded-3xl bg-black/40 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-150">
+                  <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shadow-red-600/40 shadow-xl">
+                      <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1" />
+                  </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- Pricing Section --- */}
-      <section id="pricing" className="relative z-10 px-6 py-32 md:px-12 lg:px-24">
-        <div className="max-w-5xl mx-auto">
+      {/* --- Global Pricing Node --- */}
+      <section id="pricing" className="relative z-10 px-6 py-32 md:px-12 lg:px-24 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-20">
-             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 uppercase">
-              The <span className="gradient-text">Pricing</span>
+             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4 uppercase">
+              The <span className="text-violet-500">Node Pricing</span>
             </h2>
-            <p className="text-slate-500 text-xs font-black uppercase tracking-[0.4em]">Simple. Direct. Powerful.</p>
+            <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.5em]">Scalable Mastery Frameworks</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <div className="glass-panel rounded-[2.5rem] p-10 border-white/5 relative group">
-              <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2">Essential</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Tier 1 */}
+            <div className="rounded-[2.5rem] bg-[#1a1a23] p-10 border border-white/5 transition-all duration-150 hover:border-white/10 group">
+              <h3 className="text-sm font-black text-white uppercase tracking-widest mb-2">Essential Node</h3>
               <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-5xl font-black text-white">$0</span>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Path</span>
+                <span className="text-4xl font-black text-white">$0</span>
+                <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">/ Per Architect</span>
               </div>
-              <ul className="space-y-5 mb-12">
-                {['Unlimited AI Discovery', 'Vertical Learning Paths', 'Progress Tracking', 'Community Access'].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-400">
-                    <span className="text-violet-500">✦</span> {feat}
+              <ul className="space-y-4 mb-10">
+                {['Unlimited Path Synthesis', 'Vertical Objective Tracker', 'Community Registry Access'].map((f, i) => (
+                  <li key={i} className="flex items-center gap-3 text-[11px] font-bold text-slate-500">
+                    <span className="text-emerald-500">✦</span> {f}
                   </li>
                 ))}
               </ul>
-              <Button variant="outline" className="w-full py-6" onClick={() => window.location.href = '/signup'}>
-                Access Framework
+              <Button variant="outline" className="w-full py-5 text-[10px] uppercase font-black tracking-widest transition-all group-hover:bg-white group-hover:text-black hover:scale-100" onClick={() => window.location.href = '/signup'}>
+                Access Platform
               </Button>
             </div>
 
-            {/* Pro Plan */}
-            <div className="glass-panel rounded-[2.5rem] p-10 border-violet-500/40 bg-violet-600/[0.03] relative overflow-hidden premium-glow-violet group">
-              <div className="absolute top-6 right-6 px-3 py-1 bg-violet-600 rounded-full text-[8px] font-black tracking-[0.2em] text-white uppercase">Featured</div>
-              <h3 className="text-xl font-black text-white uppercase tracking-widest mb-2">Professional</h3>
+            {/* Tier 2 */}
+            <div className="rounded-[2.5rem] bg-[#1a1a23] p-10 border border-violet-500/20 relative group transition-all duration-150 hover:border-violet-500/50">
+              <div className="absolute top-8 right-8 px-2 py-1 border border-violet-500/20 rounded-md text-[8px] font-black tracking-widest text-violet-400 uppercase">Pro Alpha</div>
+              <h3 className="text-sm font-black text-white uppercase tracking-widest mb-2">Professional Mode</h3>
               <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-5xl font-black text-white">$9</span>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Monthly</span>
+                <span className="text-4xl font-black text-white">$9</span>
+                <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">/ Per Session</span>
               </div>
-              <ul className="space-y-5 mb-12">
-                {['YouTube Playlist Integration', 'Advanced AI Architecting', 'Priority API Requests', 'Neural Note-Taking'].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-200">
-                    <span className="text-violet-400">✦</span> {feat}
+              <ul className="space-y-4 mb-10">
+                {['Native YouTube Syncing', 'Priority Neural Discovery', 'Advanced Export Protocols'].map((f, i) => (
+                  <li key={i} className="flex items-center gap-3 text-[11px] font-bold text-slate-300">
+                    <span className="text-violet-500">✦</span> {f}
                   </li>
                 ))}
               </ul>
-              <Button variant="primary" className="w-full py-6 grayscale opacity-50 cursor-not-allowed">
-                Waitlist Only
+              <Button variant="primary" className="w-full py-5 text-[10px] uppercase font-black tracking-widest grayscale opacity-50 cursor-not-allowed">
+                Waitlist Locked
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- Footer --- */}
-      <footer className="relative z-10 px-6 py-20 border-t border-white/5 bg-[#050508]">
+      {/* --- Footer Protocols --- */}
+      <footer className="relative z-10 px-6 py-20 border-t border-white/5 bg-[#0c0c12]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-16">
           <div className="max-w-xs space-y-6">
-             <div className="flex items-center gap-3">
+             <div className="flex items-center gap-3 transition-transform duration-150 hover:scale-[1.02]">
               <span className="text-2xl">🔗</span>
               <span className="text-xl font-black tracking-tighter text-white uppercase">LinkMe</span>
             </div>
-            <p className="text-sm font-medium text-slate-500 leading-relaxed italic border-l-2 border-slate-800 pl-4">
-              Designing the future of self-directed mastery through AI-curated neural roadmaps.
+            <p className="text-[11px] font-bold text-slate-600 leading-relaxed italic border-l-2 border-white/5 pl-4">
+              Architecting the future of human mastery through sequential AI curriculum design. High-performance learning for high-impact minds.
             </p>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-12">
-             <div className="space-y-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Platform</span>
-                <ul className="space-y-2">
-                   <li><Link href="/signup" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Start Learning</Link></li>
-                   <li><Link href="/chat" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">AI Architect</Link></li>
+             <div className="space-y-6">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-800">Node Map</span>
+                <ul className="space-y-3">
+                   <li><Link href="/signup" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Initialization</Link></li>
+                   <li><Link href="/chat" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Neural Architect</Link></li>
                 </ul>
              </div>
-             <div className="space-y-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Corporate</span>
-                <ul className="space-y-2">
-                   <li><Link href="/privacy" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Privacy Codex</Link></li>
-                   <li><Link href="/terms" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Terms of Use</Link></li>
-                </ul>
-             </div>
-             <div className="space-y-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Support</span>
-                <ul className="space-y-2">
-                   <li><a href="mailto:hello@linkme-ai.com" className="text-xs font-bold text-slate-400 hover:text-violet-400 transition-colors">Neural Email</a></li>
+             <div className="space-y-6">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-800">Governance</span>
+                <ul className="space-y-3">
+                   <li><Link href="/privacy" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Privacy Codex</Link></li>
+                   <li><Link href="/terms" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Use Protocol</Link></li>
                 </ul>
              </div>
           </div>
         </div>
         
         <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">
-            © 2024 LinkMe Technologies. Standardized Mastery Platforms.
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-800">
+            © 2024 LinkMe Technologies. Registered Mastery Framework.
           </p>
           <div className="flex items-center gap-6">
-             <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">Built in the Shadows</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-900">Alpha Branch: Stable</span>
           </div>
         </div>
       </footer>

@@ -69,36 +69,6 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
         checkStatus();
     }, []);
 
-    const exportToYouTube = async () => {
-        if (!savedPathId) {
-            setExportMessage('Please save the learning path first');
-            setTimeout(() => setExportMessage(null), 3000);
-            return;
-        }
-        setIsExporting(true);
-        try {
-            const res = await fetch('/api/youtube/playlist', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
-                    learningPathId: savedPathId,
-                    title: `LinkMe: ${learningPath.topic}`,
-                }),
-            });
-            const data = await res.json();
-            if (data.success) {
-                setExportMessage(`✅ Playlist created!`);
-                if (data.playlistUrl) window.open(data.playlistUrl, '_blank');
-            }
-        } catch {
-            setExportMessage('Failed to export');
-        } finally {
-            setIsExporting(false);
-            setTimeout(() => setExportMessage(null), 5000);
-        }
-    };
-
     const toggleVideoExpand = (videoId: string) => {
         setExpandedVideos(prev => {
             const next = new Set(prev);
@@ -162,100 +132,89 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
         : 0;
 
     return (
-        <div className="w-full space-y-12 animate-in fade-in zoom-in-95 duration-700">
-            {/* --- Premium Stats Banner --- */}
-            <div className="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 blur-[60px] rounded-full" />
-                
+        <div className="w-full space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Header / Stats Panel */}
+            <div className="p-6 md:p-8 rounded-3xl bg-[#1a1a23] border border-white/5 relative overflow-hidden group">
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="max-w-xl">
                         <div className="flex items-center gap-2 mb-3">
-                            <span className="flex h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400">Mastery Framework Active</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-violet-400">Mastery Architecture Synthesized</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-3">
+                        <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight mb-3 uppercase tracking-tighter">
                             {learningPath.topic}
                         </h2>
-                        <p className="text-slate-400 text-sm sm:text-base leading-relaxed line-clamp-2 md:line-clamp-none italic border-l-2 border-violet-500/30 pl-4">
+                        <p className="text-slate-400 text-sm leading-relaxed line-clamp-2 md:line-clamp-none italic font-medium">
                             "{learningPath.summary}"
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-3 min-w-[200px]">
                         <Button 
-                            variant={savedPathId ? 'outline' : 'glow'} 
+                            variant={savedPathId ? 'secondary' : 'glow'} 
                             onClick={saveLearningPath}
                             disabled={isSaving || savedPathId !== undefined}
-                            className="w-full"
+                            className="w-full font-black uppercase tracking-widest text-[10px]"
                         >
-                            {savedPathId ? '✓ Path Archived' : 'Archive Path'}
+                            {savedPathId ? '✓ Architecture Stored' : 'Store Architecture'}
                         </Button>
                         
                         {savedPathId && !isGuest && (
                             <Button 
                                 variant="primary" 
-                                className="w-full bg-red-600 hover:bg-red-700 shadow-red-500/20"
-                                onClick={youtubeConnected ? exportToYouTube : () => window.location.href = '/settings'}
+                                className="w-full bg-[#ff0000]/10 border border-[#ff0000]/20 text-[#ff0000] hover:bg-[#ff0000] hover:text-white font-black uppercase tracking-widest text-[10px]"
+                                onClick={youtubeConnected ? () => {} : () => window.location.href = '/settings'}
                                 loading={isExporting}
                             >
-                                {youtubeConnected ? 'Sync to YouTube' : 'Connect YouTube'}
+                                {youtubeConnected ? 'Sync to YouTube' : 'Sync YouTube Node'}
                             </Button>
                         )}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-white/5">
+                <div className="grid grid-cols-3 gap-8 mt-10 p-6 rounded-2xl bg-black/40 border border-white/5">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Efficiency</span>
-                        <span className="text-lg font-black text-white">{learningPath.estimatedTotalTime}</span>
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Duration</span>
+                        <span className="text-base font-black text-white">{learningPath.estimatedTotalTime}</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Resources</span>
-                        <span className="text-lg font-black text-white">{learningPath.totalVideos} Videos</span>
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Resources</span>
+                        <span className="text-base font-black text-white">{learningPath.totalVideos} Nodes</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Completion</span>
-                        <span className="text-lg font-black text-violet-400">{progressPercent}%</span>
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Efficiency</span>
+                        <span className="text-base font-black text-violet-400">{progressPercent}%</span>
                     </div>
-                </div>
-
-                <div className="mt-6 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div 
-                        className="h-full bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-400 transition-all duration-1000 shadow-[0_0_15px_rgba(139,92,246,0.5)]"
-                        style={{ width: `${progressPercent}%` }}
-                    />
                 </div>
             </div>
 
-            {/* --- Neural Timeline Architecture --- */}
-            <div className="relative pl-4 sm:pl-8 space-y-16">
-                {/* Vertical Timeline Line */}
-                <div className="absolute left-[23px] sm:left-[39px] top-4 bottom-4 w-px bg-gradient-to-b from-violet-500/50 via-indigo-500/20 to-transparent" />
+            {/* Performance Timeline */}
+            <div className="relative pl-4 sm:pl-8 space-y-12">
+                {/* Clean Timeline Line */}
+                <div className="absolute left-[20px] sm:left-[36px] top-4 bottom-4 w-px bg-white/5" />
 
                 {learningPath.stages.map((stage, sIdx) => (
-                    <div key={stage.stageNumber} className="relative animate-in fade-in slide-in-from-left-4 duration-700" style={{ animationDelay: `${sIdx * 150}ms` }}>
+                    <div key={stage.stageNumber} className="relative">
                         
-                        {/* Milestone Orb */}
+                        {/* Milestone Marker */}
                         <div className="absolute -left-[14px] sm:-left-[14px] top-0 flex items-center justify-center">
-                            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#050508] border-2 border-violet-500/40 flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.2)] z-10 group-hover:border-violet-400 transition-colors">
-                                <span className="text-xs sm:text-sm font-black text-violet-400">{stage.stageNumber}</span>
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#0c0c12] border border-white/10 flex items-center justify-center z-10 transition-colors group-hover:border-violet-500/50">
+                                <span className="text-[10px] font-black text-violet-400">{stage.stageNumber}</span>
                             </div>
-                            <div className="absolute inset-0 w-9 h-9 sm:w-11 sm:h-11 bg-violet-600/20 blur-lg rounded-full" />
                         </div>
 
-                        {/* Stage Content */}
+                        {/* Stage Details */}
                         <div className="pl-12 sm:pl-16">
-                            <div className="mb-8">
-                                <h3 className="text-lg sm:text-xl font-black text-white tracking-tight mb-2 uppercase">
+                            <div className="mb-6">
+                                <h3 className="text-base sm:text-lg font-black text-white tracking-widest uppercase mb-1">
                                     {stage.stageName}
                                 </h3>
-                                <p className="text-sm text-slate-500 max-w-2xl leading-relaxed">
+                                <p className="text-xs text-slate-500 max-w-2xl font-medium">
                                     {stage.description}
                                 </p>
                             </div>
 
-                            <div className="grid gap-4 sm:gap-6">
-                                {stage.videos.map((video, vIdx) => {
+                            <div className="grid gap-3 sm:gap-4">
+                                {stage.videos.map((video) => {
                                     const isExpanded = expandedVideos.has(video.videoId);
                                     const isWatched = watchedVideos.has(video.videoId);
                                     
@@ -263,84 +222,75 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                                         <div 
                                             key={video.videoId}
                                             className={`
-                                                glass-card rounded-2xl overflow-hidden group/v transition-all duration-500
-                                                ${isWatched ? 'border-emerald-500/30' : 'hover:border-white/20'}
+                                                rounded-2xl border transition-all duration-150 overflow-hidden
+                                                ${isWatched ? 'bg-black/40 border-emerald-500/30' : 'bg-[#1a1a23] border-white/5 hover:border-white/10'}
                                             `}
                                         >
                                             <div 
-                                                className="p-4 sm:p-5 flex items-start gap-4 cursor-pointer"
+                                                className="p-4 flex items-start gap-4 cursor-pointer"
                                                 onClick={() => toggleVideoExpand(video.videoId)}
                                             >
-                                                {/* Specialized Checkbox */}
+                                                {/* Specialized Status Check */}
                                                 <button 
                                                     onClick={(e) => toggleWatched(video.videoId, e)}
                                                     className={`
-                                                        w-6 h-6 rounded-lg flex-shrink-0 flex items-center justify-center border-2 transition-all mt-1
+                                                        w-5 h-5 rounded-md flex-shrink-0 flex items-center justify-center border-2 transition-all mt-0.5
                                                         ${isWatched 
-                                                            ? 'bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-500/40' 
-                                                            : 'border-white/10 group-hover/v:border-violet-500/50'
+                                                            ? 'bg-emerald-500 border-emerald-500' 
+                                                            : 'border-white/10 hover:border-violet-500/50'
                                                         }
                                                     `}
                                                 >
-                                                    {isWatched && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}><path d="M5 13l4 4L19 7" /></svg>}
+                                                    {isWatched && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={5}><path d="M5 13l4 4L19 7" /></svg>}
                                                 </button>
 
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-start justify-between gap-4">
-                                                        <h4 className={`text-sm sm:text-base font-bold transition-all ${isWatched ? 'text-slate-600' : 'text-slate-200'}`}>
+                                                        <h4 className={`text-sm font-bold transition-all ${isWatched ? 'text-slate-600' : 'text-slate-200'}`}>
                                                             {video.title}
                                                         </h4>
-                                                        <div className={`w-2 h-2 rounded-full mt-2 transition-colors ${isWatched ? 'bg-emerald-500' : 'bg-slate-800'}`} />
                                                     </div>
 
-                                                    <div className="flex flex-wrap items-center gap-4 mt-3">
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[10px] font-bold text-slate-400">
-                                                            <span>⏳ {video.estimatedTime}</span>
-                                                        </div>
-                                                        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-wider
-                                                            ${video.difficulty === 'beginner' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 
-                                                              video.difficulty === 'advanced' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 
-                                                              'bg-amber-500/10 border-amber-500/20 text-amber-400'}
+                                                    <div className="flex flex-wrap items-center gap-3 mt-3">
+                                                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest px-2 py-0.5 rounded-md bg-black/40 border border-white/5">⏳ {video.estimatedTime}</span>
+                                                        <span className={`text-[10px] font-black uppercase tracking-widest
+                                                            ${video.difficulty === 'beginner' ? 'text-emerald-500' : 
+                                                              video.difficulty === 'advanced' ? 'text-rose-500' : 
+                                                              'text-amber-500'}
                                                         `}>
                                                             {video.difficulty}
-                                                        </div>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Advanced Video Intel - Expanded Area */}
+                                            {/* Resource Details Expansion */}
                                             {isExpanded && (
-                                                <div className="px-5 pb-6 space-y-6 border-t border-white/5 pt-6 animate-in slide-in-from-top-4 duration-300">
-                                                    <div className="grid md:grid-cols-2 gap-6">
+                                                <div className="px-4 pb-5 space-y-5 border-t border-white/5 pt-5 animate-in slide-in-from-top-2 duration-200">
+                                                    <div className="grid md:grid-cols-2 gap-5">
                                                         <div className="space-y-4">
                                                             <div className="space-y-2">
-                                                                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-400">Core Concepts</h5>
+                                                                <h5 className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-400">Knowledge Tags</h5>
                                                                 <div className="flex flex-wrap gap-2">
                                                                     {video.conceptsCovered.map((c, i) => (
-                                                                        <span key={i} className="text-[10px] font-bold px-2 py-1 bg-violet-500/10 rounded-md text-violet-300 border border-violet-500/10">{c}</span>
+                                                                        <span key={i} className="text-[9px] font-bold px-2 py-1 bg-white/5 rounded-md text-slate-400">{c}</span>
                                                                     ))}
                                                                 </div>
                                                             </div>
-                                                            <div className="space-y-2">
-                                                                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Learning Outcome</h5>
-                                                                <p className="text-xs text-slate-400 leading-relaxed font-medium italic">"{video.learningOutcomes[0] || 'Mastery of specialized concepts.'}"</p>
-                                                            </div>
                                                         </div>
-                                                        <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                                                            <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500 mb-3">Architect's Note</h5>
-                                                            <p className="text-xs text-slate-400 leading-relaxed">{video.whyRecommended}</p>
+                                                        <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+                                                            <h5 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Internal Note</h5>
+                                                            <p className="text-[11px] text-slate-400 font-medium leading-relaxed italic">"{video.whyRecommended}"</p>
                                                         </div>
                                                     </div>
                                                     
-                                                    <a 
-                                                        href={`https://www.youtube.com/watch?v=${video.videoId}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center justify-center gap-3 w-full py-4 bg-white text-black font-black uppercase tracking-[0.2em] text-xs rounded-xl hover:bg-violet-500 hover:text-white transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-violet-500/30"
+                                                    <Button 
+                                                        variant="primary" 
+                                                        className="w-full py-4 tracking-[0.2em] text-[10px] uppercase font-black"
+                                                        onClick={() => window.open(`https://www.youtube.com/watch?v=${video.videoId}`, '_blank')}
                                                     >
-                                                        Launch Resource on YouTube
-                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                                    </a>
+                                                        Initialize Node Access ↗
+                                                    </Button>
                                                 </div>
                                             )}
                                         </div>
@@ -352,23 +302,20 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                 ))}
             </div>
 
-            {/* --- Completion Goals (Final Boss) --- */}
-            {learningPath.completionGoals.length > 0 && (
-                <div className="glass-panel rounded-3xl p-8 border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/10 blur-[60px] rounded-full" />
-                    <h4 className="text-lg font-black text-white uppercase tracking-widest mb-6 flex items-center gap-3">
-                        <span className="text-emerald-500 text-2xl">🏆</span> Mastery Roadmap Completed
-                    </h4>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                        {learningPath.completionGoals.map((goal, i) => (
-                            <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-black/40 border border-white/5 transition-hover hover:border-emerald-500/30">
-                                <span className="text-emerald-500 flex-shrink-0">✦</span>
-                                <span className="text-sm font-medium text-slate-300">{goal}</span>
-                            </div>
-                        ))}
-                    </div>
+            {/* Achievement / Objectives Panel */}
+            <div className="p-8 rounded-3xl bg-[#1a1a23] border border-white/5 relative overflow-hidden">
+                <h4 className="text-sm font-black text-white uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+                    <span className="text-emerald-500 text-lg">🏁</span> Objectives Unlocked
+                </h4>
+                <div className="grid sm:grid-cols-2 gap-3">
+                    {learningPath.completionGoals.map((goal, i) => (
+                        <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-black/40 border border-white/5">
+                            <span className="text-emerald-500 font-black text-sm">✦</span>
+                            <span className="text-[11px] font-bold text-slate-400 leading-relaxed">{goal}</span>
+                        </div>
+                    ))}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
