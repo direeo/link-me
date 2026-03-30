@@ -3,8 +3,8 @@
 import React from 'react';
 
 /**
- * Minimal Input Component: Clean Modern Dark Edition
- * Focus: 150ms transitions and sharp white/violet borders.
+ * Minimal Input Component: True Professional Minimalism
+ * No gradients, no blurs, just clean whitespace and sharp 1px borders.
  */
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
@@ -18,20 +18,20 @@ export function Input({
     ...props
 }: InputProps) {
     return (
-        <div className="w-full space-y-2 group">
+        <div className="w-full space-y-1.5 font-sans">
             {label && (
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-violet-400 transition-colors">
+                <label className="block text-[11px] font-semibold text-slate-500 transition-colors group-focus-within:text-slate-300">
                     {label}
                 </label>
             )}
             <div className="relative">
                 <input
                     className={`
-                        w-full px-4 py-3.5 bg-[#1a1a23] border border-white/5 rounded-xl
-                        text-slate-200 placeholder-slate-600 font-medium
+                        w-full px-4 py-2.5 bg-[#111111] border border-[#262626] rounded-lg
+                        text-slate-200 placeholder-slate-600 text-sm
                         transition-all duration-150 ease-out
-                        hover:border-white/10
-                        focus:outline-none focus:border-violet-500/50 focus:bg-[#20202a]
+                        hover:border-[#333333]
+                        focus:outline-none focus:border-white/20 focus:bg-[#161616]
                         ${error ? 'border-red-500/50 text-red-200' : ''}
                         ${className}
                     `}
@@ -39,8 +39,8 @@ export function Input({
                 />
             </div>
             {error && (
-                <p className="text-[10px] font-black uppercase tracking-widest text-red-500/80 mt-1">
-                    ⚠️ {error}
+                <p className="text-[10px] font-semibold text-red-500/80 mt-1">
+                    {error}
                 </p>
             )}
         </div>

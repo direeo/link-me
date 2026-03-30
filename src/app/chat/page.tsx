@@ -12,7 +12,7 @@ import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
 import { Button } from '@/components/ui/Button';
 
 /**
- * Premium Chat Workspace: Clean Modern Dark Edition
+ * Professional Chat Workspace: Professional Minimalism Edition
  * Focus: High-performance scrolling, distraction-free architecture, and instant response.
  */
 export default function ChatPage() {
@@ -42,16 +42,16 @@ export default function ChatPage() {
                 {
                     id: '1',
                     role: 'assistant',
-                    content: `Node Session Initialized${user?.name ? `, ${user.name}` : ''}. 🔗🎓
+                    content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}. 🔗
                     
-I am your AI learning architect. Define your objective, and I will synthesize a high-performance learning path from the world's most elite tutorial data.
+I'm here to help you build structured learning paths from the best tutorial data available. Simply describe what you want to learn, and I'll architect a clean curriculum for you.
 
-**Framework Parameters:**
-✅ **Sequential Stages**: Structured for logical mastery.
-✅ **Neural Discovery**: Resources analyzed for impact score.
-✅ **Native Integration**: Sync your path to your YouTube nodes.
+**Key Features:**
+- **Automated Curriculum**: Sequential stages for mastery.
+- **Expert Curation**: High-impact tutorial selection.
+- **Direct Export**: Sync paths to your YouTube workspace.
 
-What shall we architect today?`,
+What are you looking to master today?`,
                     timestamp: new Date(),
                 },
             ]);
@@ -110,7 +110,7 @@ What shall we architect today?`,
                 {
                     id: `err-${Date.now()}`,
                     role: 'assistant',
-                    content: `⚠️ System Halt: Transmission Failure. Re-initialize requested.`,
+                    content: `⚠️ Transmission Failure. Please try again.`,
                     timestamp: new Date(),
                 }
             ]);
@@ -129,64 +129,60 @@ What shall we architect today?`,
         setMessages([{
             id: '1',
             role: 'assistant',
-            content: `👋 Node Re-initialized. Awaiting new learning objective.`,
+            content: `👋 Ready for a new objective. What shall we learn?`,
             timestamp: new Date(),
         }]);
     };
 
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-[#0c0c12] flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+                <div className="w-6 h-6 border border-white/20 border-t-white rounded-full animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="h-screen bg-[#0c0c12] flex flex-col relative overflow-hidden font-body selection:bg-violet-500/20">
-            {/* Minimal Background Infrastructure */}
-            <div className="neural-bg" />
+        <div className="h-screen bg-[#0a0a0a] flex flex-col relative overflow-hidden font-sans selection:bg-white/10">
 
-            {/* --- Global Action Header --- */}
-            <header className="flex-shrink-0 z-40 bg-[#0c0c12]/80 border-b border-white/5 backdrop-blur-md">
+            {/* --- High-Speed Navigation --- */}
+            <header className="flex-shrink-0 z-40 bg-[#0a0a0a]/90 border-b border-[#262626] backdrop-blur-sm">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-6">
-                        <Link href="/" className="flex items-center gap-3 transition-transform duration-150 hover:scale-[1.02]">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-600/10">
-                                <span className="text-sm font-black">🔗</span>
+                        <Link href="/" className="flex items-center gap-3 transition-transform duration-150 hover:scale-[1.01]">
+                            <div className="w-7 h-7 rounded bg-white flex items-center justify-center shadow-lg">
+                                <span className="text-sm font-black text-black">🔗</span>
                             </div>
-                            <span className="text-lg font-black tracking-tighter text-white uppercase hidden sm:block">LinkMe</span>
+                            <span className="text-lg font-bold tracking-tight text-white uppercase hidden sm:block">LinkMe</span>
                         </Link>
                         
-                        <div className="h-4 w-px bg-white/5 hidden sm:block" />
+                        <div className="h-4 w-px bg-[#262626] hidden sm:block" />
 
                         <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={startNewChat} className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white">
-                                <svg className="w-3 h-3 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path d="M12 4v16m8-8H4" strokeWidth={3} /></svg>
-                                New Node
+                            <Button variant="ghost" size="sm" onClick={startNewChat} className="text-xs font-bold text-slate-500 hover:text-white">
+                                New Thread
                             </Button>
                             
                             {!isGuest && (
-                                <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hidden md:flex">
-                                    <svg className="w-3 h-3 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth={3} /></svg>
-                                    Archive
+                                <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} className="text-xs font-bold text-slate-500 hover:text-white hidden md:flex">
+                                    History
                                 </Button>
                             )}
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="px-3 py-1.5 bg-black/40 border border-white/5 rounded-xl flex items-center gap-3 transition-all hover:bg-black/60">
-                            <div className="w-5 h-5 rounded-lg bg-white/10 flex items-center justify-center text-[10px] font-black text-slate-400">
+                        <div className="px-3 py-1 bg-[#111111] border border-[#262626] rounded-lg flex items-center gap-3">
+                            <div className="w-5 h-5 rounded bg-white/5 flex items-center justify-center text-[10px] font-bold text-slate-400">
                                 {isGuest ? 'G' : user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hidden sm:block">
-                                {isGuest ? 'Sandbox Operator' : user?.name || user?.email}
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#ededed] hidden sm:block">
+                                {isGuest ? 'Guest Session' : user?.name || user?.email}
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-1 border-l border-white/5 pl-2">
-                             <button onClick={handleLogout} className="p-2 text-slate-700 hover:text-red-500 transition-all duration-150 hover:scale-110">
+                        <div className="flex items-center gap-1 border-l border-[#262626] pl-2">
+                             <button onClick={handleLogout} className="p-2 text-slate-700 hover:text-white transition-all duration-150">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" strokeWidth={2} /></svg>
                             </button>
                         </div>
@@ -196,12 +192,10 @@ What shall we architect today?`,
 
             {/* --- Operational Interface --- */}
             <main className="flex-1 overflow-hidden flex flex-col relative z-10">
-                {/* Scrolling Node Matrix */}
                 <div className="flex-1 overflow-y-auto px-4 py-10 md:px-12 no-scrollbar">
                     <div className="max-w-4xl mx-auto">
                         {isGuest && <GuestBanner />}
                         
-                        {/* Recursive Message Array */}
                         <div className="space-y-4">
                             {messages.map((message) => (
                                 <MessageBubble key={message.id} message={message} />
@@ -212,11 +206,11 @@ What shall we architect today?`,
                 </div>
 
                 {/* --- Input Command Node --- */}
-                <div className="flex-shrink-0 p-6 md:p-10 border-t border-white/5 bg-[#0c0c12]">
+                <div className="flex-shrink-0 p-6 md:p-10 border-t border-[#262626] bg-[#0a0a0a]">
                     <div className="max-w-3xl mx-auto">
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
                         <div className="text-center mt-4">
-                             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-800">Verified AI Synthesis Protocol • v2.1 Alpha</span>
+                             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-800">Professional Learning Protocols Active</span>
                         </div>
                     </div>
                 </div>
@@ -231,7 +225,7 @@ What shall we architect today?`,
                     setMessages(prev => [...prev, {
                         id: `arch-${Date.now()}`,
                         role: 'assistant',
-                        content: `📚 Archival Recall: Re-synthesizing specifications for "${item.topic}".`,
+                        content: `📚 Recalling archived path for "${item.topic}".`,
                         timestamp: new Date(),
                     }]);
                 }}

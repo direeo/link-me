@@ -4,8 +4,8 @@ import React from 'react';
 import { YouTubeResult } from '@/types';
 
 /**
- * High-Performance Tutorial Card: Clean Modern Dark Edition
- * Focus: Snappy 150ms transitions and lightweight thumbnail overlays.
+ * High-Performance Tutorial Card: Professional Minimalism Edition
+ * Focus: No gradients, no blurs, just clean whitespace and sharp 1px borders.
  */
 interface TutorialCardProps {
     tutorial: YouTubeResult;
@@ -31,57 +31,56 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
             rel="noopener noreferrer"
             className="block group/card relative"
         >
-            <div className="rounded-2xl border border-white/5 bg-[#1a1a23] overflow-hidden transition-all duration-150 hover:bg-[#20202a] hover:border-white/10 shadow-sm">
+            <div className="rounded-xl border border-[#262626] bg-[#111111] overflow-hidden transition-all duration-150 hover:bg-[#161616] hover:border-[#333333] shadow-sm">
                 <div className="flex flex-col sm:flex-row h-full">
-                    {/* Simplified Thumbnail */}
+                    {/* Minimal Thumbnail */}
                     <div className="relative w-full sm:w-48 lg:w-56 aspect-video sm:aspect-square flex-shrink-0">
                         <img
                             src={tutorial.thumbnail}
                             alt={tutorial.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                            className="w-full h-full object-cover grayscale opacity-80 group-hover/card:grayscale-0 group-hover/card:opacity-100 transition-all duration-300"
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
-                            <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
-                                <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-white border-b-[6px] border-b-transparent ml-1" />
+                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg">
+                                <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-black border-b-[6px] border-b-transparent ml-1" />
                             </div>
                         </div>
                     </div>
 
                     {/* Content Matrix */}
-                    <div className="p-4 flex flex-col justify-between flex-1 min-w-0">
+                    <div className="p-5 flex flex-col justify-between flex-1 min-w-0">
                         <div className="space-y-2">
                             <div className="flex items-center justify-between gap-4">
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-400 truncate">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 truncate">
                                     {tutorial.channelTitle}
                                 </span>
-                                <span className="text-[9px] font-bold text-slate-500 whitespace-nowrap">
+                                <span className="text-[10px] font-bold text-slate-600 whitespace-nowrap">
                                     {formatDate(tutorial.publishedAt)}
                                 </span>
                             </div>
                             
-                            <h3 className="font-bold text-white text-sm leading-snug line-clamp-2 group-hover/card:text-violet-300 transition-colors">
+                            <h3 className="font-bold text-white text-sm sm:text-base leading-tight line-clamp-2 group-hover/card:text-slate-300 transition-colors">
                                 {tutorial.title}
                             </h3>
                             
-                            <p className="text-[11px] text-slate-500 line-clamp-2 font-medium leading-relaxed italic">
+                            <p className="text-xs text-slate-500 line-clamp-2 font-medium leading-relaxed italic">
                                 {tutorial.description}
                             </p>
                         </div>
 
                         {/* Performance Intelligence */}
-                        <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                        <div className="mt-6 pt-4 border-t border-[#262626] flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 {tutorial.viewCount && (
-                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{tutorial.viewCount} Views</span>
+                                    <span className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">{tutorial.viewCount} Views</span>
                                 )}
-                                <div className="flex items-center gap-1.5 text-violet-500/80">
-                                    <div className="w-1 h-1 rounded-full bg-violet-500" />
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] group-hover/card:text-violet-400 transition-colors">Neural Resource</span>
+                                <div className="flex items-center gap-1.5 text-slate-500">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest group-hover/card:text-white transition-colors">Resource Node</span>
                                 </div>
                             </div>
                             
-                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-700 group-hover/card:text-slate-400 transition-colors">
-                                Auth Access ↗
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#8b5cf6] group-hover/card:text-white transition-colors">
+                                Access ↗
                             </span>
                         </div>
                     </div>

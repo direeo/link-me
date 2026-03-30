@@ -3,8 +3,8 @@
 import React from 'react';
 
 /**
- * High-Performance Button: Clean Modern Dark Edition
- * Focus: Snappy 150ms transitions and 1px sharp borders.
+ * High-Performance Button: Professional Minimalism Edition
+ * Focus: No gradients, no blurs, just clean whitespace and sharp borders.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'glow';
@@ -23,9 +23,9 @@ export function Button({
     ...props
 }: ButtonProps) {
     const baseStyles = `
-    inline-flex items-center justify-center font-semibold rounded-xl
-    transition-all duration-150 ease-out 
-    focus:outline-none focus:ring-2 focus:ring-violet-500/20
+    inline-flex items-center justify-center font-semibold rounded-lg
+    transition-all duration-150 cubic-bezier(0.4, 0, 0.2, 1)
+    focus:outline-none focus:ring-1 focus:ring-white/20
     disabled:opacity-50 disabled:cursor-not-allowed
     active:scale-[0.98] select-none
   `;
@@ -33,22 +33,21 @@ export function Button({
     const variants = {
         primary: `
       bg-white text-black 
-      hover:bg-slate-100 hover:shadow-[0_4px_12px_rgba(255,255,255,0.1)]
-      border border-white/10
+      hover:bg-slate-100 hover:shadow-sm
+      border border-transparent
     `,
         glow: `
-      bg-gradient-to-br from-violet-600 to-indigo-600
-      text-white shadow-lg shadow-violet-600/10
-      hover:brightness-110 hover:shadow-violet-600/20
+      bg-[#8b5cf6] text-white
+      hover:brightness-110
       border border-white/5
     `,
         secondary: `
-      bg-[#1a1a23] border border-white/5
-      hover:bg-[#23232f] hover:border-white/10
+      bg-[#141414] border border-[#262626]
+      hover:bg-[#1a1a1a] hover:border-[#333333]
       text-slate-200
     `,
         outline: `
-      bg-transparent border border-white/10
+      bg-transparent border border-[#262626]
       hover:border-white/20 hover:bg-white/5
       text-slate-400 hover:text-white
     `,
@@ -59,9 +58,9 @@ export function Button({
     };
 
     const sizes = {
-        sm: 'px-4 py-2 text-xs font-bold uppercase tracking-wider',
-        md: 'px-6 py-3 text-sm',
-        lg: 'px-8 py-4 text-base',
+        sm: 'px-4 py-2 text-xs',
+        md: 'px-5 py-2.5 text-sm',
+        lg: 'px-6 py-3 text-base font-bold',
     };
 
     return (
@@ -73,7 +72,6 @@ export function Button({
             {loading ? (
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    <span>Processing...</span>
                 </div>
             ) : (
                 children
