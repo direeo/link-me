@@ -100,7 +100,7 @@ export default function ChatHistorySidebar({ isOpen, onClose, onSelectHistory }:
                         <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Chat History
+                        History
                     </h2>
                     <button
                         onClick={onClose}
@@ -148,7 +148,7 @@ export default function ChatHistorySidebar({ isOpen, onClose, onSelectHistory }:
                                 >
                                     <div className="flex items-start justify-between gap-2">
                                         <h3 className="font-medium text-sm text-slate-200 group-hover:text-white line-clamp-1">
-                                            {item.topic || 'Untitled conversation'}
+                                            {item.topic || 'Untitled Path'}
                                         </h3>
                                         <span className="text-xs text-slate-500 whitespace-nowrap">
                                             {formatDate(item.timestamp)}

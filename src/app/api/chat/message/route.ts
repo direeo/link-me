@@ -300,21 +300,23 @@ export async function POST(request: NextRequest) {
                     if (isLoggedIn && (learningPath || tutorials.length > 0)) {
                         try {
                             const db = getDb();
+                            
+                            // Prepare the payload including the FULL learning path
+                            const historyPayload = {
+                                topic: parsed.topic,
+                                skillLevel: parsed.level,
+                                goal: parsed.goal,
+                                query,
+                                tutorials: learningPath ? undefined : (tutorials || []), 
+                                learningPath: learningPath || null, // Store EVERYTHING (stages, videos, summary)
+                                timestamp: new Date().toISOString(),
+                                tutorialCount: learningPath ? learningPath.totalVideos : (tutorials ? tutorials.length : 0),
+                            };
+
                             await db.chatHistory.create({
                                 data: {
                                     userId,
-                                    messages: JSON.stringify({
-                                        topic: parsed.topic,
-                                        skillLevel: parsed.level,
-                                        goal: parsed.goal,
-                                        query,
-                                        learningPath: learningPath ? {
-                                            totalVideos: learningPath.totalVideos,
-                                            stages: learningPath.stages.length,
-                                            summary: learningPath.summary,
-                                        } : null,
-                                        timestamp: new Date().toISOString(),
-                                    }),
+                                    messages: JSON.stringify(historyPayload),
                                 },
                             });
                         } catch (err) {

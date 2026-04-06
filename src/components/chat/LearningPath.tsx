@@ -55,17 +55,33 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                 const res = await fetch('/api/auth/me', { credentials: 'include' });
                 const data = await res.json();
                 setIsGuest(data.user?.isGuest === true || !data.success);
+                
                 if (data.success && !data.user?.isGuest) {
                     const ytRes = await fetch('/api/youtube/status', { credentials: 'include' });
                     const ytData = await ytRes.json();
                     setYoutubeConnected(ytData.connected || false);
+                    
+                    // --- AUTO-LOAD PROGRESS ---
+                    if (savedPathId) {
+                        try {
+                            const progressRes = await fetch(`/api/learning-path/progress?learningPathId=${savedPathId}`, { credentials: 'include' });
+                            const progressData = await progressRes.json();
+                            if (progressData.success) {
+                                const watchedSet = new Set<string>();
+                                Object.entries(progressData.progress).forEach(([vid, watched]) => {
+                                    if (watched) watchedSet.add(vid);
+                                });
+                                setWatchedVideos(watchedSet);
+                            }
+                        } catch (pErr) { console.error('Progress Load Error:', pErr); }
+                    }
                 }
             } catch {
                 setIsGuest(true);
             }
         };
         checkStatus();
-    }, []);
+    }, [savedPathId]);
 
     const toggleVideoExpand = (videoId: string) => {
         setExpandedVideos(prev => {
@@ -131,7 +147,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
 
     return (
         <div className="w-full space-y-12 animate-in fade-in duration-500">
-            {/* Professional Summary Header */}
+            {/* Mastery Node Summary Header */}
             <div className="p-8 rounded-2xl bg-[#111111] border border-[#262626] relative overflow-hidden">
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
                     <div className="flex-1 space-y-4">
@@ -148,9 +164,9 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                             variant={savedPathId ? 'secondary' : 'glow'} 
                             onClick={saveLearningPath}
                             disabled={isSaving || savedPathId !== undefined}
-                            className="w-full text-xs"
+                            className="w-full text-[10px] font-bold uppercase tracking-widest"
                         >
-                            {savedPathId ? 'Saved' : 'Save Path'}
+                            {savedPathId ? 'Registry Active' : 'Initialize Sync'}
                         </Button>
                         
                         {savedPathId && !isGuest && (
@@ -181,14 +197,14 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                 </div>
             </div>
 
-            {/* Content Curriculum */}
+            {/* Sequential Mastery Architecture */}
             <div className="relative pl-6 sm:pl-10 space-y-12">
                 <div className="absolute left-[30px] sm:left-[38px] top-6 bottom-6 w-px bg-[#262626]" />
 
                 {learningPath.stages.map((stage) => (
                     <div key={stage.stageNumber} className="relative">
                         
-                        {/* Status Checkpoint */}
+                        {/* Neural Segment Checkpoint */}
                         <div className="absolute -left-[14px] sm:-left-[14px] top-1">
                             <div className="w-8 h-8 rounded-lg bg-[#0a0a0a] border border-[#262626] flex items-center justify-center text-[11px] font-bold text-white">
                                 {stage.stageNumber}
@@ -269,7 +285,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                                                             </div>
                                                         </div>
                                                         <div className="p-4 rounded-lg bg-black/40 border border-[#262626]">
-                                                            <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2">Rationale</h5>
+                                                            <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2">Synthesis Rationale</h5>
                                                             <p className="text-[11px] text-slate-400 font-medium leading-relaxed italic">"{video.whyRecommended}"</p>
                                                         </div>
                                                     </div>
@@ -292,9 +308,9 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                 ))}
             </div>
 
-            {/* Achievement Matrix */}
+            {/* Mastery Outcome Protocol */}
             <div className="p-8 rounded-2xl bg-[#111111] border border-[#262626]">
-                <h4 className="text-sm font-bold text-white uppercase tracking-[0.2em] mb-8">Learning Outcomes</h4>
+                <h4 className="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-10">Mastery Outcome Protocol</h4>
                 <div className="grid sm:grid-cols-2 gap-4">
                     {learningPath.completionGoals.map((goal, i) => (
                         <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-black/40 border border-[#262626]">

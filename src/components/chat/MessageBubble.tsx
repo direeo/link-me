@@ -27,7 +27,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                 {/* Clean Role Label */}
                 <div className="flex items-center gap-2 mb-2 px-1">
                     <span className={`text-[10px] font-bold uppercase tracking-widest ${isAssistant ? 'text-white' : 'text-slate-500'}`}>
-                        {isAssistant ? 'AI' : 'You'}
+                        {isAssistant ? 'AI OPERATOR' : 'YOU'}
                     </span>
                     <div className={`h-1 w-1 rounded-full ${isAssistant ? 'bg-white' : 'bg-slate-700'}`} />
                 </div>
@@ -53,11 +53,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                 {/* Learning Path - Focus First */}
                 {message.learningPath && (
                     <div className="mt-10 w-full">
-                        <div className="flex items-center gap-4 mb-8">
-                            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">Curriculum Overview</h3>
-                            <div className="h-px flex-1 bg-[#262626]" />
+                        <div className="flex items-center gap-4 mb-10">
+                             <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white">Mastery Architecture</h3>
+                             <div className="h-px flex-1 bg-[#262626]" />
                         </div>
-                        <LearningPath learningPath={message.learningPath} />
+                        <LearningPath learningPath={message.learningPath} savedPathId={message.savedPathId} />
                     </div>
                 )}
 
@@ -79,13 +79,13 @@ function LoadingIndicator() {
         <div className="flex w-full mb-8 justify-start animate-in fade-in duration-300">
             <div className="flex flex-col items-start">
                 <div className="flex items-center gap-2 mb-2 px-1">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 animate-pulse">Thinking</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 animate-pulse">Synthesizing</span>
                     <div className="h-1 w-1 rounded-full bg-slate-700 animate-pulse" />
                 </div>
                 
                 <div className="bg-[#161616] border border-[#262626] p-4 rounded-xl flex items-center gap-3">
                     <div className="w-4 h-4 border-2 border-white/5 border-t-white rounded-full animate-spin" />
-                    <span className="text-xs font-bold text-slate-400">Building your learning path...</span>
+                    <span className="text-xs font-bold text-slate-400">Architecting Mastery Node...</span>
                 </div>
             </div>
         </div>

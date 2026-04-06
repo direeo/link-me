@@ -55,16 +55,16 @@ export default function HomePage() {
       <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-48 pb-32 md:pt-64 md:pb-48 text-center animate-in fade-in duration-700">
         <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-[#262626] bg-[#111111] mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Learning Simplified</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Professional Learning Framework v2.1</span>
         </div>
 
-        <h1 className="text-5xl md:text-[5.5rem] lg:text-[7rem] font-bold text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl">
-          Structured learning <br className="hidden md:block" />
-          built for clarity.
+        <h1 className="text-5xl md:text-[5.5rem] lg:text-[7rem] font-bold text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl uppercase">
+          Neural Mastery <br className="hidden md:block" />
+          Architecture.
         </h1>
 
         <p className="text-base md:text-lg text-slate-500 max-w-2xl leading-relaxed mb-12 font-medium">
-          Eliminate discovery fatigue. LinkMe organizes the best tutorials into simple, actionable paths for any technical skill.
+          Deploying Neural Mastery Architecture. LinkMe synthesizes 10,000+ data nodes into actionable learning protocols.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
@@ -103,9 +103,9 @@ export default function HomePage() {
             <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:border-[#444444]">
               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-lg">🎯</div>
               <div>
-                <h3 className="text-lg font-bold text-white uppercase mb-2">Automated Discovery</h3>
+                <h3 className="text-lg font-bold text-white uppercase mb-2">Neural Synthesis</h3>
                 <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                  Our system evaluates available data to identify the most effective and accurate resources for your goal.
+                  Advanced discovery engines evaluating 10,000+ data nodes to identify optimal mastery resources.
                 </p>
               </div>
             </div>
@@ -113,9 +113,9 @@ export default function HomePage() {
             <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:border-[#444444]">
               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-lg">🧱</div>
               <div>
-                <h3 className="text-lg font-bold text-white uppercase mb-2">Sequential Paths</h3>
+                <h3 className="text-lg font-bold text-white uppercase mb-2">Mastery Architecture</h3>
                 <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                  Learning is structured into logical stages, ensuring a foundations-to-mastery workflow for every topic.
+                  Structural curriculum design deploying sequential nodes for comprehensive technical skill acquisition.
                 </p>
               </div>
             </div>
@@ -123,9 +123,9 @@ export default function HomePage() {
             <div className="rounded-2xl bg-[#111111] p-10 border border-[#262626] flex flex-col justify-between h-[320px] transition-all hover:border-[#444444]">
               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-lg">🔗</div>
               <div>
-                <h3 className="text-lg font-bold text-white uppercase mb-2">Native Sync</h3>
+                <h3 className="text-lg font-bold text-white uppercase mb-2">Registry Synchronization</h3>
                 <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                  Export organized playlists directly to your YouTube profile and sync progress across devices.
+                  Seamlessly export synthesized playlists to your external YouTube registry and maintain mastery state.
                 </p>
               </div>
             </div>

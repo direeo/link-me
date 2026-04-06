@@ -44,14 +44,14 @@ export default function ChatPage() {
                     role: 'assistant',
                     content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}. 🔗
                     
-I'm here to help you build structured learning paths from the best tutorial data available. Simply describe what you want to learn, and I'll architect a clean curriculum for you.
+I am the LinkMe AI Operator. I've initialized your mastery environment. Describe your learning objective, and I will architect a high-density curriculum for you.
 
-**Key Features:**
-- **Automated Curriculum**: Sequential stages for mastery.
-- **Expert Curation**: High-impact tutorial selection.
-- **Direct Export**: Sync paths to your YouTube workspace.
+**Active Protocols:**
+- **Mastery Architecture**: Sequential stages for foundational to elite skill acquisition.
+- **Data Synthesis**: High-impact tutorial evaluation and curation.
+- **Registry Sync**: Direct export to your external YouTube node.
 
-What are you looking to master today?`,
+What shall we synthesize today?`,
                     timestamp: new Date(),
                 },
             ]);
@@ -129,7 +129,7 @@ What are you looking to master today?`,
         setMessages([{
             id: '1',
             role: 'assistant',
-            content: `👋 New chat started. What would you like to learn today?`,
+            content: `👋 New session initialized. What shall we master?`,
             timestamp: new Date(),
         }]);
     };
@@ -159,8 +159,8 @@ What are you looking to master today?`,
                         <div className="h-4 w-px bg-[#262626] hidden sm:block" />
 
                         <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={startNewChat} className="text-xs font-bold text-slate-500 hover:text-white">
-                                New Thread
+                            <Button variant="ghost" size="sm" onClick={startNewChat} className="text-xs font-bold text-slate-500 hover:text-white uppercase tracking-widest">
+                                New Session
                             </Button>
                             
                             {!isGuest && (
@@ -182,7 +182,10 @@ What are you looking to master today?`,
                         </div>
 
                         <div className="flex items-center gap-1 border-l border-[#262626] pl-2">
-                             <button onClick={handleLogout} className="p-2 text-slate-700 hover:text-white transition-all duration-150">
+                             <Link href="/settings" className="p-2 text-slate-700 hover:text-white transition-all duration-150" title="Settings">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                             </Link>
+                             <button onClick={handleLogout} className="p-2 text-slate-700 hover:text-white transition-all duration-150" title="Logout">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" strokeWidth={2} /></svg>
                             </button>
                         </div>
@@ -210,7 +213,7 @@ What are you looking to master today?`,
                     <div className="max-w-3xl mx-auto">
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
                         <div className="text-center mt-4">
-                             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-800">Learning path generator active</span>
+                             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-800 animate-pulse">Assistant Ready</span>
                         </div>
                     </div>
                 </div>
@@ -220,14 +223,40 @@ What are you looking to master today?`,
             <ChatHistorySidebar
                 isOpen={showHistory}
                 onClose={() => setShowHistory(false)}
-                onSelectHistory={(item) => {
+                onSelectHistory={async (item) => {
                     setShowHistory(false);
-                    setMessages(prev => [...prev, {
-                        id: `arch-${Date.now()}`,
-                        role: 'assistant',
-                        content: `📚 Recalling archived path for "${item.topic}".`,
-                        timestamp: new Date(),
-                    }]);
+                    setIsLoading(true);
+                    
+                    try {
+                        const response = await fetch(`/api/chat/history/${item.id}`, { credentials: 'include' });
+                        const result = await response.json();
+                        
+                        if (result.success && result.data) {
+                            const { topic, learningPath, tutorials, query } = result.data;
+                            setConversationId(item.id);
+                            setMessages([
+                                {
+                                    id: `arch-init-${Date.now()}`,
+                                    role: 'assistant',
+                                    content: `📚 Recalling archived mastery path for "${topic || item.topic}".`,
+                                    timestamp: new Date(),
+                                    learningPath,
+                                    tutorials
+                                }
+                            ]);
+                        } else {
+                            throw new Error(result.message || 'Failure to recall history node');
+                        }
+                    } catch (error) {
+                         setMessages(prev => [...prev, {
+                             id: `err-arch-${Date.now()}`,
+                             role: 'assistant',
+                             content: `⚠️ Failed to restore archived history node.`,
+                             timestamp: new Date(),
+                         }]);
+                    } finally {
+                        setIsLoading(false);
+                    }
                 }}
             />
         </div>

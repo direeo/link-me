@@ -26,15 +26,15 @@ export default function SignupPage() {
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
-        if (!formData.name.trim()) newErrors.name = 'Full identity required';
-        if (!formData.email.trim()) newErrors.email = 'Neural ID required';
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid transmission pattern';
+        if (!formData.name.trim()) newErrors.name = 'Full name required';
+        if (!formData.email.trim()) newErrors.email = 'Email required';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
         
-        if (!formData.password) newErrors.password = 'Access protocol required';
-        else if (formData.password.length < 8) newErrors.password = 'Complexity below threshold (8+ characters)';
-        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) newErrors.password = 'Protocol requires: Upper, Lower, Digital';
+        if (!formData.password) newErrors.password = 'Password required';
+        else if (formData.password.length < 8) newErrors.password = 'Password too short (8+ characters)';
+        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) newErrors.password = 'Requires: Upper, Lower, Digital';
 
-        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Sync frequency mismatch';
+        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -79,72 +79,79 @@ export default function SignupPage() {
     const strength = getPasswordStrength();
 
     return (
-        <div className="min-h-screen bg-[#050508] flex items-center justify-center px-4 py-20 relative overflow-hidden selection:bg-violet-500/30">
-            {/* Neural Background Orbs */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="orb orb-purple top-[5%] -left-[10%] opacity-20" />
-                <div className="orb orb-indigo bottom-[15%] -right-[10%] opacity-15" />
-            </div>
-
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 py-20 relative overflow-hidden font-sans selection:bg-white/10">
+            
             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-700">
                 {/* Branding */}
-                <Link href="/" className="flex items-center justify-center gap-3 mb-10 group">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/20 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-xl">🔗</span>
+                <Link href="/" className="flex flex-col items-center gap-6 mb-12 group">
+                    <div className="w-10 h-10 rounded bg-white flex items-center justify-center shadow-lg transition-transform duration-150 hover:scale-[1.02]">
+                        <span className="text-black font-black text-lg">🔗</span>
                     </div>
-                    <span className="text-2xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-2xl font-black tracking-tighter text-white uppercase sm:block italic">LinkMe AI</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-800 mt-2">Personalized Learning</span>
+                    </div>
                 </Link>
 
-                <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 border-white/5 premium-glow-violet">
+                <div className="bg-[#111111] rounded-2xl p-8 md:p-12 border border-[#262626]">
                     <div className="text-center mb-10">
-                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Initialize Profile</h1>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Creation of New Mastery Node</p>
+                        <h1 className="text-xl font-bold text-white uppercase tracking-widest">Create Account</h1>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Join the LinkMe Network</p>
                     </div>
 
                     {serverError && (
-                        <div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wide">
+                        <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest">
                             ⚠️ System Halt: {serverError}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <Input label="Full Identity" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="John Operator" />
-                        <Input label="Neural ID (Email)" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@linkme-ai.com" />
-                        
-                        <div>
-                            <Input label="Access Protocol" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
-                            {formData.password && (
-                                <div className="mt-3">
-                                    <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
-                                        <div className={`h-full ${strength.color} transition-all duration-500 shadow-[0_0_10px_rgba(255,255,255,0.2)]`} style={{ width: strength.width }} />
+                        <div className="space-y-4">
+                            <Input label="Full Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="John Doe" />
+                            <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
+                            
+                            <div>
+                                <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                                {formData.password && (
+                                    <div className="mt-3">
+                                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                            <div className={`h-full ${strength.color} transition-all duration-500`} style={{ width: strength.width }} />
+                                        </div>
+                                        <p className={`text-[10px] uppercase font-bold tracking-widest mt-1.5 ${strength.color.replace('bg-', 'text-')}`}>
+                                            Strength: {strength.text}
+                                        </p>
                                     </div>
-                                    <p className={`text-[10px] uppercase font-black tracking-widest mt-1.5 ${strength.color.replace('bg-', 'text-')}`}>
-                                        Protocol Security: {strength.text}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
 
-                        <Input label="Sync Confirmation" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />
+                            <Input label="Confirm Password" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />
+                        </div>
                         
-                        <Button type="submit" loading={isLoading} className="w-full py-4 tracking-widest mt-4" variant="glow">
-                            Commence Initialization
+                        <Button type="submit" loading={isLoading} className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em] mt-4" variant="primary">
+                            Create Account
                         </Button>
                     </form>
 
-                    <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
-                        <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest bg-transparent">
-                            <span className="px-4 text-slate-700">Sandbox Interaction</span>
+                    <div className="relative my-10">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#262626]" /></div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest bg-transparent">
+                            <span className="px-4 text-slate-800 bg-[#111111]">Guest Access</span>
                         </div>
                     </div>
 
-                    <Button onClick={handleGuestMode} variant="outline" className="w-full py-4 tracking-widest text-[10px] uppercase border-white/5 hover:bg-white/5">
-                        Initialize Guest Profile
+                    <Button onClick={handleGuestMode} variant="outline" className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em] border-[#262626] hover:bg-white/5">
+                        Continue as Guest
                     </Button>
 
-                    <p className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-slate-600">
-                        Existing Node? <Link href="/login" className="text-violet-400 hover:text-white transition-colors ml-1 underline decoration-violet-500/30">Authorize Registry Access</Link>
+                    <p className="mt-10 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+                        Existing user? <Link href="/login" className="text-white hover:underline transition-colors ml-1 italic">Sign In</Link>
+                    </p>
+                </div>
+                
+                <div className="text-center mt-12">
+                    <p className="text-[10px] font-bold text-slate-800 uppercase tracking-widest leading-relaxed">
+                        By initializing, you agree to our <br/> 
+                        <Link href="/terms" className="text-slate-600 hover:text-white underline">Terms of Service</Link> and <Link href="/privacy" className="text-slate-600 hover:text-white underline">Privacy Policy</Link>
                     </p>
                 </div>
             </div>

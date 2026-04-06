@@ -60,6 +60,7 @@ export interface ChatMessage {
     timestamp: Date;
     tutorials?: YouTubeResult[];
     learningPath?: LearningPath;
+    savedPathId?: string;
     isLoading?: boolean;
 }
 

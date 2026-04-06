@@ -94,37 +94,35 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#050508] flex items-center justify-center px-4 py-20 relative overflow-hidden selection:bg-violet-500/30">
-            {/* Neural Background Orbs */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="orb orb-purple top-[10%] -left-[10%] opacity-20" />
-                <div className="orb orb-indigo bottom-[10%] -right-[10%] opacity-15" />
-            </div>
-
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 py-20 relative overflow-hidden font-sans selection:bg-white/10">
+            
             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-700">
                 {/* Branding */}
-                <Link href="/" className="flex items-center justify-center gap-3 mb-10 group">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/20 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-xl">🔗</span>
+                <Link href="/" className="flex flex-col items-center gap-6 mb-12 group">
+                    <div className="w-10 h-10 rounded bg-white flex items-center justify-center shadow-lg transition-transform duration-150 hover:scale-[1.02]">
+                        <span className="text-black font-black text-lg">🔗</span>
                     </div>
-                    <span className="text-2xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
+                    <div className="flex flex-col items-center">
+                        <span className="text-2xl font-black tracking-tighter text-white uppercase sm:block italic">LinkMe AI</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-800 mt-2">Secure Access</span>
+                    </div>
                 </Link>
 
-                <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 border-white/5 premium-glow-violet">
+                <div className="bg-[#111111] rounded-2xl p-8 md:p-12 border border-[#262626]">
                     {requires2FA ? (
                         <>
                             <div className="text-center mb-10">
-                                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shadow-inner">
-                                    <span className="text-2xl">🔐</span>
+                                <div className="w-16 h-16 mx-auto mb-6 rounded bg-white flex items-center justify-center shadow-lg">
+                                    <span className="text-black font-black text-2xl">🔐</span>
                                 </div>
-                                <h1 className="text-2xl font-black text-white uppercase tracking-tight">Neural Unlock</h1>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2">
+                                <h1 className="text-xl font-bold text-white uppercase tracking-widest">2FA Verification</h1>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2">
                                     Identity Verification Required
                                 </p>
                             </div>
 
                             {serverError && (
-                                <div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wide">
+                                <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest">
                                     ⚠️ {serverError}
                                 </div>
                             )}
@@ -135,70 +133,72 @@ export default function LoginPage() {
                                     value={twoFactorCode}
                                     onChange={(e) => setTwoFactorCode(isBackupCode ? e.target.value.toUpperCase().slice(0, 8) : e.target.value.replace(/\D/g, '').slice(0, 6))}
                                     placeholder={isBackupCode ? 'BACKUP CODE' : '0 0 0 0 0 0'}
-                                    className="w-full px-4 py-5 bg-white/[0.03] border border-white/[0.08] rounded-2xl text-white text-center text-3xl tracking-[0.3em] focus:outline-none focus:border-violet-500/50 font-black backdrop-blur-xl"
+                                    className="w-full px-4 py-6 bg-white/[0.03] border border-[#262626] rounded-xl text-white text-center text-3xl tracking-[0.3em] focus:outline-none focus:border-white/20 font-black"
                                     maxLength={isBackupCode ? 8 : 6}
                                     autoFocus
                                 />
-                                <Button type="submit" loading={isLoading} className="w-full py-4" variant="glow">
+                                <Button type="submit" loading={isLoading} className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em]" variant="primary">
                                     Verify Identity
                                 </Button>
                             </form>
                             
                             <div className="mt-8 flex flex-col gap-4 text-center">
-                                <button onClick={() => { setIsBackupCode(!isBackupCode); setTwoFactorCode(''); }} className="text-[10px] font-black uppercase tracking-widest text-violet-400 hover:text-white transition-colors">
-                                    {isBackupCode ? 'Use App Code' : 'Lost Access? Use Backup'}
+                                <button onClick={() => { setIsBackupCode(!isBackupCode); setTwoFactorCode(''); }} className="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors underline decoration-[#262626]">
+                                    {isBackupCode ? 'Use App Registry Code' : 'Lost Access? Use Backup Recovery'}
                                 </button>
-                                <button onClick={() => setRequires2FA(false)} className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors">
-                                    Return to Registry
+                                <button onClick={() => setRequires2FA(false)} className="text-[10px] font-bold uppercase tracking-widest text-slate-800 hover:text-slate-500 transition-colors">
+                                    Return to Login
                                 </button>
                             </div>
                         </>
                     ) : (
                         <>
                             <div className="text-center mb-10">
-                                <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Welcome Back</h1>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Resuming Learning Session</p>
+                                <h1 className="text-xl font-bold text-white uppercase tracking-widest">Welcome Back</h1>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Resuming Learning Session</p>
                             </div>
 
                             {serverError && (
-                                <div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wide">
-                                    ⚠️ {serverError}
+                                <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest">
+                                    ⚠️ Access Denied: {serverError}
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <Input label="Neural ID (Email)" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="operator@linkme.com" />
-                                <Input label="Access Protocol (Password)" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                                <div className="space-y-4">
+                                    <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
+                                    <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                                </div>
                                 
                                 <div className="flex items-center justify-between">
                                     <label className="flex items-center gap-2 cursor-pointer group">
-                                        <div className="w-4 h-4 rounded border border-white/10 bg-white/5 flex items-center justify-center transition-all group-hover:border-violet-500/50">
+                                        <div className="w-4 h-4 rounded border border-[#262626] bg-white/5 flex items-center justify-center transition-all group-hover:border-white/20">
                                             <input type="checkbox" className="hidden" />
-                                            <div className="w-2 h-2 rounded-sm bg-violet-500 opacity-0 transition-opacity" />
+                                            <div className="w-2 h-2 rounded-sm bg-white opacity-0 transition-opacity" />
                                         </div>
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Maintain Session</span>
+                                        <span className="text-[10px] font-bold text-slate-800 uppercase tracking-widest group-hover:text-slate-500">Maintain Session</span>
                                     </label>
-                                    <a href="#" className="text-[10px] font-bold text-violet-400 hover:text-white uppercase tracking-widest">Forgot Protocol?</a>
+                                    <a href="#" className="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest italic">Forgot password?</a>
                                 </div>
 
-                                <Button type="submit" loading={isLoading} className="w-full py-4 tracking-widest" variant="glow">
-                                    Authorize Access
+                                <Button type="submit" loading={isLoading} className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em]" variant="primary">
+                                    Sign In
                                 </Button>
                             </form>
 
-                            <div className="relative my-8">
-                                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
-                                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest leading-none bg-transparent">
-                                    <span className="px-4 text-slate-700">External Node Bypass</span>
+                            <div className="relative my-10">
+                                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#262626]" /></div>
+                                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest bg-transparent">
+                                    <span className="px-4 text-slate-800 bg-[#111111]">Guest Access</span>
                                 </div>
                             </div>
 
-                            <Button onClick={handleGuestMode} variant="outline" className="w-full py-4 tracking-widest text-[10px] uppercase border-white/5 hover:bg-white/5">
-                                Initialize Guest Access
+                            <Button onClick={handleGuestMode} variant="outline" className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em] border-[#262626] hover:bg-white/5">
+                                Continue as Guest
                             </Button>
 
-                            <p className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-slate-600">
-                                New Operator? <Link href="/signup" className="text-violet-400 hover:text-white transition-colors ml-1 underline decoration-violet-500/30">Create Neural Profile</Link>
+                            <p className="mt-10 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+                                New User? <Link href="/signup" className="text-white hover:underline transition-colors ml-1 italic font-bold">Create Account</Link>
                             </p>
                         </>
                     )}
