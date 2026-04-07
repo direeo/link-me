@@ -35,7 +35,7 @@ export default function ChatPage() {
         if (!authLoading && !user) router.push('/login');
     }, [authLoading, user, router]);
 
-    // Initial Synthesis Sequence
+    // Session Initialization
     useEffect(() => {
         if (messages.length === 0) {
             setMessages([
@@ -44,14 +44,9 @@ export default function ChatPage() {
                     role: 'assistant',
                     content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}. 🔗
                     
-I am the LinkMe AI Operator. I've initialized your mastery environment. Describe your learning objective, and I will architect a high-density curriculum for you.
+I am your LinkMe learning assistant. Tell me what you'd like to learn today, and I'll create a structured course for you from the best YouTube tutorials.
 
-**Active Protocols:**
-- **Mastery Architecture**: Sequential stages for foundational to elite skill acquisition.
-- **Data Synthesis**: High-impact tutorial evaluation and curation.
-- **Registry Sync**: Direct export to your external YouTube node.
-
-What shall we synthesize today?`,
+What are we learning today?`,
                     timestamp: new Date(),
                 },
             ]);
@@ -145,8 +140,8 @@ What shall we synthesize today?`,
     return (
         <div className="h-screen bg-[#0a0a0a] flex flex-col relative overflow-hidden font-sans selection:bg-white/10">
 
-            {/* --- High-Speed Navigation --- */}
-            <header className="flex-shrink-0 z-40 bg-[#0a0a0a]/90 border-b border-[#262626] backdrop-blur-sm">
+            {/* --- Premium Navigation --- */}
+            <header className="flex-shrink-0 z-40 bg-[#0a0a0a]/60 border-b border-white/5 backdrop-blur-xl">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-6">
                         <Link href="/" className="flex items-center gap-3 transition-transform duration-150 hover:scale-[1.01]">
@@ -208,8 +203,8 @@ What shall we synthesize today?`,
                     </div>
                 </div>
 
-                {/* --- Input Command Node --- */}
-                <div className="flex-shrink-0 p-6 md:p-10 border-t border-[#262626] bg-[#0a0a0a]">
+                {/* --- Input Command Area --- */}
+                <div className="flex-shrink-0 p-6 md:p-10 border-t border-white/5 bg-[#0a0a0a]/80 backdrop-blur-lg">
                     <div className="max-w-3xl mx-auto">
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
                         <div className="text-center mt-4">

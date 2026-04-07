@@ -147,7 +147,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
 
     return (
         <div className="w-full space-y-12 animate-in fade-in duration-500">
-            {/* Mastery Node Summary Header */}
+            {/* Learning Path Summary Header */}
             <div className="p-8 rounded-2xl bg-[#111111] border border-[#262626] relative overflow-hidden">
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
                     <div className="flex-1 space-y-4">
@@ -197,14 +197,14 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                 </div>
             </div>
 
-            {/* Sequential Mastery Architecture */}
+            {/* Structured Learning Stages */}
             <div className="relative pl-6 sm:pl-10 space-y-12">
                 <div className="absolute left-[30px] sm:left-[38px] top-6 bottom-6 w-px bg-[#262626]" />
 
                 {learningPath.stages.map((stage) => (
                     <div key={stage.stageNumber} className="relative">
                         
-                        {/* Neural Segment Checkpoint */}
+                        {/* Learning Stage Checkpoint */}
                         <div className="absolute -left-[14px] sm:-left-[14px] top-1">
                             <div className="w-8 h-8 rounded-lg bg-[#0a0a0a] border border-[#262626] flex items-center justify-center text-[11px] font-bold text-white">
                                 {stage.stageNumber}
@@ -285,7 +285,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                                                             </div>
                                                         </div>
                                                         <div className="p-4 rounded-lg bg-black/40 border border-[#262626]">
-                                                            <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2">Synthesis Rationale</h5>
+                                                            <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2">Why this video?</h5>
                                                             <p className="text-[11px] text-slate-400 font-medium leading-relaxed italic">"{video.whyRecommended}"</p>
                                                         </div>
                                                     </div>
@@ -310,7 +310,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
 
             {/* Mastery Outcome Protocol */}
             <div className="p-8 rounded-2xl bg-[#111111] border border-[#262626]">
-                <h4 className="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-10">Mastery Outcome Protocol</h4>
+                <h4 className="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-10">Learning Goals</h4>
                 <div className="grid sm:grid-cols-2 gap-4">
                     {learningPath.completionGoals.map((goal, i) => (
                         <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-black/40 border border-[#262626]">
