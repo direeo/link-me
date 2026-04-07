@@ -60,7 +60,7 @@ export default function SignupPage() {
                     </div>
                 </Link>
 
-                <div className="bg-[#111111] rounded-2xl p-8 md:p-12 border border-[#262626] relative overflow-hidden shadow-2xl">
+                <div className="glass-panel rounded-[40px] p-8 md:p-14 relative overflow-hidden transition-all duration-700 animate-in fade-in zoom-in-95">
                     <div className="text-center mb-10">
                         <h1 className="text-xl font-bold text-white uppercase tracking-widest">Create Account</h1>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Join the LinkMe Network</p>

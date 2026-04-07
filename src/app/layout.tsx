@@ -38,13 +38,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body className="min-h-screen bg-[#0a0a0a] text-[#ededed] antialiased font-sans relative flex flex-col">
-        <AuthProvider>
-          <div className="relative z-10 flex-1 flex flex-col">
-            {children}
+       <body className="min-h-screen bg-[#0a0a0a] text-[#ededed] antialiased font-sans relative flex flex-col">
+          {/* PREMIUM DECORATIVE LAYER (Vercel look) */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+             <div className="orb orb-violet w-[800px] h-[800px] -top-[400px] -left-[400px]" />
+             <div className="orb orb-indigo w-[600px] h-[600px] -bottom-[300px] -right-[300px]" />
+             <div className="orb orb-pink w-[400px] h-[400px] top-[20%] right-[-100px]" />
           </div>
-        </AuthProvider>
-      </body>
+
+          <AuthProvider>
+             <div className="relative z-10 flex-1 flex flex-col">
+                {children}
+             </div>
+          </AuthProvider>
+       </body>
     </html>
   );
 }
