@@ -55,7 +55,7 @@ export default function LoginPage() {
                     </div>
                 </Link>
 
-                <div className="glass-panel rounded-3xl p-8 md:p-12 relative overflow-hidden backdrop-blur-2xl">
+                <div className="bg-[#111111] rounded-2xl p-8 md:p-12 border border-[#262626] relative overflow-hidden shadow-2xl">
                     <div className="text-center mb-10">
                         <h1 className="text-xl font-bold text-white uppercase tracking-widest">Sign In</h1>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Resuming Learning Session</p>

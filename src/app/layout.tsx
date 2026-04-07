@@ -39,13 +39,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable}`}>
       <body className="min-h-screen bg-[#0a0a0a] text-[#ededed] antialiased font-sans relative flex flex-col">
-        {/* GLOBAL BACKGROUND EFFECTS (Premium restoration) */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="orb orb-violet w-[800px] h-[800px] top-[-300px] left-[-300px]" />
-          <div className="orb orb-blue w-[600px] h-[600px] bottom-[-200px] right-[-200px]" />
-          <div className="orb orb-pink w-[400px] h-[400px] top-[40%] right-[-100px]" />
-        </div>
-
         <AuthProvider>
           <div className="relative z-10 flex-1 flex flex-col">
             {children}
