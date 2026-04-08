@@ -60,7 +60,7 @@ export default function SignupPage() {
                     </div>
                 </Link>
 
-                <div className="glass-panel rounded-[40px] p-8 md:p-14 relative overflow-hidden transition-all duration-700 animate-in fade-in zoom-in-95">
+                <div className="glass-panel rounded-[40px] p-8 md:p-12 relative overflow-hidden transition-all duration-700 animate-in fade-in zoom-in-95">
                     <div className="text-center mb-10">
                         <h1 className="text-xl font-bold text-white uppercase tracking-widest">Create Account</h1>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Join the LinkMe Network</p>
@@ -72,19 +72,19 @@ export default function SignupPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-3">
                             <Input label="Full Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="John Doe" />
                             <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
                             <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
                             <Input label="Confirm Password" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />
                         </div>
-                        <Button type="submit" loading={isLoading} className="w-full py-6 text-[10px] font-bold uppercase tracking-[0.2em] mt-4" variant="primary">
-                            Sign Up
-                        </Button>
-                    </form>
+                    <Button type="submit" loading={isLoading} className="w-full h-14 btn-premium text-[10px] font-bold uppercase tracking-[0.2em] mt-2">
+                        Sign Up
+                    </Button>
+</form>
 
-                    <div className="relative my-10">
+<div className="relative my-8">
                         <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
                         <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
                             <span className="px-4 text-slate-600 bg-transparent">Guest Access</span>
