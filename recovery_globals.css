@@ -1,20 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+﻿@import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: #050508;
-    --foreground: #fafafa;
-    --primary: #8b5cf6;
-    --primary-glow: rgba(139, 92, 246, 0.4);
-    --secondary: #12121e;
-    --accent: #06b6d4;
-    --muted: #71717a;
-    
-    /* Shared transitions */
-    --transition-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+/* Design Tokens: Neural Midnight */
+:root {
+  --background: #050508;
+  --foreground: #fafafa;
+  --primary: #8b5cf6;
+  --primary-glow: rgba(139, 92, 246, 0.4);
+  --secondary: #12121e;
+  --accent: #06b6d4;
+  --muted: #71717a;
+  
+  /* Shared transitions */
+  --transition-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* Base styles */
@@ -23,12 +20,16 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* Typography Overrides */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit), sans-serif;
   letter-spacing: -0.02em;
+}
+
+.font-body {
+  font-family: var(--font-inter), sans-serif;
 }
 
 /* Custom scrollbar */
