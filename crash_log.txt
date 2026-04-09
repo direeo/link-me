@@ -81,3 +81,21 @@ database
 [getDb] Using: Turso
  GET /api/auth/me 401 in 19ms (compile: 5ms, render: 13ms)
 Γ£ô Compiled in 782ms
+Γ£ô Compiled in 387ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET / 200 in 818ms (compile: 278ms, proxy.ts: 19ms, render: 521ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 401 in 84ms (compile: 23ms, render: 61ms)
+ GET /login 200 in 629ms (compile: 404ms, proxy.ts: 25ms, render: 200ms)
+ GET /signup 200 in 337ms (compile: 251ms, proxy.ts: 32ms, render: 54ms)
