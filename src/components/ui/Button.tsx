@@ -3,8 +3,8 @@
 import React from 'react';
 
 /**
- * High-Fidelity Button: Neural Midnight Edition
- * Matches the premium production build on Vercel.
+ * High-Fidelity Button: Bento Edition
+ * Matches the 'rounded-xl' gradient aesthetic seen on Vercel.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'glow';
@@ -23,7 +23,7 @@ export function Button({
     ...props
 }: ButtonProps) {
     const baseStyles = `
-    inline-flex items-center justify-center font-bold uppercase tracking-widest rounded-full
+    inline-flex items-center justify-center font-bold uppercase tracking-[0.2em] rounded-xl
     transition-all duration-300 cubic-bezier(0.175, 0.885, 0.32, 1.275)
     focus:outline-none focus:ring-2 focus:ring-violet-500/50
     disabled:opacity-50 disabled:cursor-not-allowed
@@ -38,10 +38,10 @@ export function Button({
       shadow-[0_10px_30px_-5px_rgba(255,255,255,0.2)]
     `,
         glow: `
-      bg-white text-black
-      hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]
-      border border-transparent
-      shadow-[0_10px_40px_-10px_rgba(255,255,255,0.3)]
+      bg-gradient-to-br from-violet-600 to-indigo-600 text-white
+      hover:shadow-[0_0_30px_rgba(139,92,246,0.4)]
+      border border-white/10
+      shadow-[0_10px_25px_-5px_rgba(139,92,246,0.3)]
     `,
         secondary: `
       bg-[#12121e] border border-white/5
@@ -60,7 +60,7 @@ export function Button({
     };
 
     const sizes = {
-        sm: 'px-6 h-10 text-[10px]',
+        sm: 'px-5 h-10 text-[9px]',
         md: 'px-8 h-12 text-xs',
         lg: 'px-10 h-14 text-sm',
     };
@@ -73,7 +73,7 @@ export function Button({
         >
             {loading ? (
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                 </div>
             ) : (
                 children

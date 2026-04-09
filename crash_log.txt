@@ -1,0 +1,83 @@
+﻿
+> linkme@0.1.0 dev
+> next dev
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.16.102.48:3000
+- Environments: .env.local, .env
+
+Γ£ô Starting...
+node.exe : ΓÜá The 
+"middleware" file 
+convention is deprecated. 
+Please use "proxy" 
+instead. Learn more: https
+://nextjs.org/docs/message
+s/middleware-to-proxy
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (Γ  
+  Üá The "middle...lewa   
+ re-to-proxy:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Γ£ô Ready in 2.8s
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET / 200 in 3.2s (compile: 2.4s, proxy.ts: 170ms, render: 642ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 401 in 1346ms (compile: 1286ms, render: 60ms)
+ GET / 200 in 358ms (compile: 19ms, proxy.ts: 16ms, render: 322ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 401 in 26ms (compile: 8ms, render: 18ms)
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET / 200 in 262ms (compile: 135ms, proxy.ts: 10ms, render: 117ms)
+Γ£ô Compiled in 120ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET / 200 in 424ms (compile: 121ms, proxy.ts: 13ms, render: 290ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 401 in 19ms (compile: 5ms, render: 13ms)
+Γ£ô Compiled in 782ms

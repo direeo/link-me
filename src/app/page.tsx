@@ -24,12 +24,12 @@ export default function HomePage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-4 md:px-12 lg:px-24 flex items-center justify-between backdrop-blur-md">
-        <div className="flex items-center gap-3 group cursor-pointer">
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-4 md:px-12 flex items-center justify-between backdrop-blur-md">
+        <div className="flex items-center gap-3 group cursor-pointer flex-shrink-0">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-300">
             <span className="text-lg text-white">🔗</span>
           </div>
-          <span className="text-xl font-black tracking-tighter text-white uppercase group-hover:tracking-normal transition-all duration-300">LinkMe</span>
+          <span className="text-xl font-black tracking-tighter text-white uppercase flex-shrink-0">LinkMe</span>
         </div>
         
         <div className="flex items-center gap-6">
