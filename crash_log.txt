@@ -182,3 +182,31 @@ database
  POST /api/auth/guest 200 in 40ms (compile: 24ms, render: 16ms)
  GET /chat 200 in 83ms (compile: 13ms, proxy.ts: 11ms, render: 59ms)
 Γ£ô Compiled in 638ms
+Γ£ô Compiled in 255ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET /chat 200 in 1151ms (compile: 592ms, proxy.ts: 7ms, render: 551ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 17ms (compile: 5ms, render: 12ms)
+ GET / 200 in 217ms (compile: 17ms, proxy.ts: 12ms, render: 188ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 24ms (compile: 8ms, render: 16ms)
+ GET /signup 200 in 226ms (compile: 59ms, proxy.ts: 15ms, render: 152ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 12ms (compile: 4ms, render: 8ms)
+Γ£ô Compiled in 517ms
+Γ£ô Compiled in 476ms

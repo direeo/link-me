@@ -55,8 +55,8 @@ export default function SignupPage() {
                 
                 {/* Branding */}
                 <Link href="/" className="flex flex-col items-center gap-6 mb-12 group">
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg transition-transform hover:scale-110">
-                        <span className="text-black font-black text-xl">🔗</span>
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 transition-transform group-hover:scale-110">
+                        <span className="text-white font-black text-xl">🔗</span>
                     </div>
                 </Link>
 
@@ -79,10 +79,10 @@ export default function SignupPage() {
                             <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
                             <Input label="Confirm Password" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />
                         </div>
-                    <Button type="submit" loading={isLoading} className="w-full h-14 btn-premium text-[10px] font-bold uppercase tracking-[0.2em] mt-2">
-                        Sign Up
-                    </Button>
-</form>
+                        <Button type="submit" loading={isLoading} variant="glow" className="w-full h-14 text-[10px] font-bold uppercase tracking-[0.2em] mt-2 shadow-[0_10px_30px_rgba(139,92,246,0.3)]">
+                            Sign Up
+                        </Button>
+                    </form>
 
 <div className="relative my-8">
                         <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
