@@ -210,3 +210,112 @@ database
  GET /api/auth/me 200 in 12ms (compile: 4ms, render: 8ms)
 Γ£ô Compiled in 517ms
 Γ£ô Compiled in 476ms
+Γ£ô Compiled in 404ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET /signup 200 in 599ms (compile: 216ms, proxy.ts: 7ms, render: 375ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 54ms (compile: 23ms, render: 30ms)
+ POST /api/auth/logout 200 in 105ms (compile: 92ms, render: 13ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+
+============================================================
+≡ƒôº VERIFICATION EMAIL (Development Mode)
+============================================================
+To: ojoesther2006@gmail.com
+Subject: Verify your LinkMe account
+Verification URL: http://localhost:3000/verify?token=cee691c9-ff67-4e44-89c9-09bb69fef14f
+Token: cee691c9-ff67-4e44-89c9-09bb69fef14f
+============================================================
+
+ POST /api/auth/signup 200 in 5.1s (compile: 266ms, render: 4.8s)
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET /chat 200 in 371ms (compile: 248ms, proxy.ts: 14ms, render: 109ms)
+ GET / 200 in 57ms (compile: 9ms, proxy.ts: 7ms, render: 41ms)
+ GET /chat 200 in 444ms (compile: 9ms, proxy.ts: 9ms, render: 427ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+Turso execute error: {
+  sql: 'SELECT * FROM 
+User WHERE id = ?',
+  args: [ '8529d459ad9143f
+79e788e25a' ],
+  error: TypeError: fetch 
+failed
+      at ignore-listed 
+frames {
+    [cause]: Error 
+[ConnectTimeoutError]: 
+Connect Timeout Error 
+(attempted address: link-m
+e-temidireojo.aws-eu-west-
+1.turso.io:443, timeout: 
+10000ms)
+        at ignore-listed 
+frames {
+      code: 
+'UND_ERR_CONNECT_TIMEOUT'
+    }
+  }
+}
+Auth check error: 
+TypeError: fetch failed
+    at ignore-listed 
+frames {
+  [cause]: Error 
+[ConnectTimeoutError]: 
+Connect Timeout Error 
+(attempted address: link-m
+e-temidireojo.aws-eu-west-
+1.turso.io:443, timeout: 
+10000ms)
+      at ignore-listed 
+frames {
+    code: 
+'UND_ERR_CONNECT_TIMEOUT'
+  }
+}
+ GET /api/auth/me 500 in 10.7s (compile: 5ms, render: 10.7s)
+ GET /chat 200 in 79ms (compile: 12ms, proxy.ts: 9ms, render: 59ms)
+Γ£ô Compiled in 729ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET /chat 200 in 849ms (compile: 341ms, proxy.ts: 52ms, render: 457ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 50ms (compile: 21ms, render: 29ms)
+Γ£ô Compiled in 704ms
