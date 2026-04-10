@@ -99,3 +99,39 @@ database
  GET /api/auth/me 401 in 84ms (compile: 23ms, render: 61ms)
  GET /login 200 in 629ms (compile: 404ms, proxy.ts: 25ms, render: 200ms)
  GET /signup 200 in 337ms (compile: 251ms, proxy.ts: 32ms, render: 54ms)
+ GET /chat 200 in 1042ms (compile: 564ms, proxy.ts: 46ms, render: 431ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 401 in 74ms (compile: 16ms, render: 58ms)
+ GET /login 200 in 519ms (compile: 42ms, proxy.ts: 45ms, render: 431ms)
+ POST /api/auth/guest 200 in 488ms (compile: 443ms, render: 45ms)
+ GET /chat 200 in 717ms (compile: 373ms, proxy.ts: 32ms, render: 312ms)
+ GET /settings 200 in 1445ms (compile: 1139ms, proxy.ts: 20ms, render: 285ms)
+ GET /login 200 in 1576ms (compile: 38ms, proxy.ts: 19ms, render: 1518ms)
+ GET /login 200 in 1893ms (compile: 282ms, proxy.ts: 84ms, render: 1527ms)
+Γùï Compiling /api/youtube/status ...
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 401 in 10.2s (compile: 10.2s, render: 34ms)
+ GET /settings 200 in 5.0s (compile: 16ms, proxy.ts: 10ms, render: 5.0s)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 37ms (compile: 16ms, render: 22ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 401 in 218ms (compile: 168ms, render: 50ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 401 in 81ms (compile: 49ms, render: 32ms)
+ GET /login 200 in 362ms (compile: 21ms, proxy.ts: 12ms, render: 328ms)
+ GET /chat 200 in 253ms (compile: 13ms, proxy.ts: 15ms, render: 226ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 27ms (compile: 11ms, render: 16ms)
+Γ£ô Compiled in 638ms
