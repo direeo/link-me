@@ -177,9 +177,11 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
 
                 {/* --- Command Area --- */}
                 <div className="flex-shrink-0 p-8 md:p-12 border-t border-white/5 bg-[#050508]/80 backdrop-blur-2xl">
-                    <div className="max-w-3xl mx-auto flex flex-col items-center gap-4">
+                    <div className="max-w-4xl mx-auto">
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/10 animate-pulse">LinkMe Neural Architecture v2.0</span>
+                        <div className="text-center mt-6">
+                             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10">Secure AI Neural Architecture • LinkMe Protocol v2.0</span>
+                        </div>
                     </div>
                 </div>
             </main>

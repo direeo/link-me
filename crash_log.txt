@@ -135,3 +135,50 @@ database
 [getDb] Using: Turso
  GET /api/auth/me 200 in 27ms (compile: 11ms, render: 16ms)
 Γ£ô Compiled in 638ms
+Γ£ô Compiled in 503ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET /chat 200 in 1060ms (compile: 420ms, proxy.ts: 88ms, render: 552ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 266ms (compile: 85ms, render: 181ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 31ms (compile: 15ms, render: 16ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 401 in 43ms (compile: 26ms, render: 17ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 401 in 31ms (compile: 12ms, render: 20ms)
+ GET /chat 200 in 762ms (compile: 46ms, proxy.ts: 27ms, render: 689ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 401 in 26ms (compile: 10ms, render: 16ms)
+ GET /login 200 in 150ms (compile: 62ms, proxy.ts: 8ms, render: 80ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ POST /api/auth/login 401 in 3.0s (compile: 516ms, render: 2.4s)
+ POST /api/auth/guest 200 in 40ms (compile: 24ms, render: 16ms)
+ GET /chat 200 in 83ms (compile: 13ms, proxy.ts: 11ms, render: 59ms)
+Γ£ô Compiled in 638ms
