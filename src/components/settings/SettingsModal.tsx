@@ -143,7 +143,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white text-2xl">✓</div>
                                         <div className="text-center">
                                             <p className="font-bold text-white mb-1">Two-Factor Authentication is ON</p>
-                                            <p className="text-xs text-slate-500">Your account is fully secured with neural-sync protection.</p>
+                                            <p className="text-xs text-slate-500">Your account is fully secured with two-factor protection.</p>
                                         </div>
                                         <Button variant="outline" size="sm" onClick={disable2FA} disabled={isLoading}>
                                             {isLoading ? 'Processing...' : 'Disable 2FA'}
@@ -157,7 +157,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         </div>
                                         
                                         <div className="space-y-3">
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verify Neural Token</p>
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verify Auth Code</p>
                                             <div className="flex gap-3">
                                                 <Input 
                                                     value={verificationCode}
@@ -179,7 +179,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                             <p className="text-xs text-slate-500">Requires a mobile authenticator app.</p>
                                         </div>
                                         <Button variant="glow" onClick={setup2FA} disabled={isLoading}>
-                                            {isLoading ? 'Initializing...' : 'Configure Neural Security'}
+                                            {isLoading ? 'Initializing...' : 'Enable 2FA'}
                                         </Button>
                                     </div>
                                 )}

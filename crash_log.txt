@@ -319,3 +319,41 @@ database
 [getDb] Using: Turso
  GET /api/auth/me 200 in 50ms (compile: 21ms, render: 29ms)
 Γ£ô Compiled in 704ms
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET /chat 200 in 1630ms (compile: 553ms, proxy.ts: 98ms, render: 979ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 2.7s (compile: 6ms, render: 2.6s)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 199ms (compile: 4ms, render: 195ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 200 in 982ms (compile: 15ms, render: 967ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/youtube/status 200 in 453ms (compile: 18ms, render: 435ms)
+ GET /api/youtube/auth 307 in 1339ms (compile: 1318ms, render: 21ms)
+ GET /chat 200 in 166ms (compile: 8ms, proxy.ts: 13ms, render: 145ms)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 3.2s (compile: 5ms, render: 3.2s)
+[getDb] DATABASE_URL starts with: libsql://link-me-tem
+[getDb] AUTH_TOKEN present: true
+[getDb] Using: Turso
+ GET /api/auth/me 200 in 1137ms (compile: 5ms, render: 1132ms)
+Γ£ô Compiled in 352ms
