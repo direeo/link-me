@@ -5,138 +5,140 @@
 Environment variables loaded from .env
 Prisma schema loaded from prisma\schema.prisma
 
-Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 207ms
+Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 122ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
 
-node.exe : ΓöîΓöÇΓöÇΓöÇΓöÇ
-ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö
-ÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
-öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö
-ÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
-öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-ΓöÇΓöÉ
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local, .env
+
+node.exe : ΓÜá The 
+"middleware" file 
+convention is 
+deprecated. Please use 
+"proxy" instead. Learn 
+more: https://nextjs.or
+g/docs/messages/middlew
+are-to-proxy
 At line:1 char:1
 + & "C:\Program 
 Files\nodejs/node.exe" 
 "C:\Program 
-Files\nodejs/node_mo ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo        
-      : NotSpecified: (Γ  
-  öîΓöÇΓöÇΓöÇΓöÇ...ΓöÇΓ   
- öÇΓöÇΓöÇΓöÉ:String) [    
-], RemoteException
-    + FullyQualifiedError 
-   Id : NativeCommandErr  
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : 
+NotSpecified: (Γ    Üá 
+The "middle...lewa    
+re-to-proxy:String) [  
+  ], RemoteException
+    + 
+FullyQualifiedError    
+Id : NativeCommandErr  
   or
  
-Γöé  Update available 
-5.22.0 -> 7.7.0           
-            Γöé
-Γöé                       
-                          
-        Γöé
-Γöé  This is a major 
-update - please follow 
-the guide at    Γöé
-Γöé  https://pris.ly/d/maj
-or-version-upgrade        
-        Γöé
-Γöé                       
-                          
-        Γöé
-Γöé  Run the following to 
-update                    
-        Γöé
-Γöé    npm i --save-dev 
-prisma@latest             
-          Γöé
-Γöé    npm i 
-@prisma/client@latest     
-                     Γöé
-ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö
-ÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
-öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö
-ÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
-öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
-Γû▓ Next.js 16.1.1 (Turbopack)
-- Environments: .env.local, .env
-
-ΓÜá The "middleware" file 
-convention is deprecated. 
-Please use "proxy" 
-instead. Learn more: https
-://nextjs.org/docs/message
-s/middleware-to-proxy
   Creating an optimized production build ...
-Γ£ô Compiled successfully in 48s
-  Running TypeScript ...
-  Collecting page data using 7 workers ...
-  Generating static pages using 7 workers (0/11) ...
-ΓÜá metadataBase property 
-in metadata export is not 
-set for resolving social 
-open graph or twitter 
-images, using 
-"http://localhost:3000". 
-See https://nextjs.org/doc
-s/app/api-reference/functi
-ons/generate-metadata#meta
-database
-  Generating static pages using 7 workers (2/11) 
-  Generating static pages using 7 workers (5/11) 
-  Generating static pages using 7 workers (8/11) 
-Γ£ô Generating static pages using 7 workers (11/11) in 1357.9ms
-  Finalizing page optimization ...
+Turbopack build 
+encountered 2 warnings:
+[next]/internal/font/go
+ogle/inter_2fe1ab3d.mod
+ule.css
+Error while requesting 
+resource
+There was an issue 
+establishing a 
+connection while 
+requesting https://font
+s.googleapis.com/css2?f
+amily=Inter:wght@100..9
+00&display=swap
 
-Route (app)
-Γöî Γùï /
-Γö£ Γùï /_not-found
-Γö£ ╞Æ /api/admin/users
-Γö£ ╞Æ /api/auth/2fa/disable
-Γö£ ╞Æ /api/auth/2fa/setup
-Γö£ ╞Æ /api/auth/2fa/verify
-Γö£ ╞Æ /api/auth/guest
-Γö£ ╞Æ /api/auth/login
-Γö£ ╞Æ /api/auth/logout
-Γö£ ╞Æ /api/auth/me
-Γö£ ╞Æ /api/auth/signup
-Γö£ ╞Æ /api/auth/verify
-Γö£ ╞Æ /api/chat/history
-Γö£ ╞Æ /api/chat/history/[id]
-Γö£ ╞Æ /api/chat/message
-Γö£ ╞Æ /api/health
-Γö£ ╞Æ /api/learning-path/progress
-Γö£ ╞Æ /api/learning-path/save
-Γö£ ╞Æ /api/test-chat
-Γö£ ╞Æ /api/test-db
-Γö£ ╞Æ /api/test-gemini
-Γö£ ╞Æ /api/verify/email
-Γö£ ╞Æ /api/verify/resend
-Γö£ ╞Æ /api/youtube/auth
-Γö£ ╞Æ /api/youtube/callback
-Γö£ ╞Æ /api/youtube/playlist
-Γö£ ╞Æ /api/youtube/search
-Γö£ ╞Æ /api/youtube/status
-Γö£ Γùï /chat
-Γö£ Γùï /login
-Γö£ Γùï /privacy
-Γö£ Γùï /settings
-Γö£ Γùï /signup
-Γö£ Γùï /terms
-Γöö Γùï /verify
+Import trace:
+  Server Component:
+    [next]/internal/fon
+t/google/inter_2fe1ab3d
+.module.css
+    [next]/internal/fon
+t/google/inter_2fe1ab3d
+.js
+    
+./src/app/layout.tsx
 
 
-╞Æ Proxy (Middleware)
+[next]/internal/font/go
+ogle/outfit_333574c6.mo
+dule.css
+Error while requesting 
+resource
+There was an issue 
+establishing a 
+connection while 
+requesting https://font
+s.googleapis.com/css2?f
+amily=Outfit:wght@100..
+900&display=swap
 
-Γùï  (Static)   prerendered as static content
-╞Æ  (Dynamic)  server-rendered on demand
+Import trace:
+  Server Component:
+    [next]/internal/fon
+t/google/outfit_333574c
+6.module.css
+    [next]/internal/fon
+t/google/outfit_333574c
+6.js
+    
+./src/app/layout.tsx
 
+
+
+> Build error occurred
+Error: Turbopack build 
+failed with 2 errors:
+[next]/internal/font/go
+ogle/inter_2fe1ab3d.mod
+ule.css
+next/font: error:
+Failed to fetch 
+`Inter` from Google 
+Fonts.
+
+Import trace:
+  Server Component:
+    [next]/internal/fon
+t/google/inter_2fe1ab3d
+.module.css
+    [next]/internal/fon
+t/google/inter_2fe1ab3d
+.js
+    
+./src/app/layout.tsx
+
+
+[next]/internal/font/go
+ogle/outfit_333574c6.mo
+dule.css
+next/font: error:
+Failed to fetch 
+`Outfit` from Google 
+Fonts.
+
+Import trace:
+  Server Component:
+    [next]/internal/fon
+t/google/outfit_333574c
+6.module.css
+    [next]/internal/fon
+t/google/outfit_333574c
+6.js
+    
+./src/app/layout.tsx
+
+
+    at ignore-listed 
+frames

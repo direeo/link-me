@@ -15,7 +15,7 @@ interface AuthContextType {
     isLoading: boolean;
     isAuthenticated: boolean;
     isGuest: boolean;
-    login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+    login: (email: string, password: string) => Promise<{ success: boolean; message: string; requires2FA?: boolean; requiresVerification?: boolean; email?: string }>;
     signup: (email: string, password: string, name?: string) => Promise<{ success: boolean; message: string }>;
     logout: () => Promise<void>;
     continueAsGuest: () => Promise<void>;
@@ -81,6 +81,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
 
             const data = await response.json();
+
+            // Password correct but 2FA is enabled — redirect to verify
+            if (data.success && data.requires2FA) {
+                return { success: true, message: '2FA required', requires2FA: true, email: data.email };
+            }
+
+            // Password correct but email not verified — redirect to verify
+            if (data.success && data.requiresVerification) {
+                return { success: true, message: 'Email verification required', requiresVerification: true, email: data.email };
+            }
 
             if (data.success && data.user) {
                 setUser(data.user);

@@ -9,6 +9,8 @@ function VerifyContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const email = searchParams.get('email') || '';
+    const type = searchParams.get('type') || 'email'; // 'email' or '2fa'
+    const is2FA = type === '2fa';
 
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
@@ -48,23 +50,41 @@ function VerifyContent() {
         if (fullCode.length < 6) return;
         setIsLoading(true);
         setError(null);
+
         try {
-            const res = await fetch('/api/auth/verify', {
+            // Choose endpoint based on type
+            const endpoint = is2FA ? '/api/auth/2fa/login' : '/api/auth/verify';
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, code: fullCode }),
+                body: JSON.stringify({ email, code: fullCode, token: fullCode }),
             });
             const data = await res.json();
+
             if (data.success) {
                 setIsSuccess(true);
-                setTimeout(() => router.push('/chat'), 2000);
+                setTimeout(() => router.push('/chat'), 1500);
             } else {
-                setError(data.message || 'Verification failed. Please check your code.');
+                setError(data.message || 'Incorrect code. Please try again.');
             }
         } catch {
             setError('Connection failure. Please check your network.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        if (is2FA) return; // Can't resend TOTP codes
+        try {
+            await fetch('/api/verify/resend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            setError(null);
+        } catch {
+            setError('Failed to resend. Please try again.');
         }
     };
 
@@ -74,14 +94,20 @@ function VerifyContent() {
             <div className="text-center mb-10">
                 <Link href="/" className="inline-flex items-center gap-3 group transition-all hover:opacity-80 mb-8">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/20 group-hover:scale-110 transition-transform duration-500">
-                        <span className="text-2xl text-white">🔗</span>
+                        <span className="text-2xl">🔗</span>
                     </div>
                     <span className="text-3xl font-black tracking-tighter text-white uppercase">LinkMe</span>
                 </Link>
-                <h1 className="text-2xl font-black text-white mb-3 uppercase tracking-widest">Verify Your Email</h1>
+
+                <h1 className="text-2xl font-black text-white mb-3 uppercase tracking-widest">
+                    {is2FA ? 'Two-Factor Authentication' : 'Verify Your Email'}
+                </h1>
                 <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                    We sent a <span className="text-violet-400 font-bold">6-digit code</span> to<br />
-                    <span className="text-white font-bold">{email || 'your email address'}</span>
+                    {is2FA ? (
+                        <>Enter the <span className="text-violet-400 font-bold">6-digit code</span> from your<br /><span className="text-white font-bold">Authenticator App</span></>
+                    ) : (
+                        <>We sent a <span className="text-violet-400 font-bold">6-digit code</span> to<br /><span className="text-white font-bold">{email || 'your email'}</span></>
+                    )}
                 </p>
             </div>
 
@@ -99,7 +125,14 @@ function VerifyContent() {
                     </div>
                 ) : (
                     <div className="space-y-8">
-                        {/* 6-digit inputs */}
+                        {/* Type badge */}
+                        <div className="flex justify-center">
+                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${is2FA ? 'bg-violet-500/10 border-violet-500/30 text-violet-400' : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'}`}>
+                                {is2FA ? '🛡️ Authenticator Code' : '📧 Email Code'}
+                            </span>
+                        </div>
+
+                        {/* 6 digit inputs */}
                         <div className="flex justify-between gap-2">
                             {code.map((digit, idx) => (
                                 <input
@@ -132,18 +165,30 @@ function VerifyContent() {
                             </div>
                         )}
 
-                        <p className="text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
-                            Didn't receive a code?{' '}
-                            <button className="text-violet-500 hover:text-violet-400 underline transition-colors">
-                                Resend
-                            </button>
-                        </p>
+                        <div className="text-center space-y-2">
+                            {!is2FA && (
+                                <button
+                                    onClick={handleResend}
+                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-violet-400 transition-colors"
+                                >
+                                    Didn't receive a code? <span className="underline">Resend</span>
+                                </button>
+                            )}
+                            <div>
+                                <Link
+                                    href="/login"
+                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 hover:text-slate-400 transition-colors"
+                                >
+                                    ← Back to Sign In
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
 
             <p className="text-center mt-10 text-[9px] font-black uppercase tracking-[0.4em] text-white/5">
-                Secure AI Neural Architecture • LinkMe Protocol V2.0
+                Secure Authentication • LinkMe Protocol V2.0
             </p>
         </div>
     );
@@ -152,7 +197,6 @@ function VerifyContent() {
 export default function VerifyPage() {
     return (
         <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 relative overflow-hidden selection:bg-violet-500/30">
-            {/* Background Glows */}
             <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-violet-600/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
             <Suspense fallback={<div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />}>

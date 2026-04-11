@@ -30,8 +30,18 @@ export default function LoginPage() {
         setIsLoading(true);
         const result = await login(formData.email, formData.password);
         setIsLoading(false);
-        if (result.success) router.push('/chat');
-        else setServerError(result.message);
+
+        if (result.requires2FA) {
+            // Redirect to OTP page for 2FA
+            router.push(`/verify?type=2fa&email=${encodeURIComponent(result.email || formData.email)}`);
+        } else if (result.requiresVerification) {
+            // Redirect to OTP page for email verification
+            router.push(`/verify?type=email&email=${encodeURIComponent(result.email || formData.email)}`);
+        } else if (result.success) {
+            router.push('/chat');
+        } else {
+            setServerError(result.message);
+        }
     };
 
     const handleGuestMode = async () => {
