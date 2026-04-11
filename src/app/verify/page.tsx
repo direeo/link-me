@@ -53,7 +53,7 @@ function VerifyContent() {
 
         try {
             // Choose endpoint based on type
-            const endpoint = is2FA ? '/api/auth/2fa/login' : '/api/auth/verify';
+            const endpoint = is2FA ? '/api/auth/2fa/verify' : '/api/auth/verify';
             const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
