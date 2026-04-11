@@ -431,3 +431,14 @@ database
 [getDb] AUTH_TOKEN present: true
 [getDb] Using: Turso
  GET /api/auth/me 200 in 1400ms (compile: 4ms, render: 1396ms)
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+ GET / 200 in 2.1s (compile: 700ms, proxy.ts: 678ms, render: 746ms)

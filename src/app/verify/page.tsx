@@ -22,6 +22,15 @@ function VerifyContent() {
         inputs.current[0]?.focus();
     }, []);
 
+    // Auto-submit when all 6 digits are entered
+    useEffect(() => {
+        const fullCode = code.join('');
+        if (fullCode.length === 6 && /^\d{6}$/.test(fullCode) && !isLoading && !isSuccess) {
+            handleVerify();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [code]);
+
     const handleChange = (index: number, value: string) => {
         if (!/^\d*$/.test(value)) return;
         const newCode = [...code];
