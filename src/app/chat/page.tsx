@@ -22,6 +22,7 @@ export default function ChatPage() {
     const [showHistory, setShowHistory] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [loadingStep, setLoadingStep] = useState(0);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // High-speed smooth scroll
@@ -59,11 +60,27 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
         setIsLoading(true);
 
         try {
+            // Loading step cycling
+            const steps = [
+                "Curating Your Mastery Path...",
+                "Analyzing Top-Tier Content...",
+                "Assembling Curriculum Nodes...",
+                "Finalizing Neural Synthesis..."
+            ];
+            
+            let currentStep = 0;
+            const stepInterval = setInterval(() => {
+                currentStep = (currentStep + 1) % steps.length;
+                setLoadingStep(currentStep);
+            }, 1800);
+
             const response = await fetch('/api/chat/message', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: content, conversationId }),
             });
+            
+            clearInterval(stepInterval);
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Node Error');
 
@@ -83,6 +100,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             setMessages(prev => [...prev.filter(m => !m.isLoading), { id: `err-${Date.now()}`, role: 'assistant', content: `⚠️ Failed to synthesize path.`, timestamp: new Date() }]);
         } finally {
             setIsLoading(false);
+            setLoadingStep(0);
         }
     };
 
@@ -176,12 +194,25 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                     </div>
                 </div>
 
-                {/* --- Command Area --- */}
-                <div className="flex-shrink-0 p-8 md:p-12 border-t border-white/5 bg-[#050508]/80 backdrop-blur-2xl">
+                {/* --- Command Area (Lowered & Optimized) --- */}
+                <div className="flex-shrink-0 p-6 md:p-8 border-t border-white/5 bg-[#050508]/80 backdrop-blur-2xl">
                     <div className="max-w-4xl mx-auto">
+                        {isLoading && (
+                            <div className="flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-violet-500/5 border border-violet-500/10 w-fit mx-auto animate-pulse">
+                                <div className="w-2 h-2 rounded-full bg-violet-500 animate-ping" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-300">
+                                    {[
+                                        "Curating Your Mastery Path...",
+                                        "Analyzing Top-Tier Content...",
+                                        "Assembling Curriculum Nodes...",
+                                        "Finalizing Neural Synthesis..."
+                                    ][loadingStep]}
+                                </span>
+                            </div>
+                        )}
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
-                        <div className="text-center mt-6">
-                             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10">Secure AI Neural Architecture • LinkMe Protocol v2.0</span>
+                        <div className="text-center mt-4">
+                             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/5">Secure AI Neural Architecture • LinkMe Protocol v2.0</span>
                         </div>
                     </div>
                 </div>

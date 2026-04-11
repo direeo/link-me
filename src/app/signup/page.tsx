@@ -34,8 +34,12 @@ export default function SignupPage() {
         setIsLoading(true);
         const result = await signup(formData.email, formData.password, formData.name);
         setIsLoading(false);
-        if (result.success) router.push('/chat');
-        else setServerError(result.message);
+        if (result.success) {
+            // Redirect to code verification page
+            router.push(`/verify?email=${encodeURIComponent(formData.email)}`);
+        } else {
+            setServerError(result.message);
+        }
     };
 
     const handleGuestMode = async () => {

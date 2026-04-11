@@ -103,15 +103,16 @@ export function verifyRefreshToken(token: string): DecodedToken | null {
 // ============================================
 
 /**
- * Generate a cryptographically secure verification token
- * @returns Object with token string and expiration date
+ * Generate a secure 6-digit verification code
+ * @returns Object with code string and expiration date
  */
-export function generateVerificationToken(): { token: string; expiresAt: Date } {
-    const token = uuidv4();
+export function generateVerificationCode(): { code: string; expiresAt: Date } {
+    // Generate a random 6-digit number
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
+    expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minute expiry for codes
 
-    return { token, expiresAt };
+    return { code, expiresAt };
 }
 
 /**

@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { hashPassword, generateAccessToken, generateRefreshToken, generateVerificationToken } from '@/lib/auth';
+import { hashPassword, generateAccessToken, generateRefreshToken, generateVerificationCode } from '@/lib/auth';
 import { signupSchema, validateInput } from '@/lib/validation';
 import { sendVerificationEmail } from '@/lib/email';
 import { checkRateLimit, recordAttempt, RATE_LIMITS, getClientIP } from '@/lib/rate-limit';
@@ -76,19 +76,19 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        // Generate verification token
-        const { token: verificationToken, expiresAt } = generateVerificationToken();
+        // Generate 6-digit verification code
+        const { code: verificationCode, expiresAt } = generateVerificationCode();
 
         await prisma.verificationToken.create({
             data: {
-                token: verificationToken,
+                token: verificationCode, // Reuse token field for 6-digit code
                 userId: user.id,
                 expiresAt,
             },
         });
 
-        // Send verification email
-        await sendVerificationEmail(user.email, verificationToken, user.name || undefined);
+        // Send verification email with 6-digit code
+        await sendVerificationEmail(user.email, verificationCode, user.name || undefined);
 
         // Generate auth tokens
         const tokenPayload = {

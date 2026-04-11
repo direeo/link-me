@@ -11,7 +11,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 const EMAIL_TEMPLATES = {
     verification: {
         subject: 'Verify your LinkMe account',
-        html: (verificationUrl: string, name?: string) => `
+        html: (code: string, name?: string) => `
       <!DOCTYPE html>
       <html>
         <head>
@@ -25,8 +25,8 @@ const EMAIL_TEMPLATES = {
               <h1 style="color: #8b5cf6; font-size: 28px; margin: 0;">🔗 LinkMe</h1>
             </div>
             
-            <h2 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">
-              Verify your email address
+            <h2 style="color: #1f2937; font-size: 24px; margin-bottom: 20px; text-align: center;">
+              Your Verification Code
             </h2>
             
             <p style="color: #4b5563; font-size: 16px;">
@@ -34,23 +34,17 @@ const EMAIL_TEMPLATES = {
             </p>
             
             <p style="color: #4b5563; font-size: 16px;">
-              Thanks for signing up for LinkMe! Please click the button below to verify your email address and unlock all features.
+              Thanks for joining LinkMe! Use the 6-digit verification code below to secure your account and unlock your learning journey.
             </p>
             
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${verificationUrl}" 
-                 style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                Verify Email Address
-              </a>
+            <div style="text-align: center; margin: 40px 0;">
+              <div style="display: inline-block; background: #f9fafb; color: #1f2937; padding: 24px 48px; border-radius: 16px; font-size: 36px; font-weight: 900; letter-spacing: 8px; border: 2px solid #f3f4f6; font-family: 'Courier New', Courier, monospace;">
+                ${code}
+              </div>
             </div>
             
-            <p style="color: #6b7280; font-size: 14px;">
-              Or copy this link: <br>
-              <a href="${verificationUrl}" style="color: #8b5cf6; word-break: break-all;">${verificationUrl}</a>
-            </p>
-            
-            <p style="color: #9ca3af; font-size: 14px; margin-top: 30px;">
-              This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.
+            <p style="color: #9ca3af; font-size: 14px; text-align: center; margin-top: 30px;">
+              This code expires in 15 minutes. If you didn't request this, you can safely ignore this email.
             </p>
             
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
@@ -94,42 +88,40 @@ export async function sendVerificationEmail(
     token: string,
     name?: string
 ): Promise<{ success: boolean; message: string }> {
-    const verificationUrl = `${APP_URL}/verify?token=${token}`;
     const template = EMAIL_TEMPLATES.verification;
-
-    if (EMAIL_MODE === 'development') {
-        // Development mode - log to console
-        console.log('\n' + '='.repeat(60));
-        console.log('📧 VERIFICATION EMAIL (Development Mode)');
-        console.log('='.repeat(60));
-        console.log(`To: ${email}`);
-        console.log(`Subject: ${template.subject}`);
-        console.log(`Verification URL: ${verificationUrl}`);
-        console.log(`Token: ${token}`);
-        console.log('='.repeat(60) + '\n');
-
-        return {
-            success: true,
-            message: 'Verification email logged to console (development mode)'
-        };
-    }
-
-    // Production mode - send via SMTP
-    const transporter = createTransporter();
-    if (!transporter) {
-        return {
-            success: false,
-            message: 'Email service not configured'
-        };
-    }
-
-    try {
-        await transporter.sendMail({
-            from: process.env.SMTP_FROM || 'noreply@linkme.app',
-            to: email,
-            subject: template.subject,
-            html: template.html(verificationUrl, name),
-        });
+ 
+     if (EMAIL_MODE === 'development') {
+         // Development mode - log to console
+         console.log('\n' + '='.repeat(60));
+         console.log('📧 VERIFICATION EMAIL (Development Mode)');
+         console.log('='.repeat(60));
+         console.log(`To: ${email}`);
+         console.log(`Subject: ${template.subject}`);
+         console.log(`Verification Code: ${token}`);
+         console.log('='.repeat(60) + '\n');
+ 
+         return {
+             success: true,
+             message: 'Verification email logged to console (development mode)'
+         };
+     }
+ 
+     // Production mode - send via SMTP
+     const transporter = createTransporter();
+     if (!transporter) {
+         return {
+             success: false,
+             message: 'Email service not configured'
+         };
+     }
+ 
+     try {
+         await transporter.sendMail({
+             from: process.env.SMTP_FROM || 'noreply@linkme.app',
+             to: email,
+             subject: template.subject,
+             html: template.html(token, name),
+         });
 
         return {
             success: true,

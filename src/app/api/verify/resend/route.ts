@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { resendVerificationSchema, validateInput } from '@/lib/validation';
-import { generateVerificationToken } from '@/lib/auth';
+import { generateVerificationCode } from '@/lib/auth';
 import { sendVerificationEmail } from '@/lib/email';
 import { checkRateLimit, recordAttempt, RATE_LIMITS, getClientIP } from '@/lib/rate-limit';
 
@@ -75,19 +75,19 @@ export async function POST(request: NextRequest) {
             where: { userId: user.id },
         });
 
-        // Generate new verification token
-        const { token, expiresAt } = generateVerificationToken();
+        // Generate new 6-digit verification code
+        const { code, expiresAt } = generateVerificationCode();
 
         await prisma.verificationToken.create({
             data: {
-                token,
+                token: code,
                 userId: user.id,
                 expiresAt,
             },
         });
 
-        // Send verification email
-        const emailResult = await sendVerificationEmail(user.email, token, user.name || undefined);
+        // Send verification email with code
+        const emailResult = await sendVerificationEmail(user.email, code, user.name || undefined);
 
         if (!emailResult.success) {
             return NextResponse.json(
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            message: 'Verification email sent. Please check your inbox.',
+            message: 'A new 6-digit verification code has been sent to your email.',
         });
     } catch (error) {
         console.error('Resend verification error:', error);
