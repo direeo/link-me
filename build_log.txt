@@ -5,140 +5,83 @@
 Environment variables loaded from .env
 Prisma schema loaded from prisma\schema.prisma
 
-Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 122ms
+Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 177ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
 
 Γû▓ Next.js 16.1.1 (Turbopack)
 - Environments: .env.local, .env
 
 node.exe : ΓÜá The 
 "middleware" file 
-convention is 
-deprecated. Please use 
-"proxy" instead. Learn 
-more: https://nextjs.or
-g/docs/messages/middlew
-are-to-proxy
+convention is deprecated. 
+Please use "proxy" 
+instead. Learn more: https
+://nextjs.org/docs/message
+s/middleware-to-proxy
 At line:1 char:1
 + & "C:\Program 
 Files\nodejs/node.exe" 
 "C:\Program 
-Files\nodejs/node_mo 
-...
-+ ~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~
-~~
-    + CategoryInfo     
-         : 
-NotSpecified: (Γ    Üá 
-The "middle...lewa    
-re-to-proxy:String) [  
-  ], RemoteException
-    + 
-FullyQualifiedError    
-Id : NativeCommandErr  
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (Γ  
+  Üá The "middle...lewa   
+ re-to-proxy:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
   or
  
   Creating an optimized production build ...
-Turbopack build 
-encountered 2 warnings:
-[next]/internal/font/go
-ogle/inter_2fe1ab3d.mod
-ule.css
-Error while requesting 
-resource
-There was an issue 
-establishing a 
-connection while 
-requesting https://font
-s.googleapis.com/css2?f
-amily=Inter:wght@100..9
-00&display=swap
+Γ£ô Compiled successfully in 27.0s
+  Running TypeScript ...
+Failed to compile.
 
-Import trace:
-  Server Component:
-    [next]/internal/fon
-t/google/inter_2fe1ab3d
-.module.css
-    [next]/internal/fon
-t/google/inter_2fe1ab3d
-.js
-    
-./src/app/layout.tsx
+./src/app/api/auth/2fa/log
+in/route.ts:38:21
+Type error: Property 
+'authenticator' does not 
+exist on type 'typeof impo
+rt("C:/Users/Temidire_Ojo/
+Documents/linkme/node_modu
+les/otplib/dist/index")'.
 
-
-[next]/internal/font/go
-ogle/outfit_333574c6.mo
-dule.css
-Error while requesting 
-resource
-There was an issue 
-establishing a 
-connection while 
-requesting https://font
-s.googleapis.com/css2?f
-amily=Outfit:wght@100..
-900&display=swap
-
-Import trace:
-  Server Component:
-    [next]/internal/fon
-t/google/outfit_333574c
-6.module.css
-    [next]/internal/fon
-t/google/outfit_333574c
-6.js
-    
-./src/app/layout.tsx
-
-
-
-> Build error occurred
-Error: Turbopack build 
-failed with 2 errors:
-[next]/internal/font/go
-ogle/inter_2fe1ab3d.mod
-ule.css
-next/font: error:
-Failed to fetch 
-`Inter` from Google 
-Fonts.
-
-Import trace:
-  Server Component:
-    [next]/internal/fon
-t/google/inter_2fe1ab3d
-.module.css
-    [next]/internal/fon
-t/google/inter_2fe1ab3d
-.js
-    
-./src/app/layout.tsx
-
-
-[next]/internal/font/go
-ogle/outfit_333574c6.mo
-dule.css
-next/font: error:
-Failed to fetch 
-`Outfit` from Google 
-Fonts.
-
-Import trace:
-  Server Component:
-    [next]/internal/fon
-t/google/outfit_333574c
-6.module.css
-    [next]/internal/fon
-t/google/outfit_333574c
-6.js
-    
-./src/app/layout.tsx
-
-
-    at ignore-listed 
-frames
+[0m [90m 36 |[39m      
+   [36mlet[39m isValid 
+[33m=[39m 
+[36mfalse[39m[33m;[39m
+ [90m 37 |[39m         
+[36mtry[39m {
+[31m[1m>[22m[39m[90m 
+38 |[39m             
+[36mconst[39m { 
+authenticator } 
+[33m=[39m 
+[36mawait[39m [36mimpor
+t[39m([32m'otplib'[39m)
+[33m;[39m
+ [90m    |[39m          
+           
+[31m[1m^[22m[39m
+ [90m 39 |[39m          
+   isValid [33m=[39m aut
+henticator[33m.[39mverif
+y({ token[33m,[39m 
+secret[33m:[39m user[33
+m.[39mtwoFactorSecret 
+})[33m;[39m
+ [90m 40 |[39m         
+} [36mcatch[39m {
+ [90m 41 |[39m          
+   [90m// fallback: try 
+direct comparison (for 
+testing)[39m[0m
+Next.js build worker 
+exited with code: 1 and 
+signal: null

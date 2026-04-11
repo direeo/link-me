@@ -1,0 +1,105 @@
+﻿
+> linkme@0.1.0 build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 159ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local, .env
+
+node.exe : ΓÜá The 
+"middleware" file 
+convention is deprecated. 
+Please use "proxy" 
+instead. Learn more: https
+://nextjs.org/docs/message
+s/middleware-to-proxy
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (Γ  
+  Üá The "middle...lewa   
+ re-to-proxy:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 38.7s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/11) ...
+ΓÜá metadataBase property 
+in metadata export is not 
+set for resolving social 
+open graph or twitter 
+images, using 
+"http://localhost:3000". 
+See https://nextjs.org/doc
+s/app/api-reference/functi
+ons/generate-metadata#meta
+database
+  Generating static pages using 7 workers (2/11) 
+  Generating static pages using 7 workers (5/11) 
+  Generating static pages using 7 workers (8/11) 
+Γ£ô Generating static pages using 7 workers (11/11) in 1198.0ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ ╞Æ /api/admin/users
+Γö£ ╞Æ /api/auth/2fa/disable
+Γö£ ╞Æ /api/auth/2fa/login
+Γö£ ╞Æ /api/auth/2fa/setup
+Γö£ ╞Æ /api/auth/2fa/verify
+Γö£ ╞Æ /api/auth/guest
+Γö£ ╞Æ /api/auth/login
+Γö£ ╞Æ /api/auth/logout
+Γö£ ╞Æ /api/auth/me
+Γö£ ╞Æ /api/auth/signup
+Γö£ ╞Æ /api/auth/verify
+Γö£ ╞Æ /api/chat/history
+Γö£ ╞Æ /api/chat/history/[id]
+Γö£ ╞Æ /api/chat/message
+Γö£ ╞Æ /api/health
+Γö£ ╞Æ /api/learning-path/progress
+Γö£ ╞Æ /api/learning-path/save
+Γö£ ╞Æ /api/test-chat
+Γö£ ╞Æ /api/test-db
+Γö£ ╞Æ /api/test-gemini
+Γö£ ╞Æ /api/verify/email
+Γö£ ╞Æ /api/verify/resend
+Γö£ ╞Æ /api/youtube/auth
+Γö£ ╞Æ /api/youtube/callback
+Γö£ ╞Æ /api/youtube/playlist
+Γö£ ╞Æ /api/youtube/search
+Γö£ ╞Æ /api/youtube/status
+Γö£ Γùï /chat
+Γö£ Γùï /login
+Γö£ Γùï /privacy
+Γö£ Γùï /settings
+Γö£ Γùï /signup
+Γö£ Γùï /terms
+Γöö Γùï /verify
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

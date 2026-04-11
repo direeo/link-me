@@ -32,13 +32,18 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Verify TOTP token using speakeasy/otplib
+        // Verify TOTP token using speakeasy
         let isValid = false;
         try {
-            const { authenticator } = await import('otplib');
-            isValid = authenticator.verify({ token, secret: user.twoFactorSecret });
-        } catch {
-            // fallback: try direct comparison (for testing)
+            const speakeasy = (await import('speakeasy')).default || (await import('speakeasy'));
+            isValid = speakeasy.totp.verify({
+                secret: user.twoFactorSecret,
+                encoding: 'base32',
+                token,
+                window: 1 // allow 1 window of 30sec before/after
+            });
+        } catch (e) {
+            console.error('2FA verification failed:', e);
             isValid = false;
         }
 
