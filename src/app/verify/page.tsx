@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 function VerifyContent() {
     const router = useRouter();
@@ -11,6 +12,7 @@ function VerifyContent() {
     const email = searchParams.get('email') || '';
     const type = searchParams.get('type') || 'email'; // 'email' or '2fa'
     const is2FA = type === '2fa';
+    const { refreshAuth } = useAuth();
 
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +74,8 @@ function VerifyContent() {
 
             if (data.success) {
                 setIsSuccess(true);
-                setTimeout(() => router.push('/chat'), 1500);
+                await refreshAuth(); // Update global auth state so /chat doesn't kick us out
+                setTimeout(() => router.push('/chat'), 1000);
             } else {
                 setError(data.message || 'Incorrect code. Please try again.');
             }

@@ -5,11 +5,11 @@
 Environment variables loaded from .env
 Prisma schema loaded from prisma\schema.prisma
 
-Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 158ms
+Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 192ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
 
 Γû▓ Next.js 16.1.1 (Turbopack)
 - Environments: .env.local, .env
@@ -44,7 +44,7 @@ Id : NativeCommandErr
   or
  
   Creating an optimized production build ...
-Γ£ô Compiled successfully in 37.7s
+Γ£ô Compiled successfully in 63s
   Running TypeScript ...
   Collecting page data using 7 workers ...
   Generating static pages using 7 workers (0/11) ...
@@ -62,7 +62,7 @@ tadatabase
   Generating static pages using 7 workers (2/11) 
   Generating static pages using 7 workers (5/11) 
   Generating static pages using 7 workers (8/11) 
-Γ£ô Generating static pages using 7 workers (11/11) in 1095.6ms
+Γ£ô Generating static pages using 7 workers (11/11) in 1532.6ms
   Finalizing page optimization ...
 
 Route (app)
