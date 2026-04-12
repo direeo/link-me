@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { isTokenExpired } from '@/lib/auth';
+import { isTokenExpired, generateAccessToken, generateRefreshToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,21 +57,57 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Verification success - Update user and delete token
-        await db.$transaction([
-            db.user.update({
-                where: { id: user.id },
-                data: { emailVerified: true }
-            }),
-            db.verificationToken.delete({
-                where: { id: tokenEntry.id }
-            })
-        ]);
-
-        return NextResponse.json({
-            success: true,
-            message: 'Email verified successfully! Welcome to LinkMe.'
+        // Verification success - Update user and delete token sequentially
+        await db.user.update({
+            where: { id: user.id },
+            data: { emailVerified: true }
         });
+        
+        await db.verificationToken.delete({
+            where: { id: tokenEntry.id }
+        });
+
+        // Generate auth tokens since they are newly verified
+        const tokenPayload = {
+            userId: user.id,
+            email: user.email,
+            emailVerified: true,
+            isGuest: false,
+        };
+
+        const accessToken = generateAccessToken(tokenPayload);
+        const refreshToken = generateRefreshToken(tokenPayload);
+
+        const response = NextResponse.json({
+            success: true,
+            message: 'Email verified successfully! Welcome to LinkMe.',
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                emailVerified: true,
+                isGuest: false,
+            }
+        });
+
+        // Set HTTP-only cookies
+        response.cookies.set('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 15 * 60, // 15 minutes
+            path: '/',
+        });
+
+        response.cookies.set('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60, // 7 days
+            path: '/',
+        });
+
+        return response;
 
     } catch (error) {
         console.error('Verification error:', error);

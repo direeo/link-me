@@ -3,8 +3,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { verifyPassword, generateAccessToken, generateRefreshToken } from '@/lib/auth';
+import { verifyPassword, generateAccessToken, generateRefreshToken, generateVerificationCode } from '@/lib/auth';
 import { loginSchema, validateInput } from '@/lib/validation';
+import { sendVerificationEmail } from '@/lib/email';
 import { checkRateLimit, recordAttempt, resetRateLimit, RATE_LIMITS, getClientIP } from '@/lib/rate-limit';
 
 // Force dynamic rendering
@@ -88,6 +89,34 @@ export async function POST(request: NextRequest) {
                 requires2FA: true,
                 email: user.email,
                 message: 'Please enter your 2FA code',
+            });
+        }
+
+        // Check if email is verified
+        if (!user.emailVerified) {
+            // Generate and send a fresh verification code
+            const { code, expiresAt } = generateVerificationCode();
+
+            // Delete old tokens and add new one
+            await prisma.verificationToken.deleteMany({
+                where: { userId: user.id }
+            });
+            await prisma.verificationToken.create({
+                data: {
+                    token: code,
+                    userId: user.id,
+                    expiresAt: expiresAt
+                }
+            });
+
+            // Send email asynchronously
+            sendVerificationEmail(user.email, code, user.name || undefined);
+
+            return NextResponse.json({
+                success: true,
+                requiresVerification: true,
+                email: user.email,
+                message: 'Please verify your email address',
             });
         }
 
