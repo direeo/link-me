@@ -18,8 +18,6 @@ export const dynamic = 'force-dynamic';
 // GET - Generate new TOTP secret and QR code for setup
 export async function GET(request: NextRequest) {
     try {
-        console.log('[2FA GET] Starting 2FA setup...');
-        
         // Auth check
         const accessToken = request.cookies.get('accessToken')?.value;
         if (!accessToken) {
@@ -37,7 +35,6 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        console.log('[2FA GET] Auth check passed, fetching user...');
         const prisma = getDb();
         const user = await prisma.user.findUnique({
             where: { id: decoded.userId },
@@ -58,12 +55,9 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        console.log('[2FA GET] Generating TOTP secret...');
         // Generate new secret
         const secret = generateTOTPSecret();
-        console.log('[2FA GET] Secret generated, generating QR code...');
         const qrCodeDataUrl = await generateQRCode(user.email, secret);
-        console.log('[2FA GET] QR code generated, encrypting and storing...');
 
         // Store the secret temporarily (encrypted) - user must verify before it's active
         // We'll store it in twoFactorSecret but keep twoFactorEnabled = false
@@ -75,7 +69,6 @@ export async function GET(request: NextRequest) {
             },
         });
 
-        console.log('[2FA GET] Secret stored, returning response...');
         return NextResponse.json({
             success: true,
             qrCode: qrCodeDataUrl,
@@ -84,21 +77,17 @@ export async function GET(request: NextRequest) {
         });
     } catch (error) {
         console.error('2FA setup error:', error);
-        console.error('Error details:', error instanceof Error ? error.message : String(error));
-        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
         return NextResponse.json(
-            { success: false, message: 'Failed to generate 2FA setup', error: error instanceof Error ? error.message : String(error) },
+            { success: false, message: 'Failed to generate 2FA setup' },
             { status: 500 }
         );
     }
+}
 }
 
 // POST - Verify TOTP code and enable 2FA
 export async function POST(request: NextRequest) {
     try {
-        console.log('[2FA POST] Request method:', request.method);
-        console.log('[2FA POST] Request headers:', Object.fromEntries(request.headers));
-        
         // Auth check
         const accessToken = request.cookies.get('accessToken')?.value;
         if (!accessToken) {
@@ -116,25 +105,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log('[2FA POST] Parsing request body...');
-        let body;
-        try {
-            const bodyText = await request.text();
-            console.log('[2FA POST] Raw body text length:', bodyText.length);
-            console.log('[2FA POST] Raw body text:', bodyText);
-            if (!bodyText || bodyText.length === 0) {
-                console.error('[2FA POST] EMPTY BODY RECEIVED!');
-                return NextResponse.json(
-                    { success: false, message: 'Request body is empty. Please send code in body.' },
-                    { status: 400 }
-                );
-            }
-            body = JSON.parse(bodyText);
-        } catch (parseError) {
-            console.error('[2FA POST] Failed to parse body:', parseError);
-            throw new Error(`Failed to parse request body: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
-        }
-        console.log('[2FA POST] Body parsed:', body);
+        const body = await request.json();
         const { code } = body;
 
         if (!code || typeof code !== 'string') {
@@ -207,10 +178,8 @@ export async function POST(request: NextRequest) {
         });
     } catch (error) {
         console.error('2FA verification error:', error);
-        console.error('Error details:', error instanceof Error ? error.message : String(error));
-        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
         return NextResponse.json(
-            { success: false, message: 'Failed to enable 2FA', error: error instanceof Error ? error.message : String(error) },
+            { success: false, message: 'Failed to enable 2FA' },
             { status: 500 }
         );
     }

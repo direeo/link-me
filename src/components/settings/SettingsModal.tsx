@@ -42,7 +42,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         setIsLoading(true);
         setMessage(null);
         try {
-            const res = await fetch('/api/auth/2fa/setup', { method: 'POST' });
+            const res = await fetch('/api/auth/2fa/setup', { 
+                method: 'GET',
+                credentials: 'include',
+            });
             const data = await res.json();
             if (data.success) {
                 setTwoFASecret(data.secret);
@@ -60,16 +63,18 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const verifyAndEnable = async () => {
         setIsLoading(true);
         try {
-            const res = await fetch('/api/auth/2fa/verify', {
+            const res = await fetch('/api/auth/2fa/setup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: verificationCode }),
+                credentials: 'include',
+                body: JSON.stringify({ code: verificationCode }),
             });
             const data = await res.json();
             if (data.success) {
                 setIs2FAEnabled(true);
                 setTwoFASecret(null);
                 setQrCode(null);
+                setVerificationCode('');
                 setMessage({ type: 'success', text: '2FA Enabled Successfully' });
             } else {
                 setMessage({ type: 'error', text: data.message || 'Verification failed' });
