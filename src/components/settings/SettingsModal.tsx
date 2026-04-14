@@ -61,24 +61,42 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     };
 
     const verifyAndEnable = async () => {
-        console.log('[2FA Modal] verifyAndEnable called');
-        console.log('[2FA Modal] verificationCode value:', verificationCode);
-        console.log('[2FA Modal] verificationCode length:', verificationCode.length);
+        console.log('[2FA Modal] verifyAndEnable called - timestamp:', new Date().toISOString());
+        console.log('[2FA Modal] Current state - verificationCode:', verificationCode);
+        
+        if (!verificationCode || verificationCode.length < 6) {
+            alert('[DEBUG] Code is too short: ' + verificationCode.length + ' chars');
+            console.error('[2FA Modal] Code validation failed');
+            return;
+        }
         
         setIsLoading(true);
+        setMessage(null);
+        
         try {
             const bodyObj = { code: verificationCode };
-            console.log('[2FA Modal] Sending body:', bodyObj);
             const bodyStr = JSON.stringify(bodyObj);
-            console.log('[2FA Modal] Stringified body:', bodyStr);
             
-            const res = await fetch('/api/auth/2fa/setup', {
+            console.log('[2FA Modal] Body object:', bodyObj);
+            console.log('[2FA Modal] Stringified body:', bodyStr);
+            console.log('[2FA Modal] Body length:', bodyStr.length);
+            
+            const fetchOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
+                credentials: 'include' as const,
                 body: bodyStr,
-            });
+            };
+            
+            console.log('[2FA Modal] Fetch options:', fetchOptions);
+            
+            const res = await fetch('/api/auth/2fa/setup', fetchOptions);
+            
             console.log('[2FA Modal] Response status:', res.status);
+            console.log('[2FA Modal] Response headers:', {
+                contentType: res.headers.get('content-type'),
+            });
+            
             const data = await res.json();
             console.log('[2FA Modal] Response data:', data);
             
@@ -89,10 +107,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 setVerificationCode('');
                 setMessage({ type: 'success', text: '2FA Enabled Successfully' });
             } else {
+                console.warn('[2FA Modal] Request failed:', data.message);
                 setMessage({ type: 'error', text: data.message || 'Verification failed' });
             }
         } catch (err) {
-            console.error('[2FA Modal] Error:', err);
+            console.error('[2FA Modal] Exception:', err);
             setMessage({ type: 'error', text: 'Verification failure' });
         } finally {
             setIsLoading(false);

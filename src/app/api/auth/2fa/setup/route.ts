@@ -105,10 +105,25 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const body = await request.json();
+        console.log('[2FA POST] POST handler called');
+        console.log('[2FA POST] Request cookies:', request.cookies.getAll());
+        
+        let body;
+        try {
+            body = await request.json();
+            console.log('[2FA POST] Parsed body:', body);
+        } catch (e) {
+            console.error('[2FA POST] Failed to parse JSON:', e);
+            return NextResponse.json(
+                { success: false, message: 'Invalid request body' },
+                { status: 400 }
+            );
+        }
+        
         const { code } = body;
 
         if (!code || typeof code !== 'string') {
+            console.log('[2FA POST] Missing or invalid code:', code);
             return NextResponse.json(
                 { success: false, message: 'Verification code is required' },
                 { status: 400 }
