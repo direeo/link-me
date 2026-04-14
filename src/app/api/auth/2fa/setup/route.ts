@@ -120,7 +120,15 @@ export async function POST(request: NextRequest) {
         let body;
         try {
             const bodyText = await request.text();
+            console.log('[2FA POST] Raw body text length:', bodyText.length);
             console.log('[2FA POST] Raw body text:', bodyText);
+            if (!bodyText || bodyText.length === 0) {
+                console.error('[2FA POST] EMPTY BODY RECEIVED!');
+                return NextResponse.json(
+                    { success: false, message: 'Request body is empty. Please send code in body.' },
+                    { status: 400 }
+                );
+            }
             body = JSON.parse(bodyText);
         } catch (parseError) {
             console.error('[2FA POST] Failed to parse body:', parseError);
