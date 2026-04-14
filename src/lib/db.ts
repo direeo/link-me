@@ -111,6 +111,7 @@ async function tursoExecute(sql: string, args: unknown[] = []): Promise<unknown[
 // ============================================
 // Turso Database Implementation
 // ============================================
+// Note: Includes findFirst, findMany, and other methods for all models
 
 const tursoDb = {
   user: {
