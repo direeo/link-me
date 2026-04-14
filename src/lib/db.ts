@@ -256,6 +256,56 @@ const tursoDb = {
         createdAt: new Date(String(r.createdAt)),
       };
     },
+    async findFirst(args: { where: { token?: string; id?: string; userId?: string } }): Promise<DbVerificationToken | null> {
+      // findFirst is similar to findUnique but supports more conditions
+      let sql = 'SELECT * FROM VerificationToken WHERE 1=1';
+      const values: unknown[] = [];
+
+      if (args.where.token) {
+        sql += ' AND token = ?';
+        values.push(args.where.token);
+      }
+      if (args.where.id) {
+        sql += ' AND id = ?';
+        values.push(args.where.id);
+      }
+      if (args.where.userId) {
+        sql += ' AND userId = ?';
+        values.push(args.where.userId);
+      }
+
+      const rows = await tursoExecute(sql, values);
+      if (rows.length === 0) return null;
+      const r = rows[0] as Record<string, unknown>;
+      return {
+        id: String(r.id),
+        token: String(r.token),
+        userId: String(r.userId),
+        expiresAt: new Date(String(r.expiresAt)),
+        createdAt: new Date(String(r.createdAt)),
+      };
+    },
+    async findMany(args: { where?: { userId?: string } }): Promise<DbVerificationToken[]> {
+      let sql = 'SELECT * FROM VerificationToken';
+      const values: unknown[] = [];
+
+      if (args.where?.userId) {
+        sql += ' WHERE userId = ?';
+        values.push(args.where.userId);
+      }
+
+      const rows = await tursoExecute(sql, values);
+      return rows.map((r: unknown) => {
+        const row = r as Record<string, unknown>;
+        return {
+          id: String(row.id),
+          token: String(row.token),
+          userId: String(row.userId),
+          expiresAt: new Date(String(row.expiresAt)),
+          createdAt: new Date(String(row.createdAt)),
+        };
+      });
+    },
     async create(args: { data: { token: string; userId: string; expiresAt: Date } }): Promise<DbVerificationToken> {
       const id = generateId();
       const now = new Date().toISOString();

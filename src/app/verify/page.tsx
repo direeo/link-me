@@ -68,7 +68,7 @@ function VerifyContent() {
             const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, code: fullCode, token: fullCode }),
+                body: JSON.stringify({ email, code: fullCode }),
             });
             const data = await res.json();
 

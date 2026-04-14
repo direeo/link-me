@@ -46,7 +46,7 @@ export function verifyTOTP(token: string, secret: string): boolean {
             secret: secret,
             encoding: 'base32',
             token: token,
-            window: 1, // Allow 1 step before and after for clock drift
+            window: 2, // Allow ±2 time steps for clock skew tolerance (previously 1)
         });
     } catch {
         return false;

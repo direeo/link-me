@@ -23,8 +23,7 @@ export async function POST(request: NextRequest) {
 
         // Find the user first to get their ID
         const user = await db.user.findUnique({
-            where: { email: email.toLowerCase() },
-            include: { verificationTokens: true }
+            where: { email: email.toLowerCase() }
         });
 
         if (!user) {
@@ -34,25 +33,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Find valid token for this user
-        const tokenEntry = await db.verificationToken.findFirst({
-            where: {
-                token: code,
-                userId: user.id
-            },
-            orderBy: { createdAt: 'desc' }
+        // Find valid token
+        const tokenEntry = await db.verificationToken.findUnique({
+            where: { token: code }
         });
 
+        // Ensure token exists and belongs to the user
         if (!tokenEntry) {
             return NextResponse.json(
-                { success: false, message: 'Invalid verification code' },
+                { success: false, message: 'Verification code not found. Please request a new code.' },
                 { status: 400 }
             );
         }
 
+        if (tokenEntry.userId !== user.id) {
+            return NextResponse.json(
+                { success: false, message: 'This verification code does not match your account.' },
+                { status: 400 }
+            );
+        }
+
+        // Check expiration
         if (isTokenExpired(tokenEntry.expiresAt)) {
             return NextResponse.json(
-                { success: false, message: 'Verification code has expired' },
+                { success: false, message: 'Verification code has expired. Please request a new code.' },
                 { status: 400 }
             );
         }

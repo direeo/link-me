@@ -12,7 +12,6 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'default-refresh-se
 // Token expiration times
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
-const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
 
 // Payload types
 export interface TokenPayload {
@@ -107,8 +106,9 @@ export function verifyRefreshToken(token: string): DecodedToken | null {
  * @returns Object with code string and expiration date
  */
 export function generateVerificationCode(): { code: string; expiresAt: Date } {
-    // Generate a random 6-digit number
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate a random 6-digit number with zero-padding
+    // Important: padStart ensures codes like "023456" don't become "23456"
+    const code = Math.floor(100000 + Math.random() * 900000).toString().padStart(6, '0');
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minute expiry for codes
 

@@ -34,14 +34,28 @@ export async function POST(request: NextRequest) {
         // Find verification token
         const verificationToken = await prisma.verificationToken.findUnique({
             where: { token },
-            include: { user: true },
         });
 
         if (!verificationToken) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: 'Invalid or expired verification token',
+                    message: 'Verification code not found. Please request a new code.',
+                },
+                { status: 400 }
+            );
+        }
+
+        // Fetch user manually since Turso implementation doesn't support "include"
+        const user = await prisma.user.findUnique({
+            where: { id: verificationToken.userId }
+        });
+
+        if (!user) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: 'User account not found',
                 },
                 { status: 400 }
             );
@@ -57,14 +71,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: 'Verification token has expired. Please request a new one.',
+                    message: 'Verification code has expired. Please request a new one.',
                 },
                 { status: 400 }
             );
         }
 
         // Check if user is already verified
-        if (verificationToken.user.emailVerified) {
+        if (user.emailVerified) {
             // Delete used token
             await prisma.verificationToken.delete({
                 where: { id: verificationToken.id },
@@ -77,8 +91,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Update user as verified
-        const user = await prisma.user.update({
-            where: { id: verificationToken.userId },
+        await prisma.user.update({
+            where: { id: user.id },
             data: { emailVerified: true },
         });
 
