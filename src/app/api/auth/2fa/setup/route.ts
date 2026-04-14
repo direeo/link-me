@@ -77,8 +77,10 @@ export async function GET(request: NextRequest) {
         });
     } catch (error) {
         console.error('2FA setup error:', error);
+        console.error('Error details:', error instanceof Error ? error.message : String(error));
+        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
         return NextResponse.json(
-            { success: false, message: 'Failed to generate 2FA setup' },
+            { success: false, message: 'Failed to generate 2FA setup', error: error instanceof Error ? error.message : String(error) },
             { status: 500 }
         );
     }
@@ -177,8 +179,10 @@ export async function POST(request: NextRequest) {
         });
     } catch (error) {
         console.error('2FA verification error:', error);
+        console.error('Error details:', error instanceof Error ? error.message : String(error));
+        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
         return NextResponse.json(
-            { success: false, message: 'Failed to enable 2FA' },
+            { success: false, message: 'Failed to enable 2FA', error: error instanceof Error ? error.message : String(error) },
             { status: 500 }
         );
     }
