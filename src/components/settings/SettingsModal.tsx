@@ -198,11 +198,24 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                             <div className="flex gap-3">
                                                 <Input 
                                                     value={verificationCode}
-                                                    onChange={(e) => setVerificationCode(e.target.value)}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        console.log('[2FA Input] onChange triggered - value:', val, 'length:', val.length);
+                                                        setVerificationCode(val);
+                                                    }}
                                                     placeholder="Enter 6-digit code"
                                                     className="flex-1"
                                                 />
-                                                <Button onClick={verifyAndEnable} disabled={isLoading || verificationCode.length < 6}>
+                                                <Button 
+                                                    onClick={() => {
+                                                        console.log('[2FA Button] Clicked! verificationCode:', verificationCode, 'length:', verificationCode.length, 'isLoading:', isLoading);
+                                                        if (verificationCode.length < 6) {
+                                                            console.warn('[2FA Button] Code too short, button should be disabled');
+                                                        }
+                                                        verifyAndEnable();
+                                                    }} 
+                                                    disabled={isLoading || verificationCode.length < 6}
+                                                >
                                                     {isLoading ? 'Syncing...' : 'Verify & Enable'}
                                                 </Button>
                                             </div>
