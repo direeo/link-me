@@ -18,14 +18,9 @@ export const dynamic = 'force-dynamic';
 // GET - Generate new TOTP secret and QR code for setup
 export async function GET(request: NextRequest) {
     try {
-        console.log('[2FA GET] Handler called');
-        
         // Auth check
         const accessToken = request.cookies.get('accessToken')?.value;
-        console.log('[2FA GET] accessToken present:', !!accessToken);
-        
         if (!accessToken) {
-            console.log('[2FA GET] No access token, returning 401');
             return NextResponse.json(
                 { success: false, message: 'Unauthorized' },
                 { status: 401 }
@@ -33,8 +28,6 @@ export async function GET(request: NextRequest) {
         }
 
         const decoded = verifyAccessToken(accessToken);
-        console.log('[2FA GET] Token decoded:', !!decoded, 'isGuest:', decoded?.isGuest);
-        
         if (!decoded || decoded.isGuest) {
             return NextResponse.json(
                 { success: false, message: 'Unauthorized' },
@@ -47,8 +40,6 @@ export async function GET(request: NextRequest) {
             where: { id: decoded.userId },
             select: { email: true, twoFactorEnabled: true },
         });
-
-        console.log('[2FA GET] User found:', !!user, 'email:', user?.email);
 
         if (!user) {
             return NextResponse.json(
@@ -65,17 +56,11 @@ export async function GET(request: NextRequest) {
         }
 
         // Generate new secret
-        console.log('[2FA GET] Generating TOTP secret...');
         const secret = generateTOTPSecret();
-        console.log('[2FA GET] Secret generated:', !!secret);
-        
-        console.log('[2FA GET] Generating QR code...');
         const qrCodeDataUrl = await generateQRCode(user.email, secret);
-        console.log('[2FA GET] QR code generated:', !!qrCodeDataUrl, 'length:', qrCodeDataUrl?.length);
 
         // Store the secret temporarily (encrypted) - user must verify before it's active
         // We'll store it in twoFactorSecret but keep twoFactorEnabled = false
-        console.log('[2FA GET] Updating user...');
         await prisma.user.update({
             where: { id: decoded.userId },
             data: {
@@ -83,26 +68,17 @@ export async function GET(request: NextRequest) {
                 twoFactorEnabled: false, // Not enabled until verified
             },
         });
-        console.log('[2FA GET] User updated successfully');
 
-        const response = {
+        return NextResponse.json({
             success: true,
             qrCode: qrCodeDataUrl,
             // Also return the secret for manual entry
             secret: secret,
-        };
-        
-        console.log('[2FA GET] Returning response:', {
-            success: response.success,
-            hasQrCode: !!response.qrCode,
-            hasSecret: !!response.secret,
         });
-        
-        return NextResponse.json(response);
     } catch (error) {
-        console.error('[2FA GET] Exception:', error);
+        console.error('2FA setup error:', error);
         return NextResponse.json(
-            { success: false, message: 'Failed to generate 2FA setup: ' + (error instanceof Error ? error.message : String(error)) },
+            { success: false, message: 'Failed to generate 2FA setup' },
             { status: 500 }
         );
     }

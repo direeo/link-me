@@ -39,36 +39,22 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     };
 
     const setup2FA = async () => {
-        console.log('[2FA Setup] Starting...');
         setIsLoading(true);
         setMessage(null);
-        setQrCode(null);
-        setTwoFASecret(null);
-        
         try {
             const res = await fetch('/api/auth/2fa/setup', { 
                 method: 'GET',
                 credentials: 'include',
             });
-            
             const data = await res.json();
-            console.log('[2FA Setup] Got response:', { success: data.success, hasQrCode: !!data.qrCode, hasSecret: !!data.secret });
-            
-            if (data.success && data.qrCode) {
-                console.log('[2FA Setup] Setting state - qrCode length:', data.qrCode.length);
+            if (data.success) {
                 setTwoFASecret(data.secret);
                 setQrCode(data.qrCode);
-                
-                // Force alert to confirm
-                alert('[DEBUG] QR Code set! Should appear now. Length: ' + data.qrCode.length);
             } else {
-                const errMsg = data.message || 'Setup failed';
-                console.error('[2FA Setup] Failed:', errMsg);
-                setMessage({ type: 'error', text: errMsg });
+                setMessage({ type: 'error', text: data.message || 'Setup failed' });
             }
         } catch (err) {
-            console.error('[2FA Setup] Error:', err);
-            setMessage({ type: 'error', text: String(err) });
+            setMessage({ type: 'error', text: 'Connection failure' });
         } finally {
             setIsLoading(false);
         }
@@ -76,44 +62,20 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     };
 
     const verifyAndEnable = async () => {
-        console.log('[2FA Modal] verifyAndEnable called - timestamp:', new Date().toISOString());
-        console.log('[2FA Modal] Current state - verificationCode:', verificationCode);
-        
-        if (!verificationCode || verificationCode.length < 6) {
-            alert('[DEBUG] Code is too short: ' + verificationCode.length + ' chars');
-            console.error('[2FA Modal] Code validation failed');
-            return;
-        }
+        if (!verificationCode || verificationCode.length < 6) return;
         
         setIsLoading(true);
         setMessage(null);
         
         try {
-            const bodyObj = { code: verificationCode };
-            const bodyStr = JSON.stringify(bodyObj);
-            
-            console.log('[2FA Modal] Body object:', bodyObj);
-            console.log('[2FA Modal] Stringified body:', bodyStr);
-            console.log('[2FA Modal] Body length:', bodyStr.length);
-            
-            const fetchOptions = {
+            const res = await fetch('/api/auth/2fa/setup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include' as const,
-                body: bodyStr,
-            };
-            
-            console.log('[2FA Modal] Fetch options:', fetchOptions);
-            
-            const res = await fetch('/api/auth/2fa/setup', fetchOptions);
-            
-            console.log('[2FA Modal] Response status:', res.status);
-            console.log('[2FA Modal] Response headers:', {
-                contentType: res.headers.get('content-type'),
+                credentials: 'include',
+                body: JSON.stringify({ code: verificationCode }),
             });
             
             const data = await res.json();
-            console.log('[2FA Modal] Response data:', data);
             
             if (data.success) {
                 setIs2FAEnabled(true);
@@ -122,11 +84,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 setVerificationCode('');
                 setMessage({ type: 'success', text: '2FA Enabled Successfully' });
             } else {
-                console.warn('[2FA Modal] Request failed:', data.message);
                 setMessage({ type: 'error', text: data.message || 'Verification failed' });
             }
         } catch (err) {
-            console.error('[2FA Modal] Exception:', err);
             setMessage({ type: 'error', text: 'Verification failure' });
         } finally {
             setIsLoading(false);
@@ -213,22 +173,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                             <div className="flex gap-3">
                                                 <Input 
                                                     value={verificationCode}
-                                                    onChange={(e) => {
-                                                        const val = e.target.value;
-                                                        console.log('[2FA Input] onChange triggered - value:', val, 'length:', val.length);
-                                                        setVerificationCode(val);
-                                                    }}
+                                                    onChange={(e) => setVerificationCode(e.target.value)}
                                                     placeholder="Enter 6-digit code"
                                                     className="flex-1"
                                                 />
                                                 <Button 
-                                                    onClick={() => {
-                                                        console.log('[2FA Button] Clicked! verificationCode:', verificationCode, 'length:', verificationCode.length, 'isLoading:', isLoading);
-                                                        if (verificationCode.length < 6) {
-                                                            console.warn('[2FA Button] Code too short, button should be disabled');
-                                                        }
-                                                        verifyAndEnable();
-                                                    }} 
+                                                    onClick={verifyAndEnable}
                                                     disabled={isLoading || verificationCode.length < 6}
                                                 >
                                                     {isLoading ? 'Syncing...' : 'Verify & Enable'}
