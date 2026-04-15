@@ -18,8 +18,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [is2FAEnabled, setIs2FAEnabled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [isGuest, setIsGuest] = useState(false);
 
-    // Initial check for 2FA status
+    // Initial check for 2FA status and guest mode
     useEffect(() => {
         if (isOpen) {
             check2FAStatus();
@@ -31,6 +32,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             const res = await fetch('/api/auth/me');
             const data = await res.json();
             if (data.success && data.user) {
+                // Check if user is guest - if so, close the modal
+                if (data.user.isGuest) {
+                    setIsGuest(true);
+                    onClose();
+                    return;
+                }
                 setIs2FAEnabled(!!data.user.twoFactorEnabled);
             }
         } catch (err) {
