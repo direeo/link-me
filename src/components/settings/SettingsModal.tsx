@@ -59,7 +59,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             setIsLoading(false);
         }
     };
-    };
 
     const verifyAndEnable = async () => {
         if (!verificationCode || verificationCode.length < 6) return;
