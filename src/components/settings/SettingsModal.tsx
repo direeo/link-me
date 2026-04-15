@@ -39,45 +39,40 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     };
 
     const setup2FA = async () => {
-        console.log('[2FA Setup] Starting QR generation...');
+        console.log('[2FA Setup] Starting...');
         setIsLoading(true);
         setMessage(null);
+        setQrCode(null);
+        setTwoFASecret(null);
+        
         try {
             const res = await fetch('/api/auth/2fa/setup', { 
                 method: 'GET',
                 credentials: 'include',
             });
-            console.log('[2FA Setup] Response status:', res.status);
-            const text = await res.text();
-            console.log('[2FA Setup] Response text:', text);
             
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error('[2FA Setup] Failed to parse JSON:', e);
-                setMessage({ type: 'error', text: 'Invalid response from server (JSON parse failed)' });
-                setIsLoading(false);
-                return;
-            }
-            
-            console.log('[2FA Setup] Parsed data:', data);
+            const data = await res.json();
+            console.log('[2FA Setup] Got response:', { success: data.success, hasQrCode: !!data.qrCode, hasSecret: !!data.secret });
             
             if (data.success && data.qrCode) {
-                console.log('[2FA Setup] Success! QR code generated');
+                console.log('[2FA Setup] Setting state - qrCode length:', data.qrCode.length);
                 setTwoFASecret(data.secret);
                 setQrCode(data.qrCode);
+                
+                // Force alert to confirm
+                alert('[DEBUG] QR Code set! Should appear now. Length: ' + data.qrCode.length);
             } else {
-                const errMsg = data.message || 'Setup failed - no QR code returned';
-                console.error('[2FA Setup] Setup failed:', errMsg);
+                const errMsg = data.message || 'Setup failed';
+                console.error('[2FA Setup] Failed:', errMsg);
                 setMessage({ type: 'error', text: errMsg });
             }
         } catch (err) {
-            console.error('[2FA Setup] Exception:', err);
-            setMessage({ type: 'error', text: 'Connection failure: ' + (err instanceof Error ? err.message : String(err)) });
+            console.error('[2FA Setup] Error:', err);
+            setMessage({ type: 'error', text: String(err) });
         } finally {
             setIsLoading(false);
         }
+    };
     };
 
     const verifyAndEnable = async () => {
