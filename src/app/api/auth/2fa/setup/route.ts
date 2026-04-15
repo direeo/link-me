@@ -83,7 +83,6 @@ export async function GET(request: NextRequest) {
         );
     }
 }
-}
 
 // POST - Verify TOTP code and enable 2FA
 export async function POST(request: NextRequest) {
