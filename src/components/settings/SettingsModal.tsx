@@ -39,6 +39,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     };
 
     const setup2FA = async () => {
+        console.log('[2FA Setup] Starting QR generation...');
         setIsLoading(true);
         setMessage(null);
         try {
@@ -46,15 +47,34 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 method: 'GET',
                 credentials: 'include',
             });
-            const data = await res.json();
-            if (data.success) {
+            console.log('[2FA Setup] Response status:', res.status);
+            const text = await res.text();
+            console.log('[2FA Setup] Response text:', text);
+            
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('[2FA Setup] Failed to parse JSON:', e);
+                setMessage({ type: 'error', text: 'Invalid response from server (JSON parse failed)' });
+                setIsLoading(false);
+                return;
+            }
+            
+            console.log('[2FA Setup] Parsed data:', data);
+            
+            if (data.success && data.qrCode) {
+                console.log('[2FA Setup] Success! QR code generated');
                 setTwoFASecret(data.secret);
                 setQrCode(data.qrCode);
             } else {
-                setMessage({ type: 'error', text: data.message || 'Setup failed' });
+                const errMsg = data.message || 'Setup failed - no QR code returned';
+                console.error('[2FA Setup] Setup failed:', errMsg);
+                setMessage({ type: 'error', text: errMsg });
             }
         } catch (err) {
-            setMessage({ type: 'error', text: 'Connection failure' });
+            console.error('[2FA Setup] Exception:', err);
+            setMessage({ type: 'error', text: 'Connection failure: ' + (err instanceof Error ? err.message : String(err)) });
         } finally {
             setIsLoading(false);
         }
