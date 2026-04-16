@@ -85,6 +85,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST - Verify TOTP code and enable 2FA
+// Verifies the TOTP code entered by user and enables 2FA if valid
 export async function POST(request: NextRequest) {
     try {
         // Auth check
