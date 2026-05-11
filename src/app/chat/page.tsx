@@ -51,6 +51,46 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
         }
     }, [user?.name, messages.length]);
 
+    const loadHistoryConversation = async (historyId: string) => {
+        try {
+            const response = await fetch(`/api/chat/history/${historyId}`, {
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                console.error('Failed to load conversation');
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                // Restore the conversation
+                const conversationData = data.data;
+                setConversationId(historyId);
+                
+                // Restore messages - ensure they have proper structure
+                const restoredMessages = conversationData.messages || [];
+                if (restoredMessages.length > 0) {
+                    setMessages(restoredMessages);
+                } else {
+                    // Fallback if no messages
+                    setMessages([{
+                        id: '1',
+                        role: 'assistant',
+                        content: `Welcome back to your ${conversationData.topic || 'learning path'}. 🔗`,
+                        timestamp: new Date(),
+                    }]);
+                }
+
+                // Close history sidebar
+                setShowHistory(false);
+            }
+        } catch (error) {
+            console.error('Error loading conversation:', error);
+        }
+    };
+
     const sendMessage = async (content: string) => {
         if (isLoading) return;
         const userMessage: ChatMessage = { id: `user-${Date.now()}`, role: 'user', content, timestamp: new Date() };
@@ -219,7 +259,11 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             </main>
 
             {/* Sidebar & Settings Modals */}
-            <ChatHistorySidebar isOpen={showHistory} onClose={() => setShowHistory(false)} onSelectHistory={() => {}} />
+            <ChatHistorySidebar 
+                isOpen={showHistory} 
+                onClose={() => setShowHistory(false)} 
+                onSelectHistory={(item) => loadHistoryConversation(item.id)} 
+            />
             <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
         </div>
     );
