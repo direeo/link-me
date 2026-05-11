@@ -10,7 +10,7 @@ import { z } from 'zod';
 export const signupSchema = z.object({
     email: z
         .string()
-        .email('Please enter a valid email address')
+        .email('Invalid email address')
         .min(1, 'Email is required')
         .max(255, 'Email is too long'),
     password: z
@@ -19,7 +19,7 @@ export const signupSchema = z.object({
         .max(128, 'Password is too long')
         .regex(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-            'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+            'Password needs: uppercase, lowercase, and a number (e.g., MyPass123)'
         ),
     name: z
         .string()

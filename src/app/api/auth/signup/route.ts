@@ -35,10 +35,11 @@ export async function POST(request: NextRequest) {
         const validation = validateInput(signupSchema, body);
 
         if (!validation.success) {
+            const errorMessages = Object.values(validation.errors).join(', ');
             return NextResponse.json(
                 {
                     success: false,
-                    message: 'Validation failed',
+                    message: errorMessages || 'Invalid input',
                     errors: validation.errors,
                 },
                 { status: 400 }
@@ -134,16 +135,24 @@ export async function POST(request: NextRequest) {
         return response;
     } catch (error) {
         console.error('Signup error:', error);
-        // Include more details in development/for debugging
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         const errorStack = error instanceof Error ? error.stack : '';
         console.error('Signup error details:', { message: errorMessage, stack: errorStack });
 
+        // Provide specific error messages
+        let userMessage = 'An error occurred during signup';
+        if (errorMessage.includes('email') || errorMessage.includes('unique')) {
+            userMessage = 'This email is already registered. Try signing in instead.';
+        } else if (errorMessage.includes('database') || errorMessage.includes('connection')) {
+            userMessage = 'Database error. Please try again in a moment.';
+        } else if (errorMessage.includes('email') && errorMessage.toLowerCase().includes('send')) {
+            userMessage = 'Failed to send verification email. Please try again.';
+        }
+
         return NextResponse.json(
             {
                 success: false,
-                message: 'An error occurred during signup',
-                // Include error details in response for debugging (remove in final production)
+                message: userMessage,
                 debug: process.env.NODE_ENV !== 'production' ? errorMessage : undefined,
             },
             { status: 500 }

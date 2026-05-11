@@ -80,7 +80,12 @@ export default function SignupPage() {
                         <div className="space-y-3">
                             <Input label="Full Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="John Doe" />
                             <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
-                            <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                            <div>
+                                <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                                <p className="text-[9px] text-slate-500 mt-2 leading-relaxed">
+                                    💡 <span className="text-slate-400">Need 1 uppercase (A-Z), 1 lowercase (a-z), 1 number (0-9), 8+ characters</span>
+                                </p>
+                            </div>
                             <Input label="Confirm Password" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />
                         </div>
                         <Button type="submit" loading={isLoading} variant="glow" className="w-full h-14 text-[10px] font-bold uppercase tracking-[0.2em] mt-2 shadow-[0_10px_30px_rgba(139,92,246,0.3)]">

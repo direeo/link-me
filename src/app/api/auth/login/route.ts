@@ -20,10 +20,11 @@ export async function POST(request: NextRequest) {
         const validation = validateInput(loginSchema, body);
 
         if (!validation.success) {
+            const errorMessages = Object.values(validation.errors).join(', ');
             return NextResponse.json(
                 {
                     success: false,
-                    message: 'Validation failed',
+                    message: errorMessages || 'Invalid email or password',
                     errors: validation.errors,
                 },
                 { status: 400 }
@@ -164,10 +165,21 @@ export async function POST(request: NextRequest) {
         return response;
     } catch (error) {
         console.error('Login error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Login error details:', errorMessage);
+
+        // Provide specific error messages
+        let userMessage = 'An error occurred during login';
+        if (errorMessage.includes('database') || errorMessage.includes('connection')) {
+            userMessage = 'Database error. Please try again in a moment.';
+        } else if (errorMessage.includes('timeout')) {
+            userMessage = 'Server is busy. Please try again.';
+        }
+
         return NextResponse.json(
             {
                 success: false,
-                message: 'An error occurred during login',
+                message: userMessage,
             },
             { status: 500 }
         );
