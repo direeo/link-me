@@ -177,7 +177,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
     return (
         <div className="h-screen bg-[#050508] flex flex-col relative overflow-hidden font-sans selection:bg-violet-500/20">
             {/* --- Premium Navigation --- */}
-            <header className="flex-shrink-0 z-[60] bg-[#050508]/60 border-b border-white/5 backdrop-blur-3xl">
+            <header className="flex-shrink-0 z-[30] bg-[#050508]/60 border-b border-white/5 backdrop-blur-3xl">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-8">
                         <Link href="/" className="flex items-center gap-3 transition-all hover:opacity-80 group">
@@ -247,7 +247,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             </header>
 
             {/* --- Operational Workspace --- */}
-            <main className="flex-1 overflow-hidden flex flex-col relative z-10">
+            <main className="flex-1 overflow-hidden flex flex-col relative z-0">
                 <div className="flex-1 overflow-y-auto px-4 py-12 md:px-12 no-scrollbar">
                     <div className="max-w-4xl mx-auto">
                         <div className="space-y-6">
