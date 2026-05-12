@@ -173,7 +173,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                             </Button>
                             
                             {!isGuest && (
-                                <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} 
+                                <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)} 
                                     className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white hidden md:flex">
                                     <span className="mr-2 opacity-50">🕒</span> History
                                 </Button>
