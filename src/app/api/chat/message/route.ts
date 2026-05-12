@@ -301,8 +301,9 @@ export async function POST(request: NextRequest) {
                         try {
                             const db = getDb();
                             
-                            // Prepare the payload including the FULL learning path
+                            // Prepare the payload including the FULL conversation and learning path
                             const historyPayload = {
+                                messages: state.messages, // Include full conversation history
                                 topic: parsed.topic,
                                 skillLevel: parsed.level,
                                 goal: parsed.goal,
