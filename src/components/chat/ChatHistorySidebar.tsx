@@ -90,12 +90,12 @@ export default function ChatHistorySidebar({ isOpen, onClose, onSelectHistory }:
 
             {/* Sidebar */}
             <aside className={`
-                fixed top-0 left-0 h-full w-full sm:w-80 bg-slate-900 border-r border-slate-800 z-50
+                fixed top-0 left-0 h-full w-full sm:w-80 bg-slate-900 border-r border-slate-800 z-[70]
                 transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-slate-800">
+                <div className="flex items-center justify-between p-4 border-b border-slate-800 relative z-[71]">
                     <h2 className="font-semibold text-white flex items-center gap-2">
                         <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

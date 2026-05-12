@@ -63,14 +63,37 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             }
 
             const data = await response.json();
+            console.log('Loaded history data:', data);
 
             if (data.success && data.data) {
                 // Restore the conversation
                 const conversationData = data.data;
                 setConversationId(historyId);
                 
-                // Restore messages - ensure they have proper structure
-                const restoredMessages = conversationData.messages || [];
+                // The stored structure has all messages plus metadata
+                // Extract the full conversation
+                const userMessages = conversationData.messages || [];
+                const topic = conversationData.topic || 'Learning path';
+                const tutorials = conversationData.tutorials || [];
+                const learningPath = conversationData.learningPath || null;
+
+                // Reconstruct the message history with proper format
+                const restoredMessages = [];
+
+                // Add all user and assistant messages
+                if (userMessages && Array.isArray(userMessages)) {
+                    userMessages.forEach((msg: any, idx: number) => {
+                        restoredMessages.push({
+                            id: `msg-${idx}`,
+                            role: msg.role,
+                            content: msg.content,
+                            timestamp: new Date(msg.timestamp || Date.now()),
+                            tutorials: msg.tutorials || undefined,
+                            learningPath: msg.learningPath || undefined,
+                        });
+                    });
+                }
+
                 if (restoredMessages.length > 0) {
                     setMessages(restoredMessages);
                 } else {
@@ -78,7 +101,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                     setMessages([{
                         id: '1',
                         role: 'assistant',
-                        content: `Welcome back to your ${conversationData.topic || 'learning path'}. 🔗`,
+                        content: `Welcome back to your ${topic}. 🔗`,
                         timestamp: new Date(),
                     }]);
                 }
