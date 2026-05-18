@@ -177,6 +177,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
     return (
         <div className="h-screen bg-[#050508] flex flex-col relative overflow-hidden font-sans selection:bg-violet-500/20">
             {/* --- Premium Navigation --- */}
+            {/* Z-index fixed: header z-[30], sidebar z-[70], main z-0 */}
             <header className="flex-shrink-0 z-[30] bg-[#050508]/60 border-b border-white/5 backdrop-blur-3xl">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-8">
