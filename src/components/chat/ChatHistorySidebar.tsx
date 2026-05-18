@@ -170,7 +170,7 @@ export default function ChatHistorySidebar({ isOpen, onClose, onSelectHistory }:
 
                                     {item.tutorialCount && (
                                         <p className="text-xs text-slate-500 mt-2">
-                                            📚 {item.tutorialCount} tutorials found
+                                            {item.tutorialCount} tutorials found
                                         </p>
                                     )}
                                 </button>

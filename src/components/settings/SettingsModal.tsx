@@ -143,7 +143,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             onClick={() => setActiveTab('youtube')}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'youtube' ? 'bg-red-600 text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                         >
-                            🎬 YouTube
+                            YouTube
                         </button>
                     </div>
 

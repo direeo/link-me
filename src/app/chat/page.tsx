@@ -42,7 +42,7 @@ export default function ChatPage() {
                 {
                     id: '1',
                     role: 'assistant',
-                    content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}. 🔗
+                    content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}.
                     
 I am your LinkMe learning assistant. Tell me what you'd like to learn today, and I'll create a structured course for you from the best YouTube tutorials.`,
                     timestamp: new Date(),
@@ -101,7 +101,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                     setMessages([{
                         id: '1',
                         role: 'assistant',
-                        content: `Welcome back to your ${topic}. 🔗`,
+                        content: `Welcome back to your ${topic}.`,
                         timestamp: new Date(),
                     }]);
                 }
@@ -160,7 +160,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             });
             if (data.conversationId) setConversationId(data.conversationId);
         } catch (error) {
-            setMessages(prev => [...prev.filter(m => !m.isLoading), { id: `err-${Date.now()}`, role: 'assistant', content: `⚠️ Failed to synthesize path.`, timestamp: new Date() }]);
+            setMessages(prev => [...prev.filter(m => !m.isLoading), { id: `err-${Date.now()}`, role: 'assistant', content: `Failed to synthesize path.`, timestamp: new Date() }]);
         } finally {
             setIsLoading(false);
             setLoadingStep(0);
@@ -178,12 +178,12 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
         <div className="h-screen bg-[#050508] flex flex-col relative overflow-hidden font-sans selection:bg-violet-500/20">
             {/* --- Premium Navigation --- */}
             {/* Z-index fixed: header z-[30], sidebar z-[70], main z-0 */}
-            <header className="flex-shrink-0 z-[30] bg-[#050508]/60 border-b border-white/5 backdrop-blur-3xl">
+            <header className={`flex-shrink-0 z-[30] bg-[#050508]/60 border-b border-white/5 backdrop-blur-3xl ${showHistory ? 'pointer-events-none' : ''}`}>
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-8">
                         <Link href="/" className="flex items-center gap-3 transition-all hover:opacity-80 group">
                             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                                <span className="text-lg text-white">🔗</span>
+                                <span className="text-lg text-white">L</span>
                             </div>
                             <span className="text-xl font-black tracking-tighter text-white uppercase sm:block hidden">LinkMe</span>
                         </Link>
@@ -199,7 +199,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                             {!isGuest && (
                                 <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)} 
                                     className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white hidden md:flex">
-                                    <span className="mr-2 opacity-50">🕒</span> History
+                                    <span className="mr-2 opacity-50">H</span> History
                                 </Button>
                             )}
                         </div>

@@ -166,7 +166,7 @@ export default function HomePage() {
             {/* Bento 4: YouTube Sync */}
             <div className="md:col-span-8 glass-card rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-10 border-red-500/10 group">
               <div className="flex-1">
-                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6 text-2xl">🎬</div>
+                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6 text-2xl">V</div>
                 <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight">One-Click YouTube Sync</h3>
                 <p className="text-slate-400 font-medium leading-relaxed">
                   Sync your entire curated path directly to your YouTube account with a single click. 

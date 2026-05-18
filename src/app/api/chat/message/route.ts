@@ -329,7 +329,7 @@ export async function POST(request: NextRequest) {
                     // Provide a helpful message to the user
                     return NextResponse.json({
                         success: true,
-                        response: `${parsed.cleanResponse}\n\n⚠️ I found some issues searching for "${parsed.topic}" tutorials. This might be a temporary issue - please try again, or try rephrasing your topic.`,
+                        response: `${parsed.cleanResponse}\n\nI found some issues searching for "${parsed.topic}" tutorials. This might be a temporary issue - please try again, or try rephrasing your topic.`,
                         conversationId: convId,
                     });
                 }
@@ -345,9 +345,9 @@ export async function POST(request: NextRequest) {
                 // No tutorials found - provide helpful suggestions
                 responseText = `${parsed.cleanResponse}
 
-🔍 I couldn't find tutorials specifically for "${parsed.topic}". This could be a very niche topic, or it might be phrased unusually.
+I couldn't find tutorials specifically for "${parsed.topic}". This could be a very niche topic, or it might be phrased unusually.
 
-💡 **Try these suggestions:**
+Try these suggestions:
 • Use more common terms (e.g., "PID control" instead of "control systems")
 • Be more specific about what aspect you want to learn
 • Try breaking it down into smaller topics

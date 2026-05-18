@@ -73,7 +73,7 @@ export default function LoginPage() {
 
                     {serverError && (
                         <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest">
-                            ⚠️ {serverError}
+                            {serverError}
                         </div>
                     )}
 

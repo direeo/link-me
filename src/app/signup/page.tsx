@@ -72,7 +72,7 @@ export default function SignupPage() {
 
                     {serverError && (
                         <div className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest">
-                            ⚠️ {serverError}
+                            {serverError}
                         </div>
                     )}
 
@@ -83,7 +83,7 @@ export default function SignupPage() {
                             <div>
                                 <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
                                 <p className="text-[9px] text-slate-500 mt-2 leading-relaxed">
-                                    💡 <span className="text-slate-400">Need 1 uppercase (A-Z), 1 lowercase (a-z), 1 number (0-9), 8+ characters</span>
+                                    <span className="text-slate-400">Need 1 uppercase (A-Z), 1 lowercase (a-z), 1 number (0-9), 8+ characters</span>
                                 </p>
                             </div>
                             <Input label="Confirm Password" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder="••••••••" />

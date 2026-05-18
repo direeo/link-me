@@ -173,7 +173,7 @@ function VerifyContent() {
 
                         {error && (
                             <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold text-center animate-in slide-in-from-top-2">
-                                ⚠️ {error}
+                                {error}
                             </div>
                         )}
 

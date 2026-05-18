@@ -292,7 +292,7 @@ export default function SettingsPage() {
                             <div className="mt-6 space-y-4">
                                 <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                                     <h4 className="font-medium text-amber-400 flex items-center gap-2 mb-2">
-                                        ⚠️ Save Your Backup Codes
+                                        Save Your Backup Codes
                                     </h4>
                                     <p className="text-slate-300 text-sm mb-4">
                                         If you lose access to your authenticator app, you can use these backup codes to sign in.
