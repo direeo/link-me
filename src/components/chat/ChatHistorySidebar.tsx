@@ -143,7 +143,10 @@ export default function ChatHistorySidebar({ isOpen, onClose, onSelectHistory }:
                             {history.map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => onSelectHistory?.(item)}
+                                    onClick={() => {
+                                        console.log('History item clicked:', item);
+                                        onSelectHistory?.(item);
+                                    }}
                                     className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-violet-500/50 transition-all group"
                                 >
                                     <div className="flex items-start justify-between gap-2">

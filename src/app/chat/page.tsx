@@ -53,13 +53,14 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
 
     const loadHistoryConversation = async (historyId: string) => {
         // Load and restore previous conversation from database
+        console.log('loadHistoryConversation called with ID:', historyId);
         try {
             const response = await fetch(`/api/chat/history/${historyId}`, {
                 credentials: 'include',
             });
 
             if (!response.ok) {
-                console.error('Failed to load conversation');
+                console.error('Failed to load conversation, status:', response.status);
                 return;
             }
 
@@ -69,6 +70,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             if (data.success && data.data) {
                 // Restore the conversation
                 const conversationData = data.data;
+                console.log('Setting conversation ID:', historyId);
                 setConversationId(historyId);
                 
                 // The stored structure has all messages plus metadata
@@ -77,6 +79,8 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 const topic = conversationData.topic || 'Learning path';
                 const tutorials = conversationData.tutorials || [];
                 const learningPath = conversationData.learningPath || null;
+
+                console.log('Found messages:', userMessages.length, 'messages');
 
                 // Reconstruct the message history with proper format
                 const restoredMessages = [];
@@ -95,10 +99,14 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                     });
                 }
 
+                console.log('Restored messages array:', restoredMessages.length, 'items');
+
                 if (restoredMessages.length > 0) {
+                    console.log('Setting messages to restored array');
                     setMessages(restoredMessages);
                 } else {
                     // Fallback if no messages
+                    console.log('No messages found, using fallback');
                     setMessages([{
                         id: '1',
                         role: 'assistant',
@@ -108,7 +116,10 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 }
 
                 // Close history sidebar
+                console.log('Closing history sidebar');
                 setShowHistory(false);
+            } else {
+                console.error('API returned error or no data:', data);
             }
         } catch (error) {
             console.error('Error loading conversation:', error);
