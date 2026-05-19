@@ -52,6 +52,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
     }, [user?.name, messages.length]);
 
     const loadHistoryConversation = async (historyId: string) => {
+        // Load and restore previous conversation from database
         try {
             const response = await fetch(`/api/chat/history/${historyId}`, {
                 credentials: 'include',
