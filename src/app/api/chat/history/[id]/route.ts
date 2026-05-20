@@ -31,6 +31,7 @@ export async function GET(
 
         try {
             const data = JSON.parse(entry.messages);
+            console.log('Parsed history data successfully:', { id: entry.id, hasMessages: !!data.messages });
             return NextResponse.json({
                 success: true,
                 data: {
@@ -40,8 +41,10 @@ export async function GET(
                     updatedAt: entry.updatedAt,
                 }
             });
-        } catch {
-            return NextResponse.json({ success: false, message: 'Syntax failure in history registry' }, { status: 500 });
+        } catch (parseError) {
+            console.error('Failed to parse history messages:', parseError);
+            console.error('Raw messages string:', entry.messages.substring(0, 500));
+            return NextResponse.json({ success: false, message: 'Failed to parse saved conversation data' }, { status: 500 });
         }
 
     } catch (error) {

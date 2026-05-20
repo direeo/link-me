@@ -301,25 +301,50 @@ export async function POST(request: NextRequest) {
                         try {
                             const db = getDb();
                             
-                            // Prepare the payload including the FULL conversation and learning path
+                            // Prepare the payload with ONLY serializable data
                             const historyPayload = {
-                                messages: state.messages, // Include full conversation history
+                                messages: state.messages.map((msg: any) => ({
+                                    role: msg.role,
+                                    content: msg.content,
+                                })),
                                 topic: parsed.topic,
                                 skillLevel: parsed.level,
                                 goal: parsed.goal,
                                 query,
-                                tutorials: learningPath ? undefined : (tutorials || []), 
-                                learningPath: learningPath || null, // Store EVERYTHING (stages, videos, summary)
+                                tutorials: learningPath ? undefined : (tutorials || []).map((vid: any) => ({
+                                    id: vid.id,
+                                    title: vid.title,
+                                    url: vid.url,
+                                })),
+                                learningPath: learningPath ? {
+                                    topic: learningPath.topic,
+                                    skillLevel: learningPath.skillLevel,
+                                    totalVideos: learningPath.totalVideos,
+                                    stages: learningPath.stages?.map((stage: any) => ({
+                                        stageName: stage.stageName,
+                                        description: stage.description,
+                                        videos: stage.videos?.map((vid: any) => ({
+                                            id: vid.id,
+                                            title: vid.title,
+                                            url: vid.url,
+                                        })) || [],
+                                    })) || [],
+                                } : null,
                                 timestamp: new Date().toISOString(),
                                 tutorialCount: learningPath ? learningPath.totalVideos : (tutorials ? tutorials.length : 0),
                             };
 
+                            // Verify data is JSON serializable
+                            const testSerialize = JSON.stringify(historyPayload);
+                            console.log('History payload serialization successful, size:', testSerialize.length);
+
                             await db.chatHistory.create({
                                 data: {
                                     userId,
-                                    messages: JSON.stringify(historyPayload),
+                                    messages: testSerialize,
                                 },
                             });
+                            console.log('Chat history saved successfully');
                         } catch (err) {
                             console.error('Failed to save chat history:', err);
                         }
