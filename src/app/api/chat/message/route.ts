@@ -315,18 +315,33 @@ export async function POST(request: NextRequest) {
                                     id: vid.id,
                                     title: vid.title,
                                     url: vid.url,
+                                    channelTitle: vid.channelTitle,
+                                    publishedAt: vid.publishedAt,
                                 })),
                                 learningPath: learningPath ? {
                                     topic: learningPath.topic,
                                     skillLevel: learningPath.skillLevel,
+                                    userLevel: learningPath.userLevel,
+                                    userGoal: learningPath.userGoal,
                                     totalVideos: learningPath.totalVideos,
+                                    estimatedTotalTime: learningPath.estimatedTotalTime,
+                                    completionGoals: learningPath.completionGoals || [],
+                                    summary: learningPath.summary || '',
                                     stages: learningPath.stages?.map((stage: any) => ({
                                         stageName: stage.stageName,
+                                        stageNumber: stage.stageNumber,
                                         description: stage.description,
                                         videos: stage.videos?.map((vid: any) => ({
-                                            id: vid.id,
+                                            videoId: vid.videoId || vid.id,
                                             title: vid.title,
-                                            url: vid.url,
+                                            qualityScore: vid.qualityScore,
+                                            difficulty: vid.difficulty,
+                                            conceptsCovered: vid.conceptsCovered || [],
+                                            learningOutcomes: vid.learningOutcomes || [],
+                                            prerequisites: vid.prerequisites || [],
+                                            whyRecommended: vid.whyRecommended || '',
+                                            estimatedTime: vid.estimatedTime || '',
+                                            order: vid.order,
                                         })) || [],
                                     })) || [],
                                 } : null,
@@ -348,6 +363,7 @@ export async function POST(request: NextRequest) {
                         } catch (err) {
                             console.error('Failed to save chat history:', err);
                         }
+                    }
                     }
                 } catch (searchError) {
                     console.error('YouTube search error:', searchError);

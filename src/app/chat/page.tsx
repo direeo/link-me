@@ -91,19 +91,32 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
 
                 // Reconstruct the message history with proper format
                 const restoredMessages = [];
+                const learningPath = conversationData.learningPath;
+                const tutorials = conversationData.tutorials;
 
                 // Add all user and assistant messages
                 if (userMessages && Array.isArray(userMessages)) {
                     userMessages.forEach((msg: any, idx: number) => {
-                        restoredMessages.push({
+                        const messageObj: any = {
                             id: `msg-${idx}`,
                             role: msg.role,
                             content: msg.content,
                             timestamp: new Date(msg.timestamp || Date.now()),
-                            tutorials: msg.tutorials || undefined,
-                            learningPath: msg.learningPath || undefined,
-                        });
+                        };
+                        
+                        restoredMessages.push(messageObj);
                     });
+                    
+                    // Attach learning path and tutorials to the last assistant message
+                    if (restoredMessages.length > 0) {
+                        for (let i = restoredMessages.length - 1; i >= 0; i--) {
+                            if (restoredMessages[i].role === 'assistant') {
+                                if (learningPath) restoredMessages[i].learningPath = learningPath;
+                                if (tutorials) restoredMessages[i].tutorials = tutorials;
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 console.log('Restored messages array:', restoredMessages.length, 'items');
