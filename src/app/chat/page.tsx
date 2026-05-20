@@ -60,7 +60,16 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
             });
 
             if (!response.ok) {
-                console.error('Failed to load conversation, status:', response.status);
+                const errorData = await response.json();
+                console.error('Failed to load conversation, status:', response.status, 'message:', errorData?.message);
+                
+                setMessages([{
+                    id: `err-${Date.now()}`,
+                    role: 'assistant',
+                    content: errorData?.message || 'Could not load this conversation. It may be from an older version. Please create a new conversation.',
+                    timestamp: new Date(),
+                }]);
+                setShowHistory(false);
                 return;
             }
 
@@ -77,8 +86,6 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 // Extract the full conversation
                 const userMessages = conversationData.messages || [];
                 const topic = conversationData.topic || 'Learning path';
-                const tutorials = conversationData.tutorials || [];
-                const learningPath = conversationData.learningPath || null;
 
                 console.log('Found messages:', userMessages.length, 'messages');
 
@@ -120,6 +127,13 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 setShowHistory(false);
             } else {
                 console.error('API returned error or no data:', data);
+                setMessages([{
+                    id: `err-${Date.now()}`,
+                    role: 'assistant',
+                    content: data?.message || 'Could not load this conversation.',
+                    timestamp: new Date(),
+                }]);
+                setShowHistory(false);
             }
         } catch (error) {
             console.error('Error loading conversation:', error);

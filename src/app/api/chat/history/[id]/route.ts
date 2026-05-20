@@ -32,11 +32,27 @@ export async function GET(
         try {
             const data = JSON.parse(entry.messages);
             console.log('Parsed history data successfully:', { id: entry.id, hasMessages: !!data.messages });
+            
+            // Ensure messages is an array - handle old format
+            let messages = data.messages || [];
+            if (!Array.isArray(messages)) {
+                console.warn('Messages is not an array, converting...');
+                messages = [];
+            }
+
             return NextResponse.json({
                 success: true,
                 data: {
                     id: entry.id,
-                    ...data,
+                    messages: messages,
+                    topic: data.topic || 'Untitled',
+                    skillLevel: data.skillLevel,
+                    goal: data.goal,
+                    query: data.query,
+                    tutorials: data.tutorials,
+                    learningPath: data.learningPath,
+                    timestamp: data.timestamp || entry.createdAt,
+                    tutorialCount: data.tutorialCount,
                     createdAt: entry.createdAt,
                     updatedAt: entry.updatedAt,
                 }
@@ -44,7 +60,10 @@ export async function GET(
         } catch (parseError) {
             console.error('Failed to parse history messages:', parseError);
             console.error('Raw messages string:', entry.messages.substring(0, 500));
-            return NextResponse.json({ success: false, message: 'Failed to parse saved conversation data' }, { status: 500 });
+            return NextResponse.json({ 
+                success: false, 
+                message: 'This conversation data is corrupted and cannot be loaded. Please create a new conversation.' 
+            }, { status: 500 });
         }
 
     } catch (error) {
