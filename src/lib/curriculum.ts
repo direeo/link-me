@@ -223,36 +223,36 @@ export function formatLearningPathAsText(path: LearningPath): string {
 
     const lines: string[] = [];
 
-    lines.push(`🎓 YOUR PERSONALIZED ${path.topic.toUpperCase()} LEARNING PATH`);
+    lines.push(`YOUR PERSONALIZED ${path.topic.toUpperCase()} LEARNING PATH`);
     lines.push('');
     lines.push(path.summary);
-    lines.push(`📊 ${path.totalVideos} videos | ⏱️ ${path.estimatedTotalTime}`);
+    lines.push(`${path.totalVideos} videos | ${path.estimatedTotalTime}`);
     lines.push('');
 
     for (const stage of path.stages) {
-        lines.push('━'.repeat(45));
-        lines.push(`📍 ${stage.stageName.toUpperCase()}`);
+        lines.push('—'.repeat(45));
+        lines.push(`${stage.stageName.toUpperCase()}`);
         lines.push(stage.description);
-        lines.push('━'.repeat(45));
+        lines.push('—'.repeat(45));
         lines.push('');
 
         for (const video of stage.videos) {
-            lines.push(`${video.order}️⃣ "${video.title}"`);
-            lines.push(`   ⏱️ ${video.estimatedTime} | ⭐ Quality: ${video.qualityScore}/10`);
+            lines.push(`${video.order}. "${video.title}"`);
+            lines.push(`   ${video.estimatedTime} | Quality: ${video.qualityScore}/10`);
             lines.push('');
-            lines.push(`   📚 CONCEPTS: ${video.conceptsCovered.join(', ')}`);
-            lines.push(`   🎯 YOU'LL LEARN: ${video.learningOutcomes.slice(0, 2).join('; ')}`);
-            lines.push(`   💡 WHY THIS: ${video.whyRecommended}`);
+            lines.push(`   CONCEPTS: ${video.conceptsCovered.join(', ')}`);
+            lines.push(`   YOU'LL LEARN: ${video.learningOutcomes.slice(0, 2).join('; ')}`);
+            lines.push(`   WHY THIS: ${video.whyRecommended}`);
             lines.push('');
         }
     }
 
     if (path.completionGoals.length > 0) {
-        lines.push('━'.repeat(45));
-        lines.push('🏁 AFTER COMPLETING THIS PATH, YOU\'LL BE ABLE TO:');
-        lines.push('━'.repeat(45));
+        lines.push('—'.repeat(45));
+        lines.push('AFTER COMPLETING THIS PATH, YOU\'LL BE ABLE TO:');
+        lines.push('—'.repeat(45));
         for (const goal of path.completionGoals) {
-            lines.push(`✓ ${goal}`);
+            lines.push(`- ${goal}`);
         }
     }
 

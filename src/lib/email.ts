@@ -22,7 +22,7 @@ const EMAIL_TEMPLATES = {
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f4f5;">
           <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #8b5cf6; font-size: 28px; margin: 0;">🔗 LinkMe</h1>
+              <h1 style="color: #8b5cf6; font-size: 28px; margin: 0;">LinkMe</h1>
             </div>
             
             <h2 style="color: #1f2937; font-size: 24px; margin-bottom: 20px; text-align: center;">
@@ -93,7 +93,7 @@ export async function sendVerificationEmail(
      if (EMAIL_MODE === 'development') {
          // Development mode - log to console
          console.log('\n' + '='.repeat(60));
-         console.log('📧 VERIFICATION EMAIL (Development Mode)');
+         console.log('VERIFICATION EMAIL (Development Mode)');
          console.log('='.repeat(60));
          console.log(`To: ${email}`);
          console.log(`Subject: ${template.subject}`);
@@ -145,7 +145,7 @@ export async function sendWelcomeEmail(
 ): Promise<{ success: boolean; message: string }> {
     if (EMAIL_MODE === 'development') {
         console.log('\n' + '='.repeat(60));
-        console.log('📧 WELCOME EMAIL (Development Mode)');
+        console.log('WELCOME EMAIL (Development Mode)');
         console.log('='.repeat(60));
         console.log(`To: ${email}`);
         console.log(`Welcome, ${name || 'User'}! Your email is now verified.`);

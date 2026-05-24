@@ -157,7 +157,7 @@ export default function SettingsPage() {
                     <div className="flex items-center gap-4">
                         <Link href="/chat" className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-                                <span className="text-sm">🔗</span>
+                                <span className="text-sm font-black text-white">L</span>
                             </div>
                             <span className="font-bold gradient-text">LinkMe</span>
                         </Link>
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                         <div className="flex items-start justify-between">
                             <div>
                                 <h3 className="font-medium text-white flex items-center gap-2">
-                                    🔐 Two-Factor Authentication
+                                    Two-Factor Authentication
                                 </h3>
                                 <p className="text-slate-400 text-sm mt-1">
                                     Add an extra layer of security to your account using an authenticator app.
@@ -308,7 +308,7 @@ export default function SettingsPage() {
                                             onClick={copyBackupCodes}
                                             className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors text-sm"
                                         >
-                                            📋 Copy Codes
+                                            Copy Codes
                                         </button>
                                         <button
                                             onClick={() => {

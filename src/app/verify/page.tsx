@@ -106,7 +106,7 @@ function VerifyContent() {
             <div className="text-center mb-10">
                 <Link href="/" className="inline-flex items-center gap-3 group transition-all hover:opacity-80 mb-8">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-violet-500/20 group-hover:scale-110 transition-transform duration-500">
-                        <span className="text-2xl">🔗</span>
+                        <span className="text-xl font-black text-white">L</span>
                     </div>
                     <span className="text-3xl font-black tracking-tighter text-white uppercase">LinkMe</span>
                 </Link>
@@ -140,7 +140,7 @@ function VerifyContent() {
                         {/* Type badge */}
                         <div className="flex justify-center">
                             <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${is2FA ? 'bg-violet-500/10 border-violet-500/30 text-violet-400' : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'}`}>
-                                {is2FA ? '🛡️ Authenticator Code' : '📧 Email Code'}
+                                {is2FA ? 'Authenticator Code' : 'Email Code'}
                             </span>
                         </div>
 

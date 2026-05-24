@@ -136,7 +136,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
             const data = await res.json();
             if (data.success) {
                 setSavedPathId(data.learningPathId);
-                setSaveMessage('✅ Saved!');
+                setSaveMessage('Saved!');
             }
         } catch {
             setSaveMessage('Save failed');

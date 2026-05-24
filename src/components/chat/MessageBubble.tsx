@@ -30,7 +30,7 @@ export default function MessageBubble({ message, containerRef }: MessageBubblePr
                 <div className="flex items-center gap-3 mb-3 px-1">
                     {isAssistant && (
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                            <span className="text-[10px] text-white">🔗</span>
+                            <span className="text-[10px] font-black text-white">L</span>
                         </div>
                     )}
                     <div className="flex flex-col">
@@ -98,7 +98,7 @@ function LoadingIndicator() {
             <div className="flex flex-col items-start gap-3">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center animate-pulse">
-                        <span className="text-[10px] text-white/30">🔗</span>
+                        <span className="text-[10px] font-black text-white/30">L</span>
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 animate-pulse">Synthesizing...</span>
                 </div>
