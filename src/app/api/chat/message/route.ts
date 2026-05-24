@@ -339,10 +339,15 @@ export async function POST(request: NextRequest) {
                                 query,
                                 tutorials: learningPath ? undefined : (tutorials || []).map((vid: any) => ({
                                     id: vid.id,
+                                    videoId: vid.videoId || vid.id,
                                     title: vid.title,
+                                    description: vid.description || '',
+                                    thumbnail: vid.thumbnail || '',
                                     url: vid.url,
                                     channelTitle: vid.channelTitle,
                                     publishedAt: vid.publishedAt,
+                                    viewCount: vid.viewCount,
+                                    duration: vid.duration,
                                 })),
                                 learningPath: learningPath ? {
                                     topic: learningPath.topic,

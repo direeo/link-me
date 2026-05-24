@@ -107,7 +107,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 const tutorials = conversationData.tutorials;
 
                 // Add all user and assistant messages
-                if (userMessages && Array.isArray(userMessages)) {
+                if (userMessages && Array.isArray(userMessages) && userMessages.length > 0) {
                     userMessages.forEach((msg: any, idx: number) => {
                         const messageObj: ChatMessage = {
                             id: `msg-${idx}`,
@@ -117,29 +117,27 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                         };
                         restoredMessages.push(messageObj);
                     });
-                    
+
                     // Attach learning path and tutorials to the last assistant message
-                    if (restoredMessages.length > 0) {
-                        let attached = false;
-                        for (let i = restoredMessages.length - 1; i >= 0; i--) {
-                            if (restoredMessages[i].role === 'assistant') {
-                                if (learningPath) restoredMessages[i].learningPath = learningPath as any;
-                                if (tutorials) restoredMessages[i].tutorials = tutorials as any;
-                                attached = true;
-                                break;
-                            }
+                    let attached = false;
+                    for (let i = restoredMessages.length - 1; i >= 0; i--) {
+                        if (restoredMessages[i].role === 'assistant') {
+                            if (learningPath) restoredMessages[i].learningPath = learningPath as LearningPathType;
+                            if (tutorials && (tutorials as any[]).length > 0) restoredMessages[i].tutorials = tutorials as any;
+                            attached = true;
+                            break;
                         }
-                        // If no assistant message, add a new one with the learning path
-                        if (!attached && learningPath) {
-                            restoredMessages.push({
-                                id: `msg-lp`,
-                                role: 'assistant',
-                                content: 'Here is your learning path.',
-                                timestamp: new Date(),
-                                learningPath,
-                                tutorials,
-                            });
-                        }
+                    }
+                    // If no assistant message found, append one with the learning path
+                    if (!attached && (learningPath || tutorials)) {
+                        restoredMessages.push({
+                            id: `msg-lp`,
+                            role: 'assistant',
+                            content: `Here is your learning path for ${topic}.`,
+                            timestamp: new Date(),
+                            ...(learningPath && { learningPath: learningPath as LearningPathType }),
+                            ...(tutorials && { tutorials: tutorials as any }),
+                        });
                     }
                 }
 
@@ -149,13 +147,21 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                     console.log('Setting messages to restored array');
                     setMessages(restoredMessages);
                 } else {
-                    // Fallback if no messages
-                    console.log('No messages found, using fallback');
+                    // No conversation text saved — still show the learning path / tutorials
+                    console.log('No message history found, showing learning path directly');
+                    const hasPath = !!learningPath;
+                    const hasTutorials = tutorials && (tutorials as any[]).length > 0;
                     setMessages([{
-                        id: '1',
+                        id: 'restored-lp',
                         role: 'assistant',
-                        content: `Welcome back to your ${topic}.`,
-                        timestamp: new Date(),
+                        content: hasPath
+                            ? `Here is your saved learning path for ${topic}. Pick up where you left off!`
+                            : hasTutorials
+                                ? `Here are the tutorials from your previous session on ${topic}.`
+                                : `You previously explored "${topic}". Start a new chat to continue learning!`,
+                        timestamp: new Date(conversationData.timestamp || Date.now()),
+                        ...(hasPath && { learningPath: learningPath as LearningPathType }),
+                        ...(hasTutorials && { tutorials: tutorials as any }),
                     }]);
                 }
 
