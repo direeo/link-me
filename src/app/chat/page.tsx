@@ -24,9 +24,21 @@ export default function ChatPage() {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [loadingStep, setLoadingStep] = useState(0);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messageRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
     // High-speed smooth scroll
     useEffect(() => {
+        // If the latest message includes a learning path or tutorials, scroll so the top of that message is visible.
+        const lastWithPath = [...messages].reverse().find(m => m.learningPath || (m.tutorials && m.tutorials.length > 0));
+        if (lastWithPath) {
+            const el = messageRefs.current[lastWithPath.id];
+            if (el) {
+                el.scrollIntoView({ behavior: 'auto', block: 'start' });
+                return;
+            }
+        }
+
+        // Default behavior: scroll to bottom
         messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
     }, [messages]);
 
@@ -303,7 +315,13 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 <div className="flex-1 overflow-y-auto px-4 py-12 md:px-12 no-scrollbar">
                     <div className="max-w-4xl mx-auto">
                         <div className="space-y-6">
-                            {messages.map((message) => <MessageBubble key={message.id} message={message} />)}
+                            {messages.map((message) => (
+                                <MessageBubble
+                                    key={message.id}
+                                    message={message}
+                                    containerRef={(el) => { messageRefs.current[message.id] = el; }}
+                                />
+                            ))}
                         </div>
                         <div ref={messagesEndRef} className="h-20" />
                     </div>

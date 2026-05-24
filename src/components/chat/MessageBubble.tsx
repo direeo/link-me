@@ -7,9 +7,11 @@ import LearningPath from './LearningPath';
 
 interface MessageBubbleProps {
     message: ChatMessage;
+    // optional ref callback to expose the message container for scrolling
+    containerRef?: (el: HTMLDivElement | null) => void;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message, containerRef }: MessageBubbleProps) {
     const isAssistant = message.role === 'assistant';
 
     if (message.isLoading) {
@@ -17,7 +19,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     }
 
     return (
-        <div className={`flex w-full mb-12 ${isAssistant ? 'justify-start' : 'justify-end'} animate-in fade-in duration-500`}>
+        <div ref={(el) => containerRef?.(el)} className={`flex w-full mb-12 ${isAssistant ? 'justify-start' : 'justify-end'} animate-in fade-in duration-500`}>
             <div 
                 className={`
                     flex flex-col max-w-[95%] sm:max-w-[85%] 
