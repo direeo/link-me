@@ -90,31 +90,43 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                 console.log('Found messages:', userMessages.length, 'messages');
 
                 // Reconstruct the message history with proper format
-                const restoredMessages = [];
+                const restoredMessages: ChatMessage[] = [];
                 const learningPath = conversationData.learningPath;
                 const tutorials = conversationData.tutorials;
 
                 // Add all user and assistant messages
                 if (userMessages && Array.isArray(userMessages)) {
                     userMessages.forEach((msg: any, idx: number) => {
-                        const messageObj: any = {
+                        const messageObj: ChatMessage = {
                             id: `msg-${idx}`,
-                            role: msg.role,
+                            role: msg.role as any,
                             content: msg.content,
                             timestamp: new Date(msg.timestamp || Date.now()),
                         };
-                        
                         restoredMessages.push(messageObj);
                     });
                     
                     // Attach learning path and tutorials to the last assistant message
                     if (restoredMessages.length > 0) {
+                        let attached = false;
                         for (let i = restoredMessages.length - 1; i >= 0; i--) {
                             if (restoredMessages[i].role === 'assistant') {
-                                if (learningPath) restoredMessages[i].learningPath = learningPath;
-                                if (tutorials) restoredMessages[i].tutorials = tutorials;
+                                if (learningPath) restoredMessages[i].learningPath = learningPath as any;
+                                if (tutorials) restoredMessages[i].tutorials = tutorials as any;
+                                attached = true;
                                 break;
                             }
+                        }
+                        // If no assistant message, add a new one with the learning path
+                        if (!attached && learningPath) {
+                            restoredMessages.push({
+                                id: `msg-lp`,
+                                role: 'assistant',
+                                content: 'Here is your learning path.',
+                                timestamp: new Date(),
+                                learningPath,
+                                tutorials,
+                            });
                         }
                     }
                 }

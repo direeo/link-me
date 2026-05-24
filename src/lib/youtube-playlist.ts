@@ -122,12 +122,52 @@ export async function exportLearningPathToPlaylist(
         };
     }
 
+    return exportLearningPathObjectToPlaylist(userId, {
+        topic: learningPath.topic,
+        userLevel: learningPath.userLevel,
+        userGoal: learningPath.userGoal,
+        totalVideos: learningPath.totalVideos,
+        estimatedTotalTime: learningPath.estimatedTotalTime,
+        stages: JSON.parse(learningPath.stages),
+        completionGoals: JSON.parse(learningPath.completionGoals),
+        summary: learningPath.summary,
+    }, customTitle);
+}
+
+export async function exportLearningPathObjectToPlaylist(
+    userId: string,
+    learningPath: {
+        topic: string;
+        userLevel: string;
+        userGoal: string;
+        totalVideos: number;
+        estimatedTotalTime: string;
+        stages: Array<{ videos: Array<{ videoId: string }> }>;
+        completionGoals?: string[];
+        summary?: string;
+    },
+    customTitle?: string
+): Promise<{
+    success: boolean;
+    playlistId?: string;
+    playlistUrl?: string;
+    videosAdded?: number;
+    videosFailed?: number;
+    error?: string;
+}> {
+    // Get authenticated YouTube client
+    const auth = await getAuthenticatedClient(userId);
+    if (!auth) {
+        return {
+            success: false,
+            error: 'YouTube account not connected. Please connect in Settings.',
+        };
+    }
+
     try {
-        // Parse the stages to get video IDs
-        const stages = JSON.parse(learningPath.stages);
         const videoIds: string[] = [];
 
-        for (const stage of stages) {
+        for (const stage of learningPath.stages || []) {
             for (const video of stage.videos || []) {
                 if (video.videoId) {
                     videoIds.push(video.videoId);
@@ -142,13 +182,11 @@ export async function exportLearningPathToPlaylist(
             };
         }
 
-        // Create the playlist
         const title = customTitle || `LinkMe: ${learningPath.topic}`;
-        const description = `Learning path created by LinkMe\n\n${learningPath.summary}\n\nLevel: ${learningPath.userLevel}\nGoal: ${learningPath.userGoal}\nTotal videos: ${learningPath.totalVideos}\nEstimated time: ${learningPath.estimatedTotalTime}`;
+        const description = `Learning path created by LinkMe\n\n${learningPath.summary || ''}\n\nLevel: ${learningPath.userLevel}\nGoal: ${learningPath.userGoal}\nTotal videos: ${learningPath.totalVideos}\nEstimated time: ${learningPath.estimatedTotalTime}`;
 
         const playlistId = await createPlaylist(auth.youtube, title, description);
 
-        // Add videos to playlist
         const { success: added, failed } = await addVideosToPlaylist(
             auth.youtube,
             playlistId,

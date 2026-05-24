@@ -48,6 +48,11 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
     const [saveMessage, setSaveMessage] = useState<string | null>(null);
     const [isGuest, setIsGuest] = useState(false);
     const [youtubeConnected, setYoutubeConnected] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+    const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
+    const [playlistError, setPlaylistError] = useState<string | null>(null);
+
+    const userHasYouTube = youtubeConnected;
 
     useEffect(() => {
         const checkStatus = async () => {
@@ -141,8 +146,47 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
         }
     };
 
-    const progressPercent = learningPath.totalVideos > 0
-        ? Math.round((watchedVideos.size / learningPath.totalVideos) * 100)
+    const exportPlaylist = async () => {
+        if (!userHasYouTube) {
+            setPlaylistError('Connect YouTube first in Settings');
+            setTimeout(() => setPlaylistError(null), 3000);
+            return;
+        }
+
+        setIsExporting(true);
+        setPlaylistError(null);
+        setPlaylistUrl(null);
+
+        try {
+            const response = await fetch('/api/youtube/playlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    learningPathId: savedPathId,
+                    learningPath: savedPathId ? undefined : learningPath,
+                    title: `LinkMe Playlist: ${learningPath.topic}`,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Failed to create playlist');
+            }
+            setPlaylistUrl(data.playlistUrl);
+            setPlaylistError(null);
+        } catch (error) {
+            setPlaylistError(error instanceof Error ? error.message : 'Failed to create playlist');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const totalVideosCount = learningPath.totalVideos > 0
+        ? learningPath.totalVideos
+        : (learningPath.stages || []).reduce((sum, stage) => sum + (stage.videos?.length || 0), 0);
+
+    const progressPercent = totalVideosCount > 0
+        ? Math.round((watchedVideos.size / totalVideosCount) * 100)
         : 0;
 
     return (
@@ -168,15 +212,30 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                         >
                             {savedPathId ? 'Registry Active' : 'Initialize Sync'}
                         </Button>
+                        {saveMessage && (
+                            <p className="text-[10px] text-slate-400 mt-1">{saveMessage}</p>
+                        )}
                         
-                        {savedPathId && !isGuest && (
-                            <Button 
-                                variant="outline" 
-                                className="w-full text-xs text-[#ff0000] border-[#ff0000]/20 hover:bg-[#ff0000]/10"
-                                onClick={youtubeConnected ? () => {} : () => window.location.href = '/settings'}
+                        <Button
+                            variant={userHasYouTube ? 'primary' : 'outline'}
+                            className="w-full text-xs font-bold uppercase tracking-widest"
+                            onClick={userHasYouTube ? exportPlaylist : () => window.location.href = '/settings'}
+                            disabled={isExporting}
+                        >
+                            {userHasYouTube ? (isExporting ? 'Creating Playlist...' : 'Create YouTube Playlist') : 'Connect YouTube'}
+                        </Button>
+                        {playlistError && (
+                            <p className="text-[10px] text-red-400 mt-1">{playlistError}</p>
+                        )}
+                        {playlistUrl && (
+                            <a
+                                href={playlistUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[10px] text-emerald-300 hover:text-emerald-100 mt-1 block"
                             >
-                                {youtubeConnected ? 'Sync YouTube' : 'Connect YouTube'}
-                            </Button>
+                                Open playlist
+                            </a>
                         )}
                     </div>
                 </div>
@@ -201,7 +260,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
             <div className="relative pl-6 sm:pl-10 space-y-12">
                 <div className="absolute left-[30px] sm:left-[38px] top-6 bottom-6 w-px bg-[#262626]" />
 
-                {learningPath.stages.map((stage) => (
+                {(learningPath.stages || []).map((stage) => (
                     <div key={stage.stageNumber} className="relative">
                         
                         {/* Learning Stage Checkpoint */}
@@ -222,7 +281,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                             </div>
 
                             <div className="grid gap-3">
-                                {stage.videos.map((video) => {
+                                {(stage.videos || []).map((video) => {
                                     const isExpanded = expandedVideos.has(video.videoId);
                                     const isWatched = watchedVideos.has(video.videoId);
                                     
@@ -312,7 +371,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
             <div className="p-8 rounded-2xl bg-[#111111] border border-[#262626]">
                 <h4 className="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-10">Learning Goals</h4>
                 <div className="grid sm:grid-cols-2 gap-4">
-                    {learningPath.completionGoals.map((goal, i) => (
+                    {(learningPath.completionGoals || []).map((goal, i) => (
                         <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-black/40 border border-[#262626]">
                             <span className="text-emerald-500 font-bold text-sm">✦</span>
                             <span className="text-[12px] font-medium text-slate-400 leading-relaxed">{goal}</span>

@@ -46,6 +46,32 @@ interface ConversationState {
 
 const conversationStates = new Map<string, ConversationState>();
 
+async function hydrateStateFromHistory(historyId: string, userId: string): Promise<ConversationState | null> {
+    try {
+        const db = getDb();
+        const entry = await db.chatHistory.findUnique({
+            where: { id: historyId, userId },
+        });
+        if (!entry) return null;
+
+        const data = JSON.parse(entry.messages);
+        const messages = Array.isArray(data.messages)
+            ? data.messages.map((msg: any) => ({ role: msg.role, content: msg.content }))
+            : [];
+
+        return {
+            messages,
+            searchReady: !!data.searchReady,
+            searchQuery: data.query,
+            skillLevel: data.skillLevel,
+            goal: data.goal,
+        };
+    } catch (error) {
+        console.warn('Failed to hydrate conversation state from history:', error);
+        return null;
+    }
+}
+
 // ============================================
 // System Prompt for Gemini
 // ============================================
@@ -320,7 +346,6 @@ export async function POST(request: NextRequest) {
                                 })),
                                 learningPath: learningPath ? {
                                     topic: learningPath.topic,
-                                    skillLevel: learningPath.skillLevel,
                                     userLevel: learningPath.userLevel,
                                     userGoal: learningPath.userGoal,
                                     totalVideos: learningPath.totalVideos,
@@ -363,7 +388,6 @@ export async function POST(request: NextRequest) {
                         } catch (err) {
                             console.error('Failed to save chat history:', err);
                         }
-                    }
                     }
                 } catch (searchError) {
                     console.error('YouTube search error:', searchError);

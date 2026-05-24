@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/auth';
-import { exportLearningPathToPlaylist } from '@/lib/youtube-playlist';
+import { exportLearningPathToPlaylist, exportLearningPathObjectToPlaylist } from '@/lib/youtube-playlist';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,21 +27,29 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { learningPathId, title } = body;
+        const { learningPathId, learningPath, title } = body;
 
-        if (!learningPathId) {
+        if (!learningPathId && !learningPath) {
             return NextResponse.json(
-                { success: false, message: 'Learning path ID is required' },
+                { success: false, message: 'Learning path ID or learningPath object is required' },
                 { status: 400 }
             );
         }
 
-        // Export to YouTube playlist
-        const result = await exportLearningPathToPlaylist(
-            decoded.userId,
-            learningPathId,
-            title
-        );
+        let result;
+        if (learningPathId) {
+            result = await exportLearningPathToPlaylist(
+                decoded.userId,
+                learningPathId,
+                title
+            );
+        } else {
+            result = await exportLearningPathObjectToPlaylist(
+                decoded.userId,
+                learningPath,
+                title
+            );
+        }
 
         if (!result.success) {
             return NextResponse.json(
