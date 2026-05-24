@@ -397,6 +397,24 @@ const tursoDb = {
         [id, args.data.userId, args.data.messages, now, now]
       );
     },
+    async findUnique(args: { where: { id: string; userId?: string } }): Promise<{ id: string; userId: string; messages: string; createdAt: Date; updatedAt: Date } | null> {
+      let sql = 'SELECT * FROM ChatHistory WHERE id = ?';
+      const values: unknown[] = [args.where.id];
+      if (args.where.userId) {
+        sql += ' AND userId = ?';
+        values.push(args.where.userId);
+      }
+      const rows = await tursoExecute(sql, values);
+      if (rows.length === 0) return null;
+      const r = rows[0] as Record<string, unknown>;
+      return {
+        id: String(r.id),
+        userId: String(r.userId),
+        messages: String(r.messages),
+        createdAt: new Date(String(r.createdAt)),
+        updatedAt: new Date(String(r.updatedAt ?? r.createdAt)),
+      };
+    },
     async findMany(args: { where: { userId: string } }): Promise<Array<{ id: string; userId: string; messages: string; createdAt: Date }>> {
       const rows = await tursoExecute('SELECT * FROM ChatHistory WHERE userId = ? ORDER BY createdAt DESC', [args.where.userId]);
       return rows.map((r: unknown) => {
