@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "LinkMe | AI-Powered Learning for the Modern World",
     description: "Personalized learning paths created from world-class tutorials.",
-    url: "https://linkme-rust.vercel.app",
+    url: "https://linkme.ng",
     siteName: "LinkMe",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "LinkMe - Smart Tutorial Discovery" }],
     locale: "en_US",

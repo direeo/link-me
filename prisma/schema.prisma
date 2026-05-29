@@ -35,6 +35,10 @@ model User {
     // Notification preferences
     emailReminders Boolean @default(false)
 
+    // Password reset
+    resetPasswordToken  String?   @unique
+    resetPasswordExpiry DateTime?
+
     // Relations
     verificationTokens  VerificationToken[]
     chatHistories       ChatHistory[]

@@ -161,6 +161,93 @@ export async function sendWelcomeEmail(
     return { success: true, message: 'Welcome email sent' };
 }
 
+/**
+ * Send a password reset email with a secure one-time link
+ */
+export async function sendPasswordResetEmail(
+    email: string,
+    name: string | null,
+    resetUrl: string
+): Promise<{ success: boolean; message: string }> {
+    const firstName = name?.split(' ')[0] || 'there';
+    const subject = 'Reset your LinkMe password';
+
+    const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Reset your password</title>
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f4f5;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #8b5cf6; font-size: 28px; margin: 0;">LinkMe</h1>
+              </div>
+
+              <h2 style="color: #1f2937; font-size: 22px; margin-bottom: 16px; text-align: center;">
+                Reset your password
+              </h2>
+
+              <p style="color: #4b5563; font-size: 16px;">Hi ${firstName},</p>
+              <p style="color: #4b5563; font-size: 16px;">
+                We received a request to reset your LinkMe password. Click the button below to choose a new one.
+                This link expires in <strong>1 hour</strong>.
+              </p>
+
+              <div style="text-align: center; margin: 36px 0;">
+                <a href="${resetUrl}"
+                   style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white;
+                          text-decoration: none; padding: 14px 40px; border-radius: 10px;
+                          font-weight: 800; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
+                  Reset Password
+                </a>
+              </div>
+
+              <p style="color: #9ca3af; font-size: 13px; text-align: center;">
+                If you didn't request this, you can safely ignore this email — your password won't change.
+              </p>
+
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 28px 0;">
+              <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                © ${new Date().getFullYear()} LinkMe. Find the perfect tutorials, faster.
+              </p>
+            </div>
+          </body>
+        </html>
+    `;
+
+    if (EMAIL_MODE === 'development') {
+        console.log('\n' + '='.repeat(60));
+        console.log('PASSWORD RESET EMAIL (Development Mode)');
+        console.log('='.repeat(60));
+        console.log(`To: ${email}`);
+        console.log(`Subject: ${subject}`);
+        console.log(`Reset URL: ${resetUrl}`);
+        console.log('='.repeat(60) + '\n');
+        return { success: true, message: 'Password reset email logged to console (development mode)' };
+    }
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        return { success: false, message: 'Email service not configured' };
+    }
+
+    try {
+        await transporter.sendMail({
+            from: process.env.SMTP_FROM || 'noreply@linkme.app',
+            to: email,
+            subject,
+            html,
+        });
+        return { success: true, message: 'Password reset email sent successfully' };
+    } catch (error) {
+        console.error('Failed to send password reset email:', error);
+        return { success: false, message: 'Failed to send password reset email' };
+    }
+}
+
 export interface ActiveLearningPath {
     topic: string;
     totalVideos: number;

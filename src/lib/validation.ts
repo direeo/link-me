@@ -50,6 +50,31 @@ export const resendVerificationSchema = z.object({
         .email('Please enter a valid email address'),
 });
 
+export const forgotPasswordSchema = z.object({
+    email: z
+        .string()
+        .email('Please enter a valid email address')
+        .min(1, 'Email is required'),
+});
+
+export const resetPasswordSchema = z.object({
+    email: z
+        .string()
+        .email('Please enter a valid email address')
+        .min(1, 'Email is required'),
+    token: z
+        .string()
+        .min(1, 'Reset token is required'),
+    password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(128, 'Password is too long')
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+            'Password needs: uppercase, lowercase, and a number (e.g., MyPass123)'
+        ),
+});
+
 // ============================================
 // Chat Validation Schemas
 // ============================================

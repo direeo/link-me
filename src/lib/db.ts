@@ -30,6 +30,9 @@ export interface DbUser {
   youtubeChannelName: string | null;
   // Notification preferences
   emailReminders: boolean;
+  // Password reset
+  resetPasswordToken: string | null;
+  resetPasswordExpiry: Date | null;
 }
 
 export interface DbVerificationToken {
@@ -144,6 +147,9 @@ const tursoDb = {
         youtubeChannelName: r.youtubeChannelName ? String(r.youtubeChannelName) : null,
         // Notification preferences
         emailReminders: Boolean(r.emailReminders),
+        // Password reset
+        resetPasswordToken: r.resetPasswordToken ? String(r.resetPasswordToken) : null,
+        resetPasswordExpiry: r.resetPasswordExpiry ? new Date(String(r.resetPasswordExpiry)) : null,
       };
     },
     async create(args: { data: { email: string; passwordHash: string; name?: string | null; emailVerified?: boolean } }): Promise<DbUser> {
@@ -170,6 +176,8 @@ const tursoDb = {
         youtubeChannelId: null,
         youtubeChannelName: null,
         emailReminders: false,
+        resetPasswordToken: null,
+        resetPasswordExpiry: null,
       };
     },
     async update(args: { where: { email?: string; id?: string }; data: Record<string, unknown> }): Promise<DbUser> {
@@ -191,6 +199,9 @@ const tursoDb = {
         youtubeChannelId: 'youtubeChannelId',
         youtubeChannelName: 'youtubeChannelName',
         emailReminders: 'emailReminders',
+        passwordHash: 'passwordHash',
+        resetPasswordToken: 'resetPasswordToken',
+        resetPasswordExpiry: 'resetPasswordExpiry',
       };
 
       for (const [dataKey, dbField] of Object.entries(fieldMappings)) {
@@ -236,6 +247,8 @@ const tursoDb = {
           youtubeChannelId: row.youtubeChannelId ? String(row.youtubeChannelId) : null,
           youtubeChannelName: row.youtubeChannelName ? String(row.youtubeChannelName) : null,
           emailReminders: Boolean(row.emailReminders),
+          resetPasswordToken: row.resetPasswordToken ? String(row.resetPasswordToken) : null,
+          resetPasswordExpiry: row.resetPasswordExpiry ? new Date(String(row.resetPasswordExpiry)) : null,
         };
       });
     },

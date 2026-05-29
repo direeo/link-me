@@ -32,10 +32,8 @@ export default function LoginPage() {
         setIsLoading(false);
 
         if (result.requires2FA) {
-            // Redirect to OTP page for 2FA
             router.push(`/verify?type=2fa&email=${encodeURIComponent(result.email || formData.email)}`);
         } else if (result.requiresVerification) {
-            // Redirect to OTP page for email verification
             router.push(`/verify?type=email&email=${encodeURIComponent(result.email || formData.email)}`);
         } else if (result.success) {
             router.push('/chat');
@@ -63,12 +61,15 @@ export default function LoginPage() {
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20 transition-transform group-hover:scale-110">
                         <span className="text-white font-black text-xl">L</span>
                     </div>
+                    <span className="text-2xl font-black tracking-tighter text-white uppercase -mt-4">LinkMe</span>
                 </Link>
 
                 <div className="glass-panel rounded-[40px] p-8 md:p-12 relative overflow-hidden transition-all duration-700 animate-in fade-in zoom-in-95">
                     <div className="text-center mb-10">
-                        <h1 className="text-xl font-bold text-white uppercase tracking-widest">Sign In</h1>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2 italic">Resuming Learning Session</p>
+                        <h1 className="text-xl font-bold text-white uppercase tracking-widest">Welcome Back</h1>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mt-2">
+                            Sign in to continue learning
+                        </p>
                     </div>
 
                     {serverError && (
@@ -79,27 +80,70 @@ export default function LoginPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-4">
-                            <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
-                            <Input label="Password" name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder="••••••••" />
+                            <Input
+                                label="Email Address"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                error={errors.email}
+                                placeholder="you@example.com"
+                            />
+                            <div>
+                                <Input
+                                    label="Password"
+                                    name="password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    error={errors.password}
+                                    placeholder="••••••••"
+                                />
+                                <div className="mt-2 text-right">
+                                    <Link
+                                        href="/forgot-password"
+                                        className="text-[10px] font-bold text-slate-500 hover:text-violet-400 transition-colors uppercase tracking-widest"
+                                    >
+                                        Forgot password?
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
-                        <Button type="submit" loading={isLoading} variant="glow" className="w-full h-14 text-[10px] font-bold uppercase tracking-[0.2em] mt-2 shadow-[0_10px_30px_rgba(139,92,246,0.3)]">
+                        <Button
+                            type="submit"
+                            loading={isLoading}
+                            variant="glow"
+                            className="w-full h-14 text-[10px] font-bold uppercase tracking-[0.2em] mt-2 shadow-[0_10px_30px_rgba(139,92,246,0.3)]"
+                        >
                             Sign In
                         </Button>
                     </form>
 
-<div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5" /></div>
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-white/5" />
+                        </div>
                         <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                            <span className="px-4 text-slate-600 bg-transparent">Guest Access</span>
+                            <span className="px-4 text-slate-600 bg-transparent">Or continue without an account</span>
                         </div>
                     </div>
 
-                    <Button onClick={handleGuestMode} variant="outline" className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em] border-white/5 hover:bg-white/5">
+                    <Button
+                        onClick={handleGuestMode}
+                        variant="outline"
+                        className="w-full py-5 text-[10px] font-bold uppercase tracking-[0.2em] border-white/5 hover:bg-white/5"
+                    >
                         Continue as Guest
                     </Button>
+                    <p className="mt-2 text-center text-[9px] text-slate-600 leading-relaxed">
+                        No account needed. Your chat won&apos;t be saved.
+                    </p>
 
-                    <p className="mt-10 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
-                        New User? <Link href="/signup" className="text-white hover:underline transition-colors ml-1 italic font-bold">Create Account</Link>
+                    <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+                        New here?{' '}
+                        <Link href="/signup" className="text-white hover:underline transition-colors ml-1 italic font-bold">
+                            Create Account
+                        </Link>
                     </p>
                 </div>
             </div>

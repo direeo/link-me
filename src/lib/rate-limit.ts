@@ -167,4 +167,14 @@ export const RATE_LIMITS = {
         windowMs: 5 * 60 * 1000, // 5 minutes
         blockDurationMs: 15 * 60 * 1000, // 15 minute lockout
     },
+    forgotPassword: {
+        maxAttempts: 3,
+        windowMs: 60 * 60 * 1000, // 1 hour
+        blockDurationMs: 60 * 60 * 1000, // 1 hour
+    },
+    resetPassword: {
+        maxAttempts: 5,
+        windowMs: 60 * 60 * 1000, // 1 hour
+        blockDurationMs: 60 * 60 * 1000, // 1 hour
+    },
 };
