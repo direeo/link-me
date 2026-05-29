@@ -11,7 +11,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-    const [activeTab, setActiveTab] = useState<'security' | 'youtube'>('security');
+    const [activeTab, setActiveTab] = useState<'security' | 'notifications' | 'youtube'>('security');
     const [twoFASecret, setTwoFASecret] = useState<string | null>(null);
     const [qrCode, setQrCode] = useState<string | null>(null);
     const [verificationCode, setVerificationCode] = useState('');
@@ -20,10 +20,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [isGuest, setIsGuest] = useState(false);
 
-    // Initial check for 2FA status and guest mode
+    // Notification preferences
+    const [emailReminders, setEmailReminders] = useState(false);
+    const [prefLoading, setPrefLoading] = useState(false);
+    const [prefMessage, setPrefMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    // Initial check for 2FA status, guest mode, and preferences
     useEffect(() => {
         if (isOpen) {
             check2FAStatus();
+            loadPreferences();
         }
     }, [isOpen]);
 
@@ -32,7 +38,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             const res = await fetch('/api/auth/me');
             const data = await res.json();
             if (data.success && data.user) {
-                // Check if user is guest - if so, close the modal
                 if (data.user.isGuest) {
                     setIsGuest(true);
                     onClose();
@@ -42,6 +47,45 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             }
         } catch (err) {
             console.error('Failed to check 2FA status');
+        }
+    };
+
+    const loadPreferences = async () => {
+        try {
+            const res = await fetch('/api/settings/preferences', { credentials: 'include' });
+            const data = await res.json();
+            if (data.success) {
+                setEmailReminders(data.preferences.emailReminders ?? false);
+            }
+        } catch {
+            // non-fatal — preferences default to false
+        }
+    };
+
+    const toggleEmailReminders = async (enabled: boolean) => {
+        setPrefLoading(true);
+        setPrefMessage(null);
+        setEmailReminders(enabled); // optimistic update
+        try {
+            const res = await fetch('/api/settings/preferences', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ emailReminders: enabled }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setPrefMessage({ type: 'success', text: enabled ? 'Reminders enabled' : 'Reminders disabled' });
+            } else {
+                setEmailReminders(!enabled); // revert on error
+                setPrefMessage({ type: 'error', text: data.message || 'Failed to update' });
+            }
+        } catch {
+            setEmailReminders(!enabled);
+            setPrefMessage({ type: 'error', text: 'Connection error' });
+        } finally {
+            setPrefLoading(false);
+            setTimeout(() => setPrefMessage(null), 3000);
         }
     };
 
@@ -133,13 +177,19 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <div className="flex h-[500px]">
                     {/* Sidebar */}
                     <div className="w-48 border-r border-white/5 p-4 flex flex-col gap-2">
-                        <button 
+                        <button
                             onClick={() => setActiveTab('security')}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'security' ? 'bg-violet-600 text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                         >
                             Security
                         </button>
-                        <button 
+                        <button
+                            onClick={() => setActiveTab('notifications')}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'notifications' ? 'bg-violet-600 text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                        >
+                            Notifications
+                        </button>
+                        <button
                             onClick={() => setActiveTab('youtube')}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'youtube' ? 'bg-red-600 text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                         >
@@ -214,6 +264,64 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         {message.text}
                                     </div>
                                 )}
+                            </div>
+                        )}
+
+                        {activeTab === 'notifications' && (
+                            <div className="space-y-8">
+                                <div>
+                                    <h3 className="text-lg font-black text-white mb-2 uppercase">Email Notifications</h3>
+                                    <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                                        Choose when LinkMe sends you emails. We only send emails that matter.
+                                    </p>
+                                </div>
+
+                                {/* Learning path completion reminder */}
+                                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/8">
+                                    <div className="flex items-start justify-between gap-6">
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-bold text-white mb-1">Learning path completion</h4>
+                                            <p className="text-xs text-slate-400 leading-relaxed">
+                                                Receive a congratulations email to your registered address when you finish watching all videos in a learning path.
+                                            </p>
+                                        </div>
+
+                                        {/* Toggle switch */}
+                                        <button
+                                            onClick={() => !prefLoading && toggleEmailReminders(!emailReminders)}
+                                            disabled={prefLoading}
+                                            aria-label="Toggle email reminders"
+                                            className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-all duration-200 focus:outline-none ${
+                                                emailReminders ? 'bg-violet-600' : 'bg-white/10'
+                                            } ${prefLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        >
+                                            <span
+                                                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                                                    emailReminders ? 'translate-x-6' : 'translate-x-0'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center gap-2">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${emailReminders ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${emailReminders ? 'text-emerald-400' : 'text-slate-600'}`}>
+                                            {emailReminders ? 'Enabled' : 'Disabled'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {prefMessage && (
+                                    <div className={`p-4 rounded-xl text-xs font-bold text-center ${
+                                        prefMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                                    }`}>
+                                        {prefMessage.text}
+                                    </div>
+                                )}
+
+                                <p className="text-[10px] text-slate-600 leading-relaxed">
+                                    Emails are sent to the address you registered with. You can change this preference at any time.
+                                </p>
                             </div>
                         )}
 

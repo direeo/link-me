@@ -32,6 +32,9 @@ model User {
     youtubeChannelId      String?
     youtubeChannelName    String?
 
+    // Notification preferences
+    emailReminders Boolean @default(false)
+
     // Relations
     verificationTokens  VerificationToken[]
     chatHistories       ChatHistory[]

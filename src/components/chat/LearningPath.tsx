@@ -51,6 +51,8 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
     const [isExporting, setIsExporting] = useState(false);
     const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
     const [playlistError, setPlaylistError] = useState<string | null>(null);
+    const [isCompleted, setIsCompleted] = useState(false);
+    const completionEmailSentRef = React.useRef(false);
 
     const userHasYouTube = youtubeConnected;
 
@@ -100,10 +102,33 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
     const toggleWatched = async (videoId: string, e: React.MouseEvent) => {
         e.stopPropagation();
         const newWatched = !watchedVideos.has(videoId);
+
         setWatchedVideos(prev => {
             const next = new Set(prev);
             if (next.has(videoId)) next.delete(videoId);
             else next.add(videoId);
+
+            // Check for full completion after this update
+            if (newWatched && !isGuest && !completionEmailSentRef.current) {
+                const allVideoIds = (learningPath.stages || []).flatMap(s => (s.videos || []).map(v => v.videoId));
+                const allWatched = allVideoIds.every(id => id === videoId || next.has(id));
+                if (allWatched && allVideoIds.length > 0) {
+                    setIsCompleted(true);
+                    completionEmailSentRef.current = true;
+                    // Trigger completion email in the background
+                    fetch('/api/learning-path/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            topic: learningPath.topic,
+                            totalVideos: allVideoIds.length,
+                            estimatedTotalTime: learningPath.estimatedTotalTime,
+                        }),
+                    }).catch(err => console.error('Completion notification error:', err));
+                }
+            }
+
             return next;
         });
 
@@ -254,6 +279,24 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                         <span className="text-sm font-bold text-slate-200">{progressPercent}%</span>
                     </div>
                 </div>
+
+                {/* Completion Banner */}
+                {isCompleted && (
+                    <div className="mt-6 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-emerald-400">Learning path complete!</p>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                You finished all {learningPath.totalVideos} videos.
+                                {!isGuest && ' A congratulations email has been sent if you have reminders enabled.'}
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Structured Learning Stages */}

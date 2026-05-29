@@ -64,122 +64,112 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
     }, [user?.name, messages.length]);
 
     const loadHistoryConversation = async (historyId: string) => {
-        // Load and restore previous conversation from database
-        console.log('loadHistoryConversation called with ID:', historyId);
+        // Show a loading state immediately
+        setMessages([{
+            id: 'loading-history',
+            role: 'assistant',
+            content: '',
+            timestamp: new Date(),
+            isLoading: true,
+        }]);
+
         try {
             const response = await fetch(`/api/chat/history/${historyId}`, {
                 credentials: 'include',
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Failed to load conversation, status:', response.status, 'message:', errorData?.message);
-                
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
                 setMessages([{
                     id: `err-${Date.now()}`,
                     role: 'assistant',
-                    content: errorData?.message || 'Could not load this conversation. It may be from an older version. Please create a new conversation.',
+                    content: data?.message || 'Could not load this conversation. Please create a new session.',
                     timestamp: new Date(),
                 }]);
-                setShowHistory(false);
                 return;
             }
 
-            const data = await response.json();
-            console.log('Loaded history data:', data);
+            const conversationData = data.data;
+            setConversationId(historyId);
 
-            if (data.success && data.data) {
-                // Restore the conversation
-                const conversationData = data.data;
-                console.log('Setting conversation ID:', historyId);
-                setConversationId(historyId);
-                
-                // The stored structure has all messages plus metadata
-                // Extract the full conversation
-                const userMessages = conversationData.messages || [];
-                const topic = conversationData.topic || 'Learning path';
+            const storedMessages: any[] = Array.isArray(conversationData.messages) ? conversationData.messages : [];
+            const learningPath = conversationData.learningPath || null;
+            const tutorials = conversationData.tutorials || null;
+            const topic = conversationData.topic || 'your topic';
 
-                console.log('Found messages:', userMessages.length, 'messages');
+            // Rebuild the full conversation exactly as it appeared when it was saved
+            const restoredMessages: ChatMessage[] = [];
 
-                // Reconstruct the message history with proper format
-                const restoredMessages: ChatMessage[] = [];
-                const learningPath = conversationData.learningPath;
-                const tutorials = conversationData.tutorials;
+            if (storedMessages.length > 0) {
+                storedMessages.forEach((msg: any, idx: number) => {
+                    // Safely parse timestamp
+                    let ts: Date;
+                    try {
+                        ts = msg.timestamp ? new Date(msg.timestamp) : new Date();
+                        if (isNaN(ts.getTime())) ts = new Date();
+                    } catch {
+                        ts = new Date();
+                    }
 
-                // Add all user and assistant messages
-                if (userMessages && Array.isArray(userMessages) && userMessages.length > 0) {
-                    userMessages.forEach((msg: any, idx: number) => {
-                        const messageObj: ChatMessage = {
-                            id: `msg-${idx}`,
-                            role: msg.role as any,
-                            content: msg.content,
-                            timestamp: new Date(msg.timestamp || Date.now()),
-                        };
-                        restoredMessages.push(messageObj);
+                    restoredMessages.push({
+                        id: `hist-${historyId}-${idx}`,
+                        role: (msg.role === 'user' ? 'user' : 'assistant') as any,
+                        content: msg.content || '',
+                        timestamp: ts,
                     });
+                });
 
-                    // Attach learning path and tutorials to the last assistant message
+                // Attach learning path / tutorials to the last assistant message exactly as they were
+                if (learningPath || (tutorials && tutorials.length > 0)) {
                     let attached = false;
                     for (let i = restoredMessages.length - 1; i >= 0; i--) {
                         if (restoredMessages[i].role === 'assistant') {
                             if (learningPath) restoredMessages[i].learningPath = learningPath as LearningPathType;
-                            if (tutorials && (tutorials as any[]).length > 0) restoredMessages[i].tutorials = tutorials as any;
+                            if (tutorials && tutorials.length > 0) restoredMessages[i].tutorials = tutorials;
                             attached = true;
                             break;
                         }
                     }
-                    // If no assistant message found, append one with the learning path
-                    if (!attached && (learningPath || tutorials)) {
+                    if (!attached) {
+                        // Fallback: append a summary message with the learning path
                         restoredMessages.push({
-                            id: `msg-lp`,
+                            id: `hist-lp-${historyId}`,
                             role: 'assistant',
-                            content: `Here is your learning path for ${topic}.`,
-                            timestamp: new Date(),
+                            content: `Here is your saved learning path for ${topic}.`,
+                            timestamp: new Date(conversationData.timestamp || Date.now()),
                             ...(learningPath && { learningPath: learningPath as LearningPathType }),
-                            ...(tutorials && { tutorials: tutorials as any }),
+                            ...(tutorials && tutorials.length > 0 && { tutorials }),
                         });
                     }
                 }
-
-                console.log('Restored messages array:', restoredMessages.length, 'items');
-
-                if (restoredMessages.length > 0) {
-                    console.log('Setting messages to restored array');
-                    setMessages(restoredMessages);
-                } else {
-                    // No conversation text saved — still show the learning path / tutorials
-                    console.log('No message history found, showing learning path directly');
-                    const hasPath = !!learningPath;
-                    const hasTutorials = tutorials && (tutorials as any[]).length > 0;
-                    setMessages([{
-                        id: 'restored-lp',
-                        role: 'assistant',
-                        content: hasPath
-                            ? `Here is your saved learning path for ${topic}. Pick up where you left off!`
-                            : hasTutorials
-                                ? `Here are the tutorials from your previous session on ${topic}.`
-                                : `You previously explored "${topic}". Start a new chat to continue learning!`,
-                        timestamp: new Date(conversationData.timestamp || Date.now()),
-                        ...(hasPath && { learningPath: learningPath as LearningPathType }),
-                        ...(hasTutorials && { tutorials: tutorials as any }),
-                    }]);
-                }
-
-                // Close history sidebar
-                console.log('Closing history sidebar');
-                setShowHistory(false);
             } else {
-                console.error('API returned error or no data:', data);
-                setMessages([{
-                    id: `err-${Date.now()}`,
+                // Older format: no messages stored, just show the result
+                const hasPath = !!learningPath;
+                const hasTutorials = tutorials && tutorials.length > 0;
+                restoredMessages.push({
+                    id: `hist-lp-${historyId}`,
                     role: 'assistant',
-                    content: data?.message || 'Could not load this conversation.',
-                    timestamp: new Date(),
-                }]);
-                setShowHistory(false);
+                    content: hasPath
+                        ? `Here is your saved learning path for ${topic}. Pick up where you left off!`
+                        : hasTutorials
+                            ? `Here are the tutorials from your previous session on ${topic}.`
+                            : `You previously explored "${topic}". Start a new conversation to continue learning!`,
+                    timestamp: new Date(conversationData.timestamp || Date.now()),
+                    ...(hasPath && { learningPath: learningPath as LearningPathType }),
+                    ...(hasTutorials && { tutorials }),
+                });
             }
+
+            setMessages(restoredMessages);
         } catch (error) {
             console.error('Error loading conversation:', error);
+            setMessages([{
+                id: `err-${Date.now()}`,
+                role: 'assistant',
+                content: 'Something went wrong loading this conversation. Please try again.',
+                timestamp: new Date(),
+            }]);
         }
     };
 

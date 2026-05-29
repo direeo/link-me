@@ -28,6 +28,8 @@ export interface DbUser {
   youtubeTokenExpiry: Date | null;
   youtubeChannelId: string | null;
   youtubeChannelName: string | null;
+  // Notification preferences
+  emailReminders: boolean;
 }
 
 export interface DbVerificationToken {
@@ -139,6 +141,8 @@ const tursoDb = {
         youtubeTokenExpiry: r.youtubeTokenExpiry ? new Date(String(r.youtubeTokenExpiry)) : null,
         youtubeChannelId: r.youtubeChannelId ? String(r.youtubeChannelId) : null,
         youtubeChannelName: r.youtubeChannelName ? String(r.youtubeChannelName) : null,
+        // Notification preferences
+        emailReminders: Boolean(r.emailReminders),
       };
     },
     async create(args: { data: { email: string; passwordHash: string; name?: string | null; emailVerified?: boolean } }): Promise<DbUser> {
@@ -164,6 +168,7 @@ const tursoDb = {
         youtubeTokenExpiry: null,
         youtubeChannelId: null,
         youtubeChannelName: null,
+        emailReminders: false,
       };
     },
     async update(args: { where: { email?: string; id?: string }; data: Record<string, unknown> }): Promise<DbUser> {
@@ -184,6 +189,7 @@ const tursoDb = {
         youtubeTokenExpiry: 'youtubeTokenExpiry',
         youtubeChannelId: 'youtubeChannelId',
         youtubeChannelName: 'youtubeChannelName',
+        emailReminders: 'emailReminders',
       };
 
       for (const [dataKey, dbField] of Object.entries(fieldMappings)) {
@@ -228,6 +234,7 @@ const tursoDb = {
           youtubeTokenExpiry: row.youtubeTokenExpiry ? new Date(String(row.youtubeTokenExpiry)) : null,
           youtubeChannelId: row.youtubeChannelId ? String(row.youtubeChannelId) : null,
           youtubeChannelName: row.youtubeChannelName ? String(row.youtubeChannelName) : null,
+          emailReminders: Boolean(row.emailReminders),
         };
       });
     },
