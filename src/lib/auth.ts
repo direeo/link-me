@@ -5,9 +5,21 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
+// ── Startup validation — crash loudly if secrets are missing in production ──
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10);
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-me';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-change-me';
+if (isNaN(SALT_ROUNDS) || SALT_ROUNDS < 10) {
+    throw new Error('BCRYPT_SALT_ROUNDS must be a number ≥ 10');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET env var is missing or too short (min 32 chars). Set it in your environment.');
+}
+if (!JWT_REFRESH_SECRET || JWT_REFRESH_SECRET.length < 32) {
+    throw new Error('JWT_REFRESH_SECRET env var is missing or too short (min 32 chars). Set it in your environment.');
+}
 
 // Token expiration times
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -59,7 +71,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
  * @returns Signed JWT access token
  */
 export function generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
+    return jwt.sign(payload, JWT_SECRET!, { expiresIn: ACCESS_TOKEN_EXPIRY });
 }
 
 /**
@@ -68,7 +80,7 @@ export function generateAccessToken(payload: TokenPayload): string {
  * @returns Signed JWT refresh token
  */
 export function generateRefreshToken(payload: TokenPayload): string {
-    return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
+    return jwt.sign(payload, JWT_REFRESH_SECRET!, { expiresIn: REFRESH_TOKEN_EXPIRY });
 }
 
 /**
@@ -78,7 +90,7 @@ export function generateRefreshToken(payload: TokenPayload): string {
  */
 export function verifyAccessToken(token: string): DecodedToken | null {
     try {
-        return jwt.verify(token, JWT_SECRET) as DecodedToken;
+        return jwt.verify(token, JWT_SECRET!) as DecodedToken;
     } catch {
         return null;
     }
@@ -91,7 +103,7 @@ export function verifyAccessToken(token: string): DecodedToken | null {
  */
 export function verifyRefreshToken(token: string): DecodedToken | null {
     try {
-        return jwt.verify(token, JWT_REFRESH_SECRET) as DecodedToken;
+        return jwt.verify(token, JWT_REFRESH_SECRET!) as DecodedToken;
     } catch {
         return null;
     }
@@ -140,7 +152,7 @@ export function generateGuestToken(): string {
         isGuest: true,
     };
 
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+    return jwt.sign(payload, JWT_SECRET!, { expiresIn: '24h' });
 }
 
 /**

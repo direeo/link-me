@@ -54,9 +54,13 @@ export default function ChatPage() {
                 {
                     id: '1',
                     role: 'assistant',
-                    content: `Welcome to LinkMe${user?.name ? `, ${user.name}` : ''}.
-                    
-I am your LinkMe learning assistant. Tell me what you'd like to learn today, and I'll create a structured course for you from the best YouTube tutorials.`,
+                    content: `Hey${user?.name ? ` ${user.name}` : ''}! What do you want to learn today?
+
+I'll find the best YouTube tutorials and build you a step-by-step learning path. Just tell me the topic — for example:
+
+• "I want to learn Python from scratch"
+• "Teach me React, I already know HTML and CSS"
+• "I want to get into machine learning"`,
                     timestamp: new Date(),
                 },
             ]);
@@ -184,10 +188,10 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
         try {
             // Loading step cycling
             const steps = [
-                "Curating Your Mastery Path...",
-                "Analyzing Top-Tier Content...",
-                "Assembling Curriculum Nodes...",
-                "Finalizing Neural Synthesis..."
+                "Searching YouTube for the best tutorials...",
+                "Reviewing and filtering videos...",
+                "Building your learning path...",
+                "Almost ready..."
             ];
             
             let currentStep = 0;
@@ -341,7 +345,7 @@ I am your LinkMe learning assistant. Tell me what you'd like to learn today, and
                         )}
                         <ChatInput onSend={sendMessage} disabled={isLoading} />
                         <div className="text-center mt-4">
-                             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/5">Secure AI Neural Architecture • LinkMe Protocol v2.0</span>
+                             <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/5">LinkMe • AI-Powered Learning Paths</span>
                         </div>
                     </div>
                 </div>

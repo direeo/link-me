@@ -52,6 +52,8 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
     const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
     const [playlistError, setPlaylistError] = useState<string | null>(null);
     const [isCompleted, setIsCompleted] = useState(false);
+    const [watchToast, setWatchToast] = useState<string | null>(null);
+    const [showYouTubeModal, setShowYouTubeModal] = useState(false);
 
     const userHasYouTube = youtubeConnected;
 
@@ -118,6 +120,12 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
 
             return next;
         });
+
+        // Show brief toast
+        if (newWatched) {
+            setWatchToast('Marked as watched');
+            setTimeout(() => setWatchToast(null), 2000);
+        }
 
         if (savedPathId && !isGuest) {
             try {
@@ -231,7 +239,7 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                         <Button
                             variant={userHasYouTube ? 'primary' : 'outline'}
                             className="w-full text-xs font-bold uppercase tracking-widest"
-                            onClick={userHasYouTube ? exportPlaylist : () => window.location.href = '/settings'}
+                            onClick={userHasYouTube ? exportPlaylist : () => setShowYouTubeModal(true)}
                             disabled={isExporting}
                         >
                             {userHasYouTube ? (isExporting ? 'Creating Playlist...' : 'Export to YouTube') : 'Connect to YouTube'}
@@ -409,6 +417,62 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                     ))}
                 </div>
             </div>
+
+            {/* Watch toast */}
+            {watchToast && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/30">
+                        <svg className="w-3.5 h-3.5 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-[11px] font-bold text-white uppercase tracking-widest">{watchToast}</span>
+                    </div>
+                </div>
+            )}
+
+            {/* YouTube connect modal */}
+            {showYouTubeModal && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setShowYouTubeModal(false)}
+                >
+                    <div
+                        className="w-full max-w-sm bg-[#111111] border border-[#262626] rounded-2xl p-8 shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                                <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-2.75 12 12 0 0 0-10 0A4.83 4.83 0 0 1 2.09 6.69 48.72 48.72 0 0 0 0 12a48.72 48.72 0 0 0 2.09 5.31 4.83 4.83 0 0 1 3.73 2.75 12 12 0 0 0 10 0 4.83 4.83 0 0 1 3.77-2.75A48.72 48.72 0 0 0 22 12a48.72 48.72 0 0 0-2.41-5.31zM9 15.5v-7l6 3.5z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-white">Connect YouTube</h3>
+                                <p className="text-[10px] text-slate-500 mt-0.5">Export your learning path as a playlist</p>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                            Connect your YouTube account to export this learning path as a playlist you can watch directly on YouTube.
+                        </p>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowYouTubeModal(false)}
+                                className="flex-1 py-2.5 rounded-xl border border-[#262626] text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-300 hover:border-[#333333] transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => { setShowYouTubeModal(false); window.location.href = '/settings?tab=youtube'; }}
+                                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-[10px] font-bold uppercase tracking-widest text-white transition-all"
+                            >
+                                Go to Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

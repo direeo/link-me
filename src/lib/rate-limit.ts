@@ -162,4 +162,9 @@ export const RATE_LIMITS = {
         windowMs: 60 * 1000, // 1 minute
         blockDurationMs: 5 * 60 * 1000, // 5 minutes
     },
+    twoFactor: {
+        maxAttempts: 5,
+        windowMs: 5 * 60 * 1000, // 5 minutes
+        blockDurationMs: 15 * 60 * 1000, // 15 minute lockout
+    },
 };

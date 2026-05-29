@@ -10,6 +10,7 @@
 //   5. Send a Duolingo-style motivational email via sendDailyReminderEmail
 
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { getDb } from '@/lib/db';
 import { sendDailyReminderEmail, ActiveLearningPath } from '@/lib/email';
 
@@ -38,8 +39,13 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
     if (cronSecret) {
         const auth = request.headers.get('authorization') ?? '';
-        const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-        if (token !== cronSecret) {
+        const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+        let authorized = false;
+        try {
+            authorized = token.length > 0 &&
+                timingSafeEqual(Buffer.from(token), Buffer.from(cronSecret));
+        } catch { authorized = false; }
+        if (!authorized) {
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
     }

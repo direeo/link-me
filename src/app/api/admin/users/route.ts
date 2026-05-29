@@ -1,19 +1,24 @@
 // Admin API to view all users
-// GET /api/admin/users?secret=YOUR_ADMIN_SECRET
+// GET /api/admin/users
+// Requires header: Authorization: Bearer YOUR_ADMIN_SECRET
 
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { getDb, DbUser } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
     try {
-        // Check admin secret
-        const { searchParams } = new URL(request.url);
-        const secret = searchParams.get('secret');
+        // Check admin secret via Authorization header (never in query params — those appear in logs)
         const adminSecret = process.env.ADMIN_SECRET;
+        const authHeader = request.headers.get('authorization') ?? '';
+        const provided = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
-        if (!adminSecret || secret !== adminSecret) {
+        const isAuthorized = adminSecret && provided.length > 0 &&
+            timingSafeEqual(Buffer.from(provided), Buffer.from(adminSecret));
+
+        if (!isAuthorized) {
             return NextResponse.json(
                 { success: false, message: 'Unauthorized' },
                 { status: 401 }

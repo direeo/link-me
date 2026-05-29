@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { verifyAccessToken } from '@/lib/auth';
+import { checkRateLimit, recordAttempt, resetRateLimit, RATE_LIMITS, getClientIP } from '@/lib/rate-limit';
 import {
     generateTOTPSecret,
     generateQRCode,
@@ -72,7 +73,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             qrCode: qrCodeDataUrl,
-            // Also return the secret for manual entry
+            // Return plain secret for manual entry in authenticator app
+            // (only shown once during setup — stored encrypted server-side)
             secret: secret,
         });
     } catch (error) {
@@ -105,21 +107,27 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log('[2FA POST] POST handler called');
-        console.log('[2FA POST] Request cookies:', request.cookies.getAll());
-        
+        // Rate limit 2FA attempts per user
+        const rateLimitKey = `2fa-setup:${decoded.userId}`;
+        const rateLimit = await checkRateLimit(rateLimitKey, RATE_LIMITS.twoFactor);
+        if (!rateLimit.allowed) {
+            const waitMins = Math.ceil((rateLimit.retryAfter || 900) / 60);
+            return NextResponse.json(
+                { success: false, message: `Too many attempts. Try again in ${waitMins} minute${waitMins !== 1 ? 's' : ''}.` },
+                { status: 429 }
+            );
+        }
+
         let body;
         try {
             body = await request.json();
-            console.log('[2FA POST] Parsed body:', body);
-        } catch (e) {
-            console.error('[2FA POST] Failed to parse JSON:', e);
+        } catch {
             return NextResponse.json(
                 { success: false, message: 'Invalid request body' },
                 { status: 400 }
             );
         }
-        
+
         const { code } = body;
 
         if (!code || typeof code !== 'string') {
@@ -168,11 +176,14 @@ export async function POST(request: NextRequest) {
         const isValid = verifyTOTP(code.replace(/\s/g, ''), secret);
 
         if (!isValid) {
+            await recordAttempt(rateLimitKey, RATE_LIMITS.twoFactor);
             return NextResponse.json(
                 { success: false, message: 'Invalid verification code. Please try again.' },
                 { status: 400 }
             );
         }
+
+        await resetRateLimit(rateLimitKey);
 
         // Generate backup codes
         const { plainCodes, hashedCodes } = await generateBackupCodes(10);

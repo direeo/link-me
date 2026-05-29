@@ -18,11 +18,20 @@ function VerifyContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [resendCountdown, setResendCountdown] = useState(60);
+    const [resendSuccess, setResendSuccess] = useState(false);
     const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
     useEffect(() => {
         inputs.current[0]?.focus();
     }, []);
+
+    // Countdown timer for resend button
+    useEffect(() => {
+        if (is2FA || resendCountdown <= 0) return;
+        const timer = setTimeout(() => setResendCountdown(c => c - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [resendCountdown, is2FA]);
 
     // Auto-submit when all 6 digits are entered
     useEffect(() => {
@@ -87,7 +96,7 @@ function VerifyContent() {
     };
 
     const handleResend = async () => {
-        if (is2FA) return; // Can't resend TOTP codes
+        if (is2FA || resendCountdown > 0) return;
         try {
             await fetch('/api/verify/resend', {
                 method: 'POST',
@@ -95,6 +104,9 @@ function VerifyContent() {
                 body: JSON.stringify({ email }),
             });
             setError(null);
+            setResendSuccess(true);
+            setResendCountdown(60);
+            setTimeout(() => setResendSuccess(false), 3000);
         } catch {
             setError('Failed to resend. Please try again.');
         }
@@ -179,12 +191,21 @@ function VerifyContent() {
 
                         <div className="text-center space-y-2">
                             {!is2FA && (
-                                <button
-                                    onClick={handleResend}
-                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-violet-400 transition-colors"
-                                >
-                                    Didn't receive a code? <span className="underline">Resend</span>
-                                </button>
+                                <div className="space-y-1">
+                                    {resendSuccess && (
+                                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Code resent — check your inbox</p>
+                                    )}
+                                    <button
+                                        onClick={handleResend}
+                                        disabled={resendCountdown > 0}
+                                        className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${resendCountdown > 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-500 hover:text-violet-400'}`}
+                                    >
+                                        {resendCountdown > 0
+                                            ? `Resend code in ${resendCountdown}s`
+                                            : <>Didn't receive a code? <span className="underline">Resend</span></>
+                                        }
+                                    </button>
+                                </div>
                             )}
                             <div>
                                 <Link
@@ -200,7 +221,7 @@ function VerifyContent() {
             </div>
 
             <p className="text-center mt-10 text-[9px] font-black uppercase tracking-[0.4em] text-white/5">
-                Secure Authentication • LinkMe Protocol V2.0
+                LinkMe • Secure Login
             </p>
         </div>
     );
