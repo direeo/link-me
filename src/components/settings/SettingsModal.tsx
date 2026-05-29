@@ -272,17 +272,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 <div>
                                     <h3 className="text-lg font-black text-white mb-2 uppercase">Email Notifications</h3>
                                     <p className="text-sm text-slate-400 leading-relaxed font-medium">
-                                        Choose when LinkMe sends you emails. We only send emails that matter.
+                                        Stay consistent. LinkMe sends you a daily nudge to keep your learning streak alive.
                                     </p>
                                 </div>
 
-                                {/* Learning path completion reminder */}
+                                {/* Daily learning reminder */}
                                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/8">
                                     <div className="flex items-start justify-between gap-6">
                                         <div className="flex-1">
-                                            <h4 className="text-sm font-bold text-white mb-1">Learning path completion</h4>
+                                            <h4 className="text-sm font-bold text-white mb-1">Daily learning reminders</h4>
                                             <p className="text-xs text-slate-400 leading-relaxed">
-                                                Receive a congratulations email to your registered address when you finish watching all videos in a learning path.
+                                                Get a daily email at 9 AM showing your active paths and how far along you are — just like Duolingo, but for dev skills. One email a day, no spam.
                                             </p>
                                         </div>
 
@@ -320,7 +320,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 )}
 
                                 <p className="text-[10px] text-slate-600 leading-relaxed">
-                                    Emails are sent to the address you registered with. You can change this preference at any time.
+                                    Emails are sent to your registered address once per day at 9 AM UTC. You can change this preference at any time.
                                 </p>
                             </div>
                         )}

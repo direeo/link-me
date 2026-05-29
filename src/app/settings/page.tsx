@@ -386,10 +386,10 @@ export default function SettingsPage() {
                     <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
                         <div className="flex items-start justify-between gap-6">
                             <div className="flex-1">
-                                <h3 className="font-medium text-white mb-1">Learning path completion email</h3>
+                                <h3 className="font-medium text-white mb-1">Daily learning reminders</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    Receive a congratulations email to <span className="text-slate-300">{user?.email}</span> when
-                                    you finish watching all videos in a learning path.
+                                    Get a daily email at 9 AM showing your active learning paths and progress — like Duolingo, but for dev skills.
+                                    Emails go to <span className="text-slate-300">{user?.email}</span>.
                                 </p>
                             </div>
                             {/* Toggle switch */}

@@ -161,70 +161,94 @@ export async function sendWelcomeEmail(
     return { success: true, message: 'Welcome email sent' };
 }
 
+export interface ActiveLearningPath {
+    topic: string;
+    totalVideos: number;
+    watchedCount: number;
+    estimatedTotalTime: string;
+}
+
 /**
- * Send learning path completion congratulations email
+ * Send a Duolingo-style daily reminder email encouraging the user to watch
+ * a few minutes of video from their active learning paths.
  */
-export async function sendLearningPathCompletionEmail(
+export async function sendDailyReminderEmail(
     email: string,
     name: string | null,
-    topic: string,
-    totalVideos: number,
-    estimatedTime: string
+    activePaths: ActiveLearningPath[]
 ): Promise<{ success: boolean; message: string }> {
-    const subject = `You completed your ${topic} learning path!`;
+    const firstName = name?.split(' ')[0] || 'there';
+    const subject = `Your daily learning reminder — keep the streak alive`;
+
+    const pathRows = activePaths.map(p => {
+        const pct = p.totalVideos > 0 ? Math.round((p.watchedCount / p.totalVideos) * 100) : 0;
+        const remaining = p.totalVideos - p.watchedCount;
+        return `
+          <tr>
+            <td style="padding: 14px 0; border-bottom: 1px solid #1f2937;">
+              <p style="color: #ffffff; font-size: 14px; font-weight: 700; margin: 0 0 6px 0;">${p.topic}</p>
+              <div style="background: #1f2937; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px;">
+                <div style="background: linear-gradient(90deg, #7c3aed, #4f46e5); width: ${pct}%; height: 100%; border-radius: 4px;"></div>
+              </div>
+              <p style="color: #6b7280; font-size: 12px; margin: 0;">
+                ${p.watchedCount}/${p.totalVideos} videos &nbsp;&bull;&nbsp; ${remaining} left &nbsp;&bull;&nbsp; ${p.estimatedTotalTime} total
+              </p>
+            </td>
+          </tr>`;
+    }).join('');
+
     const html = `
         <!DOCTYPE html>
         <html>
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Learning Path Completed</title>
+            <title>Daily Learning Reminder</title>
           </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f4f5;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: #0a0a0f; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-              <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #8b5cf6; font-size: 28px; margin: 0; letter-spacing: -1px;">LinkMe</h1>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; padding: 20px; background-color: #0d0d10;">
+            <div style="max-width: 560px; margin: 0 auto; background-color: #0a0a0f; border: 1px solid #1f2937; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+
+              <!-- Header -->
+              <div style="text-align: center; margin-bottom: 32px;">
+                <h1 style="color: #8b5cf6; font-size: 26px; margin: 0; letter-spacing: -1px; font-weight: 900;">LinkMe</h1>
               </div>
 
-              <div style="text-align: center; margin: 32px 0;">
-                <div style="display: inline-block; width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #4f46e5); line-height: 72px; font-size: 36px;">
-                  &#x2713;
-                </div>
-              </div>
-
-              <h2 style="color: #ffffff; font-size: 24px; text-align: center; margin-bottom: 8px;">
-                Learning Path Complete
+              <!-- Headline -->
+              <h2 style="color: #ffffff; font-size: 22px; font-weight: 900; text-align: center; margin: 0 0 8px 0;">
+                Keep your streak going, ${firstName}
               </h2>
-              <p style="color: #6b7280; text-align: center; font-size: 15px; margin-bottom: 32px;">
-                Hi${name ? ` ${name}` : ''},<br>you've finished your <strong style="color: #a78bfa;">${topic}</strong> learning path.
+              <p style="color: #6b7280; font-size: 15px; text-align: center; margin: 0 0 32px 0;">
+                Just a few minutes of video today keeps your momentum alive.
+                Your paths are waiting.
               </p>
 
-              <div style="background: #111111; border: 1px solid #262626; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
-                <div style="display: inline-flex; gap: 40px;">
-                  <div>
-                    <p style="color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">Videos watched</p>
-                    <p style="color: #ffffff; font-size: 28px; font-weight: 900; margin: 0;">${totalVideos}</p>
-                  </div>
-                  <div>
-                    <p style="color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px 0;">Time invested</p>
-                    <p style="color: #ffffff; font-size: 20px; font-weight: 900; margin: 0;">${estimatedTime}</p>
-                  </div>
-                </div>
+              <!-- Active paths -->
+              ${activePaths.length > 0 ? `
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 32px;">
+                <tbody>
+                  ${pathRows}
+                </tbody>
+              </table>
+              ` : `
+              <div style="background: #111111; border: 1px solid #262626; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                <p style="color: #6b7280; font-size: 14px; margin: 0;">Start a new learning path in LinkMe to track your progress here.</p>
               </div>
+              `}
 
-              <p style="color: #9ca3af; font-size: 14px; text-align: center; margin-top: 24px;">
-                Ready for your next challenge? Head back to LinkMe and start a new learning path.
-              </p>
-
-              <div style="text-align: center; margin-top: 32px;">
-                <a href="${APP_URL}/chat" style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
-                  Start Next Path
+              <!-- CTA -->
+              <div style="text-align: center;">
+                <a href="${APP_URL}/chat"
+                   style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; text-decoration: none;
+                          padding: 14px 40px; border-radius: 10px; font-weight: 800; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
+                  Continue Learning
                 </a>
               </div>
 
-              <hr style="border: none; border-top: 1px solid #1f2937; margin: 32px 0;">
-              <p style="color: #374151; font-size: 12px; text-align: center;">
-                You received this because you enabled learning reminders in your LinkMe settings.<br>
+              <hr style="border: none; border-top: 1px solid #1f2937; margin: 36px 0 24px 0;">
+              <p style="color: #374151; font-size: 11px; text-align: center; margin: 0;">
+                You're getting this because you enabled daily reminders in your LinkMe settings.<br>
+                <a href="${APP_URL}/settings" style="color: #4b5563; text-decoration: underline;">Turn off reminders</a>
+                &nbsp;&bull;&nbsp;
                 &copy; ${new Date().getFullYear()} LinkMe
               </p>
             </div>
@@ -234,13 +258,14 @@ export async function sendLearningPathCompletionEmail(
 
     if (EMAIL_MODE === 'development') {
         console.log('\n' + '='.repeat(60));
-        console.log('COMPLETION EMAIL (Development Mode)');
+        console.log('DAILY REMINDER EMAIL (Development Mode)');
         console.log('='.repeat(60));
-        console.log(`To: ${email}`);
+        console.log(`To: ${email} (${firstName})`);
         console.log(`Subject: ${subject}`);
-        console.log(`Topic: ${topic} | Videos: ${totalVideos} | Time: ${estimatedTime}`);
+        console.log(`Active paths: ${activePaths.length}`);
+        activePaths.forEach(p => console.log(`  - ${p.topic}: ${p.watchedCount}/${p.totalVideos} watched`));
         console.log('='.repeat(60) + '\n');
-        return { success: true, message: 'Completion email logged to console (development mode)' };
+        return { success: true, message: 'Daily reminder email logged to console (development mode)' };
     }
 
     const transporter = createTransporter();
@@ -255,9 +280,9 @@ export async function sendLearningPathCompletionEmail(
             subject,
             html,
         });
-        return { success: true, message: 'Completion email sent successfully' };
+        return { success: true, message: 'Daily reminder email sent successfully' };
     } catch (error) {
-        console.error('Failed to send completion email:', error);
-        return { success: false, message: 'Failed to send completion email' };
+        console.error('Failed to send daily reminder email:', error);
+        return { success: false, message: 'Failed to send daily reminder email' };
     }
 }

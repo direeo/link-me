@@ -52,7 +52,6 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
     const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
     const [playlistError, setPlaylistError] = useState<string | null>(null);
     const [isCompleted, setIsCompleted] = useState(false);
-    const completionEmailSentRef = React.useRef(false);
 
     const userHasYouTube = youtubeConnected;
 
@@ -108,24 +107,12 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
             if (next.has(videoId)) next.delete(videoId);
             else next.add(videoId);
 
-            // Check for full completion after this update
-            if (newWatched && !isGuest && !completionEmailSentRef.current) {
+            // Check for full completion (show banner only — no email)
+            if (newWatched) {
                 const allVideoIds = (learningPath.stages || []).flatMap(s => (s.videos || []).map(v => v.videoId));
                 const allWatched = allVideoIds.every(id => id === videoId || next.has(id));
                 if (allWatched && allVideoIds.length > 0) {
                     setIsCompleted(true);
-                    completionEmailSentRef.current = true;
-                    // Trigger completion email in the background
-                    fetch('/api/learning-path/complete', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({
-                            topic: learningPath.topic,
-                            totalVideos: allVideoIds.length,
-                            estimatedTotalTime: learningPath.estimatedTotalTime,
-                        }),
-                    }).catch(err => console.error('Completion notification error:', err));
                 }
             }
 
