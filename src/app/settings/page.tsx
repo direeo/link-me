@@ -28,6 +28,12 @@ export default function SettingsPage() {
     const [prefSaving, setPrefSaving] = useState(false);
     const [prefMsg, setPrefMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+    // Per-path reminder state
+    interface SavedPath { id: string; topic: string; totalVideos: number; watchedVideos: number; progress: number; reminderEnabled: boolean; }
+    const [savedPaths, setSavedPaths] = useState<SavedPath[]>([]);
+    const [pathsLoading, setPathsLoading] = useState(false);
+    const [togglingPathId, setTogglingPathId] = useState<string | null>(null);
+
     // Redirect if not authenticated
     useEffect(() => {
         if (!authLoading && (!user || isGuest)) {
@@ -57,9 +63,23 @@ export default function SettingsPage() {
                 // non-fatal
             }
         };
+        const loadSavedPaths = async () => {
+            setPathsLoading(true);
+            try {
+                const res = await fetch('/api/learning-path/save', { credentials: 'include' });
+                const data = await res.json();
+                if (data.success) setSavedPaths(data.learningPaths ?? []);
+            } catch {
+                // non-fatal
+            } finally {
+                setPathsLoading(false);
+            }
+        };
+
         if (isAuthenticated && !isGuest) {
             check2FAStatus();
             loadPreferences();
+            loadSavedPaths();
         }
     }, [isAuthenticated, isGuest]);
 
@@ -87,6 +107,27 @@ export default function SettingsPage() {
         } finally {
             setPrefSaving(false);
             setTimeout(() => setPrefMsg(null), 3000);
+        }
+    };
+
+    const togglePathReminder = async (pathId: string, enabled: boolean) => {
+        setTogglingPathId(pathId);
+        setSavedPaths(prev => prev.map(p => p.id === pathId ? { ...p, reminderEnabled: enabled } : p));
+        try {
+            const res = await fetch(`/api/learning-path/${pathId}/reminder`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ reminderEnabled: enabled }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                setSavedPaths(prev => prev.map(p => p.id === pathId ? { ...p, reminderEnabled: !enabled } : p));
+            }
+        } catch {
+            setSavedPaths(prev => prev.map(p => p.id === pathId ? { ...p, reminderEnabled: !enabled } : p));
+        } finally {
+            setTogglingPathId(null);
         }
     };
 
@@ -383,46 +424,78 @@ export default function SettingsPage() {
                 {/* Notifications Section */}
                 <section className="mt-8">
                     <h2 className="text-xl font-semibold text-white mb-4">Notifications</h2>
-                    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
-                        <div className="flex items-start justify-between gap-6">
-                            <div className="flex-1">
-                                <h3 className="font-medium text-white mb-1">Daily learning reminders</h3>
-                                <p className="text-slate-400 text-sm leading-relaxed">
-                                    Get a daily email at 9 AM showing your active learning paths and progress — like Duolingo, but for dev skills.
-                                    Emails go to <span className="text-slate-300">{user?.email}</span>.
+                    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 space-y-6">
+
+                        {/* Global toggle */}
+                        <div className="flex items-center justify-between gap-6">
+                            <div>
+                                <h3 className="font-medium text-white">Daily learning reminders</h3>
+                                <p className="text-slate-400 text-sm mt-0.5">
+                                    One email per day at 9 AM to <span className="text-slate-300">{user?.email}</span> — like Duolingo, but for dev skills.
                                 </p>
                             </div>
-                            {/* Toggle switch */}
                             <button
                                 onClick={() => !prefSaving && toggleEmailReminders(!emailReminders)}
                                 disabled={prefSaving}
                                 aria-label="Toggle email reminders"
-                                className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none mt-1 ${
+                                className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
                                     emailReminders ? 'bg-violet-600' : 'bg-slate-600'
                                 } ${prefSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                             >
-                                <span
-                                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
-                                        emailReminders ? 'translate-x-6' : 'translate-x-0'
-                                    }`}
-                                />
+                                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${emailReminders ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-2 mt-4">
-                            <div className={`w-2 h-2 rounded-full ${emailReminders ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                            <span className={`text-xs font-medium ${emailReminders ? 'text-emerald-400' : 'text-slate-500'}`}>
-                                {emailReminders ? 'Enabled' : 'Disabled'}
-                            </span>
-                        </div>
-
                         {prefMsg && (
-                            <div className={`mt-4 p-3 rounded-lg text-sm ${
+                            <div className={`p-3 rounded-lg text-sm ${
                                 prefMsg.type === 'success'
                                     ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'
                                     : 'bg-red-500/20 border border-red-500/30 text-red-400'
                             }`}>
                                 {prefMsg.text}
+                            </div>
+                        )}
+
+                        {/* Per-path toggles — only when global is ON */}
+                        {emailReminders && (
+                            <div className="space-y-3 pt-2 border-t border-slate-700/50">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Remind me about</p>
+
+                                {pathsLoading ? (
+                                    <div className="flex items-center gap-2 py-2">
+                                        <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                                        <span className="text-sm text-slate-400">Loading your paths...</span>
+                                    </div>
+                                ) : savedPaths.length === 0 ? (
+                                    <p className="text-sm text-slate-500 py-2">
+                                        No saved paths yet — start a chat and save a learning path first.
+                                    </p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {savedPaths.map(path => (
+                                            <div key={path.id} className="flex items-center justify-between gap-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700/30">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-white truncate">{path.topic}</p>
+                                                    <div className="flex items-center gap-2 mt-1.5">
+                                                        <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                                            <div className="h-full bg-violet-500 rounded-full" style={{ width: `${path.progress}%` }} />
+                                                        </div>
+                                                        <span className="text-xs text-slate-500 shrink-0">{path.watchedVideos}/{path.totalVideos} videos</span>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => togglingPathId !== path.id && togglePathReminder(path.id, !path.reminderEnabled)}
+                                                    disabled={togglingPathId === path.id}
+                                                    className={`relative shrink-0 w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+                                                        path.reminderEnabled ? 'bg-violet-600' : 'bg-slate-600'
+                                                    } ${togglingPathId === path.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                >
+                                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${path.reminderEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

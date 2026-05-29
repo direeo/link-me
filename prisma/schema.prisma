@@ -95,6 +95,7 @@ model SavedLearningPath {
     summary           String
     completionGoals   String   // JSON array of strings
     stages            String   // JSON of LearningStage[]
+    reminderEnabled   Boolean  @default(true)  // per-path daily reminder opt-in
     createdAt         DateTime @default(now())
     updatedAt         DateTime @updatedAt
 

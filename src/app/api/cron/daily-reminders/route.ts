@@ -1,11 +1,10 @@
 // Cron job: send daily learning reminder emails
-// Schedule: 0 9 * * * (9:00 AM UTC daily) — configured in vercel.json
-// Security: Vercel automatically sends Authorization: Bearer $CRON_SECRET
-//           We also accept a manual Bearer token for local testing.
+// Schedule: 0 9 * * * (9:00 AM UTC daily) — configured in render.yaml / cron-job.org
+// Security: expects Authorization: Bearer $CRON_SECRET header
 //
 // Algorithm:
 //   1. Fetch all users with emailReminders=true
-//   2. For each user, get their saved learning paths
+//   2. For each user, get their saved learning paths where reminderEnabled=true
 //   3. For each path, count watched/total videos via VideoProgress
 //   4. Skip fully-completed paths (watchedCount === totalVideos)
 //   5. Send a Duolingo-style motivational email via sendDailyReminderEmail
@@ -15,7 +14,24 @@ import { getDb } from '@/lib/db';
 import { sendDailyReminderEmail, ActiveLearningPath } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60; // seconds — give enough time to loop all users
+export const maxDuration = 60;
+
+// Ensure reminderEnabled column exists in Turso (safe no-op if already there)
+async function ensureReminderColumn() {
+    try {
+        const { createClient } = await import('@libsql/client');
+        const url = process.env.DATABASE_URL?.trim();
+        const authToken = process.env.DATABASE_AUTH_TOKEN?.trim();
+        if (url && (url.startsWith('libsql://') || authToken)) {
+            const client = createClient({ url, authToken });
+            await client.execute(
+                'ALTER TABLE SavedLearningPath ADD COLUMN reminderEnabled INTEGER DEFAULT 1'
+            ).catch(() => { /* already exists */ });
+        }
+    } catch {
+        // Local Prisma dev env
+    }
+}
 
 export async function GET(request: NextRequest) {
     // ── Authorization ────────────────────────────────────────────────────
@@ -28,9 +44,10 @@ export async function GET(request: NextRequest) {
         }
     }
 
+    await ensureReminderColumn();
+
     const db = getDb();
 
-    // ── Fetch all users — filter to emailReminders=true in JS ─────────────
     let users: Awaited<ReturnType<typeof db.user.findMany>>;
     try {
         users = await db.user.findMany();
@@ -47,18 +64,19 @@ export async function GET(request: NextRequest) {
 
     for (const user of reminderUsers) {
         try {
-            // Get all saved learning paths for this user
             const paths = await db.savedLearningPath.findMany({ where: { userId: user.id } });
 
             const activePaths: ActiveLearningPath[] = [];
 
             for (const path of paths) {
-                // Count watched videos for this path
+                // Skip paths the user has opted out of reminders for
+                if (path.reminderEnabled === false) continue;
+
                 const progressRows = await db.videoProgress.findMany({ where: { learningPathId: path.id } });
                 const watchedCount = progressRows.filter((p: { watched: boolean }) => p.watched).length;
                 const totalVideos = path.totalVideos;
 
-                // Skip paths where ALL videos are already watched (fully complete)
+                // Skip fully-completed paths
                 if (totalVideos > 0 && watchedCount >= totalVideos) continue;
 
                 activePaths.push({
@@ -69,7 +87,6 @@ export async function GET(request: NextRequest) {
                 });
             }
 
-            // Send the reminder (even if no active paths — encourages starting one)
             const result = await sendDailyReminderEmail(user.email, user.name, activePaths);
             if (result.success) {
                 sent++;
@@ -85,11 +102,5 @@ export async function GET(request: NextRequest) {
 
     console.log(`cron/daily-reminders: sent=${sent} skipped=${skipped} errors=${errors} eligible=${reminderUsers.length}`);
 
-    return NextResponse.json({
-        success: true,
-        sent,
-        skipped,
-        errors,
-        eligible: reminderUsers.length,
-    });
+    return NextResponse.json({ success: true, sent, skipped, errors, eligible: reminderUsers.length });
 }

@@ -144,6 +144,7 @@ export async function GET(request: NextRequest) {
             summary: string;
             completionGoals: string;
             stages: string;
+            reminderEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
             videoProgress: Array<{ watched: boolean }>;
@@ -163,6 +164,7 @@ export async function GET(request: NextRequest) {
                 summary: lp.summary,
                 completionGoals: JSON.parse(lp.completionGoals),
                 stages: JSON.parse(lp.stages),
+                reminderEnabled: lp.reminderEnabled ?? true,
                 createdAt: lp.createdAt,
                 updatedAt: lp.updatedAt,
             };

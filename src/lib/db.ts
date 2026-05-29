@@ -59,6 +59,7 @@ export interface DbSavedLearningPath {
   stages: string;
   completionGoals: string;
   summary: string;
+  reminderEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -490,11 +491,12 @@ const tursoDb = {
         stages: String(r.stages),
         completionGoals: String(r.completionGoals),
         summary: String(r.summary),
+        reminderEnabled: r.reminderEnabled === undefined ? true : Boolean(r.reminderEnabled),
         createdAt: new Date(String(r.createdAt)),
         updatedAt: new Date(String(r.updatedAt)),
       };
     },
-    async update(args: { where: { id: string }; data: { totalVideos?: number; estimatedTotalTime?: string; summary?: string; completionGoals?: string; stages?: string } }): Promise<DbSavedLearningPath> {
+    async update(args: { where: { id: string }; data: { totalVideos?: number; estimatedTotalTime?: string; summary?: string; completionGoals?: string; stages?: string; reminderEnabled?: boolean } }): Promise<DbSavedLearningPath> {
       const updates: string[] = [];
       const values: unknown[] = [];
 
@@ -517,6 +519,10 @@ const tursoDb = {
       if (args.data.stages !== undefined) {
         updates.push('stages = ?');
         values.push(args.data.stages);
+      }
+      if (args.data.reminderEnabled !== undefined) {
+        updates.push('reminderEnabled = ?');
+        values.push(args.data.reminderEnabled ? 1 : 0);
       }
 
       updates.push('updatedAt = ?');
@@ -545,6 +551,7 @@ const tursoDb = {
         stages: String(r.stages),
         completionGoals: String(r.completionGoals),
         summary: String(r.summary),
+        reminderEnabled: r.reminderEnabled === undefined ? true : Boolean(r.reminderEnabled),
         createdAt: new Date(String(r.createdAt)),
         updatedAt: new Date(String(r.updatedAt)),
       };
@@ -564,6 +571,7 @@ const tursoDb = {
           stages: String(row.stages),
           completionGoals: String(row.completionGoals),
           summary: String(row.summary),
+          reminderEnabled: row.reminderEnabled === undefined ? true : Boolean(row.reminderEnabled),
           createdAt: new Date(String(row.createdAt)),
           updatedAt: new Date(String(row.updatedAt)),
         };

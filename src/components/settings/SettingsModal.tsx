@@ -25,11 +25,18 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [prefLoading, setPrefLoading] = useState(false);
     const [prefMessage, setPrefMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+    // Per-path reminder state
+    interface SavedPath { id: string; topic: string; totalVideos: number; watchedVideos: number; progress: number; reminderEnabled: boolean; }
+    const [savedPaths, setSavedPaths] = useState<SavedPath[]>([]);
+    const [pathsLoading, setPathsLoading] = useState(false);
+    const [togglingPathId, setTogglingPathId] = useState<string | null>(null);
+
     // Initial check for 2FA status, guest mode, and preferences
     useEffect(() => {
         if (isOpen) {
             check2FAStatus();
             loadPreferences();
+            loadSavedPaths();
         }
     }, [isOpen]);
 
@@ -59,6 +66,42 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             }
         } catch {
             // non-fatal — preferences default to false
+        }
+    };
+
+    const loadSavedPaths = async () => {
+        setPathsLoading(true);
+        try {
+            const res = await fetch('/api/learning-path/save', { credentials: 'include' });
+            const data = await res.json();
+            if (data.success) setSavedPaths(data.learningPaths ?? []);
+        } catch {
+            // non-fatal
+        } finally {
+            setPathsLoading(false);
+        }
+    };
+
+    const togglePathReminder = async (pathId: string, enabled: boolean) => {
+        setTogglingPathId(pathId);
+        // Optimistic update
+        setSavedPaths(prev => prev.map(p => p.id === pathId ? { ...p, reminderEnabled: enabled } : p));
+        try {
+            const res = await fetch(`/api/learning-path/${pathId}/reminder`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ reminderEnabled: enabled }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                // Revert on error
+                setSavedPaths(prev => prev.map(p => p.id === pathId ? { ...p, reminderEnabled: !enabled } : p));
+            }
+        } catch {
+            setSavedPaths(prev => prev.map(p => p.id === pathId ? { ...p, reminderEnabled: !enabled } : p));
+        } finally {
+            setTogglingPathId(null);
         }
     };
 
@@ -268,7 +311,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         )}
 
                         {activeTab === 'notifications' && (
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 <div>
                                     <h3 className="text-lg font-black text-white mb-2 uppercase">Email Notifications</h3>
                                     <p className="text-sm text-slate-400 leading-relaxed font-medium">
@@ -276,17 +319,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     </p>
                                 </div>
 
-                                {/* Daily learning reminder */}
-                                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/8">
-                                    <div className="flex items-start justify-between gap-6">
-                                        <div className="flex-1">
-                                            <h4 className="text-sm font-bold text-white mb-1">Daily learning reminders</h4>
-                                            <p className="text-xs text-slate-400 leading-relaxed">
-                                                Get a daily email at 9 AM showing your active paths and how far along you are — just like Duolingo, but for dev skills. One email a day, no spam.
-                                            </p>
+                                {/* Global toggle */}
+                                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/8">
+                                    <div className="flex items-center justify-between gap-6">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-white">Daily learning reminders</h4>
+                                            <p className="text-xs text-slate-500 mt-0.5">One email per day at 9 AM — like Duolingo, but for dev skills.</p>
                                         </div>
-
-                                        {/* Toggle switch */}
                                         <button
                                             onClick={() => !prefLoading && toggleEmailReminders(!emailReminders)}
                                             disabled={prefLoading}
@@ -295,32 +334,64 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                                 emailReminders ? 'bg-violet-600' : 'bg-white/10'
                                             } ${prefLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                         >
-                                            <span
-                                                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
-                                                    emailReminders ? 'translate-x-6' : 'translate-x-0'
-                                                }`}
-                                            />
+                                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${emailReminders ? 'translate-x-6' : 'translate-x-0'}`} />
                                         </button>
-                                    </div>
-
-                                    <div className="mt-4 flex items-center gap-2">
-                                        <div className={`w-1.5 h-1.5 rounded-full ${emailReminders ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${emailReminders ? 'text-emerald-400' : 'text-slate-600'}`}>
-                                            {emailReminders ? 'Enabled' : 'Disabled'}
-                                        </span>
                                     </div>
                                 </div>
 
                                 {prefMessage && (
-                                    <div className={`p-4 rounded-xl text-xs font-bold text-center ${
+                                    <div className={`p-3 rounded-xl text-xs font-bold text-center ${
                                         prefMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
                                     }`}>
                                         {prefMessage.text}
                                     </div>
                                 )}
 
+                                {/* Per-path toggles — only shown when global reminders are ON */}
+                                {emailReminders && (
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">Remind me about</p>
+
+                                        {pathsLoading ? (
+                                            <div className="flex items-center gap-2 px-1 py-3">
+                                                <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                                                <span className="text-xs text-slate-500">Loading your paths...</span>
+                                            </div>
+                                        ) : savedPaths.length === 0 ? (
+                                            <div className="p-4 rounded-xl border border-white/5 text-xs text-slate-500 text-center">
+                                                No saved paths yet — start a chat and save a learning path first.
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-2">
+                                                {savedPaths.map(path => (
+                                                    <div key={path.id} className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-semibold text-white truncate">{path.topic}</p>
+                                                            <div className="flex items-center gap-2 mt-1.5">
+                                                                <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                                                                    <div className="h-full bg-violet-500 rounded-full" style={{ width: `${path.progress}%` }} />
+                                                                </div>
+                                                                <span className="text-[10px] text-slate-500 flex-shrink-0">{path.watchedVideos}/{path.totalVideos}</span>
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => togglingPathId !== path.id && togglePathReminder(path.id, !path.reminderEnabled)}
+                                                            disabled={togglingPathId === path.id}
+                                                            className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-all duration-200 focus:outline-none ${
+                                                                path.reminderEnabled ? 'bg-violet-600' : 'bg-white/10'
+                                                            } ${togglingPathId === path.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                        >
+                                                            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${path.reminderEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 <p className="text-[10px] text-slate-600 leading-relaxed">
-                                    Emails are sent to your registered address once per day at 9 AM UTC. You can change this preference at any time.
+                                    Emails go to your registered address. You can change this at any time.
                                 </p>
                             </div>
                         )}
