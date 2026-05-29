@@ -431,7 +431,7 @@ export default function SettingsPage() {
                             <div>
                                 <h3 className="font-medium text-white">Daily learning reminders</h3>
                                 <p className="text-slate-400 text-sm mt-0.5">
-                                    One email per day at 9 AM to <span className="text-slate-300">{user?.email}</span> — like Duolingo, but for dev skills.
+                                    One email per day at 9 AM to <span className="text-slate-300">{user?.email}</span> to keep your learning streak going.
                                 </p>
                             </div>
                             <button

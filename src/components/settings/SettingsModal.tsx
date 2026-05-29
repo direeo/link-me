@@ -324,7 +324,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     <div className="flex items-center justify-between gap-6">
                                         <div>
                                             <h4 className="text-sm font-bold text-white">Daily learning reminders</h4>
-                                            <p className="text-xs text-slate-500 mt-0.5">One email per day at 9 AM — like Duolingo, but for dev skills.</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">One email per day at 9 AM to keep your learning streak going.</p>
                                         </div>
                                         <button
                                             onClick={() => !prefLoading && toggleEmailReminders(!emailReminders)}
