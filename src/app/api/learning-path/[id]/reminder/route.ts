@@ -1,6 +1,7 @@
 // PATCH /api/learning-path/[id]/reminder
 // Toggle the per-path daily reminder opt-in for the authenticated user.
 // Body: { reminderEnabled: boolean }
+// Next.js 16: params is a Promise — must be awaited.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/auth';
