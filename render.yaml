@@ -1,0 +1,16 @@
+services:
+  # ── Cron: daily learning reminders (9 AM UTC every day) ──────────────────
+  - type: cron
+    name: linkme-daily-reminders
+    schedule: "0 9 * * *"
+    # Render cron jobs run a shell command — we just curl our own API.
+    # Set CRON_SECRET and APP_URL as environment variables in the Render dashboard.
+    startCommand: >
+      curl -sf -X GET "${APP_URL}/api/cron/daily-reminders"
+      -H "Authorization: Bearer ${CRON_SECRET}"
+      || echo "Daily reminders cron failed"
+    envVars:
+      - key: APP_URL
+        sync: false   # set in Render dashboard: https://linkme.ng
+      - key: CRON_SECRET
+        sync: false   # set in Render dashboard: any random secret string
