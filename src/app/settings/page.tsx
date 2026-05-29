@@ -23,6 +23,11 @@ export default function SettingsPage() {
     const [disablePassword, setDisablePassword] = useState('');
     const [showDisableModal, setShowDisableModal] = useState(false);
 
+    // Notification preferences
+    const [emailReminders, setEmailReminders] = useState(false);
+    const [prefSaving, setPrefSaving] = useState(false);
+    const [prefMsg, setPrefMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
     // Redirect if not authenticated
     useEffect(() => {
         if (!authLoading && (!user || isGuest)) {
@@ -30,7 +35,7 @@ export default function SettingsPage() {
         }
     }, [authLoading, user, isGuest, router]);
 
-    // Check 2FA status on mount
+    // Check 2FA status and load preferences on mount
     useEffect(() => {
         const check2FAStatus = async () => {
             try {
@@ -43,10 +48,47 @@ export default function SettingsPage() {
                 console.error('Failed to check 2FA status:', err);
             }
         };
+        const loadPreferences = async () => {
+            try {
+                const res = await fetch('/api/settings/preferences', { credentials: 'include' });
+                const data = await res.json();
+                if (data.success) setEmailReminders(data.preferences.emailReminders ?? false);
+            } catch {
+                // non-fatal
+            }
+        };
         if (isAuthenticated && !isGuest) {
             check2FAStatus();
+            loadPreferences();
         }
     }, [isAuthenticated, isGuest]);
+
+    const toggleEmailReminders = async (enabled: boolean) => {
+        setPrefSaving(true);
+        setPrefMsg(null);
+        setEmailReminders(enabled);
+        try {
+            const res = await fetch('/api/settings/preferences', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ emailReminders: enabled }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setPrefMsg({ type: 'success', text: enabled ? 'Reminders enabled' : 'Reminders disabled' });
+            } else {
+                setEmailReminders(!enabled);
+                setPrefMsg({ type: 'error', text: data.message || 'Failed to update' });
+            }
+        } catch {
+            setEmailReminders(!enabled);
+            setPrefMsg({ type: 'error', text: 'Connection error' });
+        } finally {
+            setPrefSaving(false);
+            setTimeout(() => setPrefMsg(null), 3000);
+        }
+    };
 
     const startSetup = async () => {
         setLoading(true);
@@ -334,6 +376,54 @@ export default function SettingsPage() {
                             >
                                 Disable 2FA
                             </button>
+                        )}
+                    </div>
+                </section>
+
+                {/* Notifications Section */}
+                <section className="mt-8">
+                    <h2 className="text-xl font-semibold text-white mb-4">Notifications</h2>
+                    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+                        <div className="flex items-start justify-between gap-6">
+                            <div className="flex-1">
+                                <h3 className="font-medium text-white mb-1">Learning path completion email</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Receive a congratulations email to <span className="text-slate-300">{user?.email}</span> when
+                                    you finish watching all videos in a learning path.
+                                </p>
+                            </div>
+                            {/* Toggle switch */}
+                            <button
+                                onClick={() => !prefSaving && toggleEmailReminders(!emailReminders)}
+                                disabled={prefSaving}
+                                aria-label="Toggle email reminders"
+                                className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none mt-1 ${
+                                    emailReminders ? 'bg-violet-600' : 'bg-slate-600'
+                                } ${prefSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                            >
+                                <span
+                                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                                        emailReminders ? 'translate-x-6' : 'translate-x-0'
+                                    }`}
+                                />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-4">
+                            <div className={`w-2 h-2 rounded-full ${emailReminders ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                            <span className={`text-xs font-medium ${emailReminders ? 'text-emerald-400' : 'text-slate-500'}`}>
+                                {emailReminders ? 'Enabled' : 'Disabled'}
+                            </span>
+                        </div>
+
+                        {prefMsg && (
+                            <div className={`mt-4 p-3 rounded-lg text-sm ${
+                                prefMsg.type === 'success'
+                                    ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'
+                                    : 'bg-red-500/20 border border-red-500/30 text-red-400'
+                            }`}>
+                                {prefMsg.text}
+                            </div>
                         )}
                     </div>
                 </section>
