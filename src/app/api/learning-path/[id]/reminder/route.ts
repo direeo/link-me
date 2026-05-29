@@ -10,9 +10,11 @@ export const dynamic = 'force-dynamic';
 
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
+
         const accessToken = request.cookies.get('accessToken')?.value;
         if (!accessToken) {
             return NextResponse.json({ success: false, message: 'Not authenticated' }, { status: 401 });
@@ -46,13 +48,13 @@ export async function PATCH(
         }
 
         // Confirm path belongs to this user before updating
-        const path = await db.savedLearningPath.findUnique({ where: { id: params.id } });
+        const path = await db.savedLearningPath.findUnique({ where: { id } });
         if (!path || path.userId !== decoded.userId) {
             return NextResponse.json({ success: false, message: 'Not found' }, { status: 404 });
         }
 
         await db.savedLearningPath.update({
-            where: { id: params.id },
+            where: { id },
             data: { reminderEnabled: body.reminderEnabled },
         });
 
