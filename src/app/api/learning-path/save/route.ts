@@ -124,17 +124,14 @@ export async function GET(request: NextRequest) {
 
         const db = getDb();
 
-        // Get all saved learning paths for this user with their progress
+        // Get all saved learning paths for this user
         const learningPaths = await db.savedLearningPath.findMany({
             where: { userId: decoded.userId },
-            include: {
-                videoProgress: true,
-            },
             orderBy: { updatedAt: 'desc' },
         });
 
-        // Format with progress percentage
-        const formatted = learningPaths.map((lp: {
+        // Fetch video progress per path separately (Turso doesn't support include)
+        const formatted = await Promise.all(learningPaths.map(async (lp: {
             id: string;
             topic: string;
             userLevel: string;
@@ -147,9 +144,9 @@ export async function GET(request: NextRequest) {
             reminderEnabled: boolean;
             createdAt: Date;
             updatedAt: Date;
-            videoProgress: Array<{ watched: boolean }>;
         }) => {
-            const watchedCount = lp.videoProgress.filter((vp) => vp.watched).length;
+            const progressRows = await db.videoProgress.findMany({ where: { learningPathId: lp.id } });
+            const watchedCount = progressRows.filter((vp: { watched: boolean }) => vp.watched).length;
             const progress = lp.totalVideos > 0 ? Math.round((watchedCount / lp.totalVideos) * 100) : 0;
 
             return {
@@ -168,7 +165,7 @@ export async function GET(request: NextRequest) {
                 createdAt: lp.createdAt,
                 updatedAt: lp.updatedAt,
             };
-        });
+        }));
 
         return NextResponse.json({
             success: true,
