@@ -216,25 +216,25 @@ export default function LearningPath({ learningPath, savedPathId: initialSavedPa
                     </div>
 
                     <div className="flex flex-col gap-2 min-w-[200px]">
-                        <Button 
-                            variant={savedPathId ? 'secondary' : 'glow'} 
+                        <Button
+                            variant={savedPathId ? 'secondary' : 'glow'}
                             onClick={saveLearningPath}
                             disabled={isSaving || savedPathId !== undefined}
                             className="w-full text-[10px] font-bold uppercase tracking-widest"
                         >
-                            {savedPathId ? 'Registry Active' : 'Initialize Sync'}
+                            {isSaving ? 'Saving...' : savedPathId ? 'Path Saved' : 'Save Path'}
                         </Button>
                         {saveMessage && (
                             <p className="text-[10px] text-slate-400 mt-1">{saveMessage}</p>
                         )}
-                        
+
                         <Button
                             variant={userHasYouTube ? 'primary' : 'outline'}
                             className="w-full text-xs font-bold uppercase tracking-widest"
                             onClick={userHasYouTube ? exportPlaylist : () => window.location.href = '/settings'}
                             disabled={isExporting}
                         >
-                            {userHasYouTube ? (isExporting ? 'Creating Playlist...' : 'Create YouTube Playlist') : 'Connect YouTube'}
+                            {userHasYouTube ? (isExporting ? 'Creating Playlist...' : 'Export to YouTube') : 'Connect to YouTube'}
                         </Button>
                         {playlistError && (
                             <p className="text-[10px] text-red-400 mt-1">{playlistError}</p>
