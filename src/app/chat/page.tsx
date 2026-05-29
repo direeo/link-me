@@ -56,11 +56,13 @@ export default function ChatPage() {
                     role: 'assistant',
                     content: `Hey${user?.name ? ` ${user.name}` : ''}! What do you want to learn today?
 
-I'll find the best YouTube tutorials and build you a step-by-step learning path. Just tell me the topic — for example:
+I'll search YouTube for the best tutorials and build you a step-by-step learning path — no matter the topic. For example:
 
-• "I want to learn Python from scratch"
-• "Teach me React, I already know HTML and CSS"
-• "I want to get into machine learning"`,
+• "I want to learn guitar from scratch"
+• "Teach me video editing for YouTube"
+• "How do I start investing in stocks?"
+• "I want to learn to cook Italian food"
+• "Help me get into digital marketing"`,
                     timestamp: new Date(),
                 },
             ]);
