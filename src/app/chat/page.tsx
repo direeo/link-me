@@ -28,10 +28,15 @@ export default function ChatPage() {
 
     // High-speed smooth scroll
     useEffect(() => {
-        // If the latest message includes a learning path or tutorials, scroll so the top of that message is visible.
-        const lastWithPath = [...messages].reverse().find(m => m.learningPath || (m.tutorials && m.tutorials.length > 0));
-        if (lastWithPath) {
-            const el = messageRefs.current[lastWithPath.id];
+        // Only check the most recent message (skip loading placeholder) for a learning path.
+        // Searching the full history causes scroll to jump back to old learning paths on every new message.
+        const lastMsg = messages[messages.length - 1];
+        const checkMsg = (lastMsg?.isLoading && messages.length >= 2)
+            ? messages[messages.length - 2]
+            : lastMsg;
+
+        if (checkMsg && (checkMsg.learningPath || (checkMsg.tutorials && checkMsg.tutorials.length > 0))) {
+            const el = messageRefs.current[checkMsg.id];
             if (el) {
                 el.scrollIntoView({ behavior: 'auto', block: 'start' });
                 return;
