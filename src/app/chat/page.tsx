@@ -319,9 +319,9 @@ I'll search YouTube for the best tutorials and build you a step-by-step learning
 
             {/* --- Operational Workspace --- */}
             <main className="flex-1 overflow-hidden flex flex-col relative z-0">
-                <div className="flex-1 overflow-y-auto px-4 py-12 md:px-12 no-scrollbar">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="space-y-6">
+                <div className="flex-1 overflow-y-auto px-4 md:px-12 no-scrollbar">
+                    <div className="max-w-4xl mx-auto min-h-full flex flex-col justify-end">
+                        <div className="space-y-6 py-6">
                             {messages.map((message) => (
                                 <MessageBubble
                                     key={message.id}
@@ -330,12 +330,12 @@ I'll search YouTube for the best tutorials and build you a step-by-step learning
                                 />
                             ))}
                         </div>
-                        <div ref={messagesEndRef} className="h-20" />
+                        <div ref={messagesEndRef} />
                     </div>
                 </div>
 
                 {/* --- Command Area (Lowered & Optimized) --- */}
-                <div className="flex-shrink-0 p-6 md:p-8 border-t border-white/5 bg-[#050508]/80 backdrop-blur-2xl">
+                <div className="flex-shrink-0 px-4 py-4 md:px-8 border-t border-white/5 bg-[#050508]/80 backdrop-blur-2xl">
                     <div className="max-w-4xl mx-auto">
                         {isLoading && (
                             <div className="flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-violet-500/5 border border-violet-500/10 w-fit mx-auto animate-pulse">
